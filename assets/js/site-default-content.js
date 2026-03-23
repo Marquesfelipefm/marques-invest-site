@@ -10,12 +10,11 @@ window.MARQUES_DEFAULT_CONTENT = {
     },
   },
   home: {
-    eyebrow: "Estrategia patrimonial com logica, prazo e gestao de risco",
-    title:
-      "Transformamos leitura de mercado em decisoes patrimoniais para longo prazo, aposentadoria e cripto com disciplina.",
+    eyebrow: "Marques Invest",
+    title: "Patrimonio com direcao.",
     description:
-      "A Marques Invest une inteligencia de mercado, planejamento e gestao de risco para ajudar clientes a construir patrimonio com mais clareza, metodo e consistencia.",
-    teaserTitle: "Conteudo que sustenta a tese de alocacao",
+      "Leitura de mercado, carteiras por objetivo, planejamento de aposentadoria e estrategia em cripto com gestao de risco para quem quer construir patrimonio com metodo, clareza e longo prazo.",
+    teaserTitle: "Conteudo que sustenta a direcao patrimonial",
     teasers: [
       {
         tag: "Visao",
@@ -49,7 +48,7 @@ window.MARQUES_DEFAULT_CONTENT = {
         tag: "Autoridade",
         title: "Carta Marques",
         description:
-          "Uma newsletter com leitura objetiva de mercado e impacto pratico na alocacao, pensada como produto de relacionamento.",
+          "Leitura objetiva de mercado e impacto pratico na alocacao, pensada como produto de relacionamento e autoridade.",
         link: "newsletter.html",
       },
       {
@@ -63,21 +62,21 @@ window.MARQUES_DEFAULT_CONTENT = {
   },
   analysis: {
     eyebrow: "Analise da Semana",
-    title: "O espaco para a principal leitura estrategica do periodo.",
+    title: "A leitura semanal que transforma cenario em posicionamento.",
     description:
-      "Esta pagina vai concentrar a grande analise semanal do site, com interpretacao de mercado, cenarios, riscos e oportunidades.",
-    sideTag: "O que teremos aqui",
-    sideTitle: "Estrutura editorial da pagina",
+      "Uma sintese para conectar juros, bolsa, cambio, cripto e risco global com implicacoes praticas para carteira e patrimonio.",
+    sideTag: "Estrutura",
+    sideTitle: "Como essa leitura deve funcionar",
     bullets: [
       "Resumo executivo da semana",
       "Leitura de juros, bolsa, cambio e cripto",
-      "Teses para carteira e posicionamento",
-      "Conclusao com chamada comercial",
+      "Teses para carteira e implicacoes patrimoniais",
+      "Conclusao com proxima decisao de alocacao",
     ],
   },
   highlights: {
     kicker: "Destaques",
-    title: "Area dedicada aos principais blocos editoriais do site",
+    title: "Curadoria do que merece atencao imediata.",
     cards: [
       {
         tag: "Capa",
@@ -99,22 +98,22 @@ window.MARQUES_DEFAULT_CONTENT = {
   },
   newsletter: {
     kicker: "Carta Marques",
-    title: "Receba a leitura do mercado com impacto pratico na sua alocacao.",
+    title: "Receba uma leitura objetiva do mercado.",
     description:
-      "Uma newsletter pensada para transformar ruido em clareza, com visao macro, leitura de risco e reflexo real em carteira, aposentadoria e exposicao a cripto.",
-    buttonLabel: "Quero receber a carta",
+      "Cenario da semana, impacto pratico na alocacao e direcao patrimonial para quem construi capital com horizonte de longo prazo.",
+    buttonLabel: "Quero receber",
   },
   contact: {
     kicker: "Diagnostico",
-    title: "Agende um diagnostico patrimonial inicial",
-    tag: "Triagem comercial",
-    heading: "Uma abordagem mais clara para transformar interesse em proposta.",
+    title: "Solicite seu diagnostico patrimonial",
+    tag: "Diagnostico inicial",
+    heading: "Clareza antes da proposta.",
     description:
-      "Preencha seus dados, objetivo e momento patrimonial. O formulario ajuda a Marques Invest a entender melhor o seu caso antes do primeiro contato consultivo.",
+      "Preencha seus dados para uma analise inicial da sua estrutura, do seu objetivo e do seu horizonte de investimento. Isso torna o primeiro contato mais consultivo e menos generico.",
     benefits: [
-      "Clareza sobre objetivo, horizonte e capacidade de aporte",
-      "Triagem orientada para os servicos centrais da marca",
-      "Contato consultivo com mais contexto e menos ruido",
+      "Entendimento mais claro do objetivo patrimonial",
+      "Triagem alinhada aos 3 pilares da Marques Invest",
+      "Contato consultivo com mais contexto, prazo e coerencia",
     ],
   },
 };

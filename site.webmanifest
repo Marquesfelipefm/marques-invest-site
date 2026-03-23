@@ -3,8 +3,8 @@
   "short_name": "Marques",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#060606",
-  "theme_color": "#060606",
+  "background_color": "#0E1A32",
+  "theme_color": "#0E1A32",
   "icons": [
     {
       "src": "assets/img/logo-mark.svg",

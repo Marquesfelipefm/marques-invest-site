@@ -119,33 +119,72 @@
     ];
   }
 
+  function shouldReplaceHomeContent(content) {
+    return (
+      content.home?.eyebrow === "Portal editorial para investidores" ||
+      content.home?.eyebrow === "Para investidores" ||
+      content.home?.eyebrow === "Estrategia patrimonial com logica, prazo e gestao de risco" ||
+      content.home?.title === "Analise, noticias e inteligencia de mercado em um portal so." ||
+      content.home?.title ===
+        "Transformamos leitura de mercado em decisoes patrimoniais para longo prazo, aposentadoria e cripto com disciplina." ||
+      content.home?.teaserTitle === "Previa de cada pagina antes do clique" ||
+      content.home?.teaserTitle === "Conteudo que sustenta a tese de alocacao" ||
+      String(content.home?.description || "").includes("A Marques Invest nasce com um prop") ||
+      String(content.home?.description || "").includes("A Marques Invest une inteligencia de mercado")
+    );
+  }
+
+  function shouldReplaceNewsletterContent(content) {
+    return (
+      content.newsletter?.kicker === "Newsletter" ||
+      content.newsletter?.title === "Receba um resumo do fechamento do mercado" ||
+      content.newsletter?.title === "Receba a leitura do mercado com impacto pratico na sua alocacao." ||
+      content.newsletter?.description ===
+        "Pagina pronta para captacao de leads, automacao de e-mail e estrategia de relacionamento com investidores." ||
+      content.newsletter?.description ===
+        "Uma newsletter pensada para transformar ruido em clareza, com visao macro, leitura de risco e reflexo real em carteira, aposentadoria e exposicao a cripto." ||
+      content.newsletter?.buttonLabel === "Quero receber a carta"
+    );
+  }
+
+  function shouldReplaceContactContent(content) {
+    return (
+      content.contact?.kicker === "Contato" ||
+      content.contact?.title === "Cadastre seus dados para atendimento especializado" ||
+      content.contact?.title === "Agende um diagnostico patrimonial inicial" ||
+      content.contact?.tag === "Atendimento" ||
+      content.contact?.tag === "Triagem comercial" ||
+      content.contact?.heading === "Consultoria para investidores e planejamento empresarial" ||
+      content.contact?.heading === "Uma abordagem mais clara para transformar interesse em proposta." ||
+      content.contact?.description ===
+        "Preencha o cadastro para que a equipe entre em contato. O CEP busca automaticamente o endereco e voce so completa numero e complemento." ||
+      content.contact?.description ===
+        "Preencha seus dados, objetivo e momento patrimonial. O formulario ajuda a Marques Invest a entender melhor o seu caso antes do primeiro contato consultivo." ||
+      (Array.isArray(content.contact?.benefits) &&
+        content.contact.benefits.some(
+          (item) =>
+            item === "Atendimento personalizado" ||
+            item === "Triagem rapida do perfil" ||
+            item === "Formulario preparado para integracao futura com CRM" ||
+            item === "Clareza sobre objetivo, horizonte e capacidade de aporte"
+        ))
+    );
+  }
+
+  function shouldReplaceAnalysisContent(content) {
+    return (
+      !content.analysis ||
+      content.analysis.title === "O espaco para a principal leitura estrategica do periodo." ||
+      content.analysis.sideTag === "O que teremos aqui" ||
+      content.analysis.sideTitle === "Estrutura editorial da pagina"
+    );
+  }
+
   function upgradeLegacyContent(content) {
     const defaults = window.MARQUES_DEFAULT_CONTENT || {};
 
-    if (!content.home) {
+    if (!content.home || shouldReplaceHomeContent(content)) {
       content.home = clone(defaults.home || {});
-    }
-
-    if (
-      content.home.eyebrow === "Portal editorial para investidores" ||
-      content.home.eyebrow === "Para investidores"
-    ) {
-      content.home.eyebrow = defaults.home.eyebrow;
-    }
-
-    if (content.home.title === "Analise, noticias e inteligencia de mercado em um portal so.") {
-      content.home.title = defaults.home.title;
-    }
-
-    if (
-      typeof content.home.description === "string" &&
-      content.home.description.includes("A Marques Invest nasce com um propósito claro")
-    ) {
-      content.home.description = defaults.home.description;
-    }
-
-    if (content.home.teaserTitle === "Previa de cada pagina antes do clique") {
-      content.home.teaserTitle = defaults.home.teaserTitle;
     }
 
     if (
@@ -160,66 +199,20 @@
       content.home.teasers = clone(defaults.home.teasers);
     }
 
-    if (!content.newsletter) {
+    if (!content.newsletter || shouldReplaceNewsletterContent(content)) {
       content.newsletter = clone(defaults.newsletter || {});
     }
 
-    if (content.newsletter.kicker === "Newsletter") {
-      content.newsletter.kicker = defaults.newsletter.kicker;
-    }
-
-    if (content.newsletter.title === "Receba um resumo do fechamento do mercado") {
-      content.newsletter.title = defaults.newsletter.title;
-    }
-
-    if (
-      content.newsletter.description ===
-      "Pagina pronta para captacao de leads, automacao de e-mail e estrategia de relacionamento com investidores."
-    ) {
-      content.newsletter.description = defaults.newsletter.description;
-    }
-
-    if (content.newsletter.buttonLabel === "Quero receber") {
-      content.newsletter.buttonLabel = defaults.newsletter.buttonLabel;
-    }
-
-    if (!content.contact) {
+    if (!content.contact || shouldReplaceContactContent(content)) {
       content.contact = clone(defaults.contact || {});
     }
 
-    if (content.contact.kicker === "Contato") {
-      content.contact.kicker = defaults.contact.kicker;
+    if (shouldReplaceAnalysisContent(content)) {
+      content.analysis = clone(defaults.analysis || {});
     }
 
-    if (content.contact.title === "Cadastre seus dados para atendimento especializado") {
-      content.contact.title = defaults.contact.title;
-    }
-
-    if (content.contact.tag === "Atendimento") {
-      content.contact.tag = defaults.contact.tag;
-    }
-
-    if (content.contact.heading === "Consultoria para investidores e planejamento empresarial") {
-      content.contact.heading = defaults.contact.heading;
-    }
-
-    if (
-      content.contact.description ===
-      "Preencha o cadastro para que a equipe entre em contato. O CEP busca automaticamente o endereco e voce so completa numero e complemento."
-    ) {
-      content.contact.description = defaults.contact.description;
-    }
-
-    if (
-      Array.isArray(content.contact.benefits) &&
-      content.contact.benefits.some(
-        (item) =>
-          item === "Atendimento personalizado" ||
-          item === "Triagem rapida do perfil" ||
-          item === "Formulario preparado para integracao futura com CRM"
-      )
-    ) {
-      content.contact.benefits = clone(defaults.contact.benefits);
+    if (!content.highlights) {
+      content.highlights = clone(defaults.highlights || {});
     }
 
     return content;
