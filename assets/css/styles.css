@@ -1,25 +1,25 @@
 @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Montserrat:wght@600;700&display=swap");
 
 :root {
-  --bg: #f5f7fb;
-  --bg-soft: #eef2f9;
-  --surface: rgba(255, 255, 255, 0.84);
-  --surface-strong: #ffffff;
-  --surface-dark: linear-gradient(160deg, #101b34 0%, #1a2b52 55%, #1f3562 100%);
-  --line: rgba(21, 32, 61, 0.08);
-  --line-strong: rgba(21, 32, 61, 0.14);
-  --text: #15203d;
-  --text-soft: #44516d;
-  --text-faint: #6c7890;
-  --accent: #4ade80;
-  --accent-deep: #1f9f5c;
-  --accent-soft: rgba(74, 222, 128, 0.14);
-  --success: #4ade80;
-  --danger: #d15757;
-  --panel-text: rgba(255, 255, 255, 0.92);
-  --panel-muted: rgba(227, 236, 255, 0.72);
-  --shadow: 0 26px 70px rgba(25, 41, 74, 0.12);
-  --shadow-soft: 0 18px 40px rgba(21, 32, 61, 0.08);
+  --bg: #060606;
+  --bg-soft: #0f1013;
+  --surface: rgba(13, 13, 17, 0.9);
+  --surface-strong: #111217;
+  --surface-dark: linear-gradient(160deg, #050505 0%, #0b0c10 54%, #12141a 100%);
+  --line: rgba(216, 184, 76, 0.14);
+  --line-strong: rgba(216, 184, 76, 0.24);
+  --text: #fbf8f1;
+  --text-soft: rgba(251, 248, 241, 0.8);
+  --text-faint: rgba(251, 248, 241, 0.56);
+  --accent: #d8b84c;
+  --accent-deep: #f0d67a;
+  --accent-soft: rgba(216, 184, 76, 0.14);
+  --success: #58d08a;
+  --danger: #ff8b8b;
+  --panel-text: #fff8e4;
+  --panel-muted: rgba(255, 248, 228, 0.72);
+  --shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
+  --shadow-soft: 0 20px 44px rgba(0, 0, 0, 0.24);
 }
 
 * {
@@ -38,9 +38,9 @@ body {
   font-family: "Source Sans 3", sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(74, 222, 128, 0.16), transparent 28%),
-    radial-gradient(circle at top right, rgba(83, 119, 204, 0.12), transparent 26%),
-    linear-gradient(180deg, #fbfcff 0%, #f4f7fc 48%, #eef2f9 100%);
+    radial-gradient(circle at top left, rgba(216, 184, 76, 0.15), transparent 24%),
+    radial-gradient(circle at top right, rgba(216, 184, 76, 0.08), transparent 22%),
+    linear-gradient(180deg, #020202 0%, #070809 48%, #0d0f13 100%);
 }
 
 body::before,
@@ -58,7 +58,7 @@ body::before {
   width: 320px;
   height: 320px;
   border-radius: 999px;
-  background: rgba(74, 222, 128, 0.16);
+  background: rgba(216, 184, 76, 0.16);
 }
 
 body::after {
@@ -67,7 +67,7 @@ body::after {
   width: 340px;
   height: 340px;
   border-radius: 999px;
-  background: rgba(49, 88, 168, 0.14);
+  background: rgba(216, 184, 76, 0.08);
 }
 
 a {
@@ -121,9 +121,9 @@ h3 {
   max-width: 1460px;
   margin: 0 auto 34px;
   padding: 14px 16px 14px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(216, 184, 76, 0.14);
   border-radius: 34px;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(8, 8, 10, 0.84);
   backdrop-filter: blur(20px);
   box-shadow: var(--shadow-soft);
 }
@@ -135,9 +135,9 @@ h3 {
   max-width: 1460px;
   margin: 0 auto 18px;
   padding: 10px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(216, 184, 76, 0.12);
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.66);
+  background: rgba(9, 10, 13, 0.82);
   backdrop-filter: blur(18px);
   box-shadow: var(--shadow-soft);
   overflow-x: auto;
@@ -147,8 +147,9 @@ h3 {
   flex: 0 0 auto;
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(21, 32, 61, 0.06);
-  color: var(--text);
+  border: 1px solid rgba(216, 184, 76, 0.12);
+  background: rgba(216, 184, 76, 0.08);
+  color: var(--accent-deep);
   font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -168,9 +169,9 @@ h3 {
   gap: 10px;
   min-width: 154px;
   padding: 10px 12px;
-  border: 1px solid rgba(21, 32, 61, 0.08);
+  border: 1px solid rgba(216, 184, 76, 0.12);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.76);
+  background: rgba(15, 16, 20, 0.94);
 }
 
 .market-ribbon-symbol {
@@ -208,16 +209,14 @@ h3 {
   position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  width: min(100%, 350px);
-  padding: 14px 18px 14px 20px;
-  border: 1px solid rgba(21, 32, 61, 0.08);
-  border-radius: 24px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 255, 0.98));
-  box-shadow: 0 14px 36px rgba(21, 32, 61, 0.1);
-  overflow: hidden;
+  justify-content: flex-start;
+  gap: 18px;
+  padding: 8px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
 }
 
 .brand-wordmark {
@@ -231,7 +230,11 @@ h3 {
 .brand-name {
   position: relative;
   display: block;
-  color: #15203d;
+  color: transparent;
+  background: linear-gradient(180deg, #f6e49b 0%, #d7b74c 44%, #f4dfa0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 0 18px rgba(216, 184, 76, 0.16);
   font-family: "Cinzel", Georgia, serif;
   font-size: 2.02rem;
   font-weight: 600;
@@ -240,15 +243,7 @@ h3 {
 }
 
 .brand-invest {
-  display: block;
-  margin-top: 6px;
-  padding-left: 44px;
-  color: #d99b35;
-  font-family: "Montserrat", "Space Grotesk", sans-serif;
-  font-size: 1.14rem;
-  font-weight: 700;
-  letter-spacing: 0.33em;
-  line-height: 1;
+  display: none;
 }
 
 .brand-star {
@@ -257,7 +252,8 @@ h3 {
   flex: 0 0 auto;
   width: 60px;
   height: 60px;
-  color: #15203d;
+  color: var(--accent);
+  filter: drop-shadow(0 0 14px rgba(216, 184, 76, 0.2));
   transform: translateY(-2px);
 }
 
@@ -1967,6 +1963,331 @@ body[data-page="home"] .hero-copy .eyebrow {
   height: 42px;
   background: url("../img/logo-mark.svg") center/contain no-repeat;
   opacity: 0.7;
+}
+
+html {
+  color-scheme: dark;
+}
+
+.brand-star svg path:first-child {
+  stroke: #d8b84c !important;
+}
+
+.brand-star svg path:last-child {
+  fill: #d8b84c !important;
+}
+
+.nav-links a {
+  color: rgba(251, 248, 241, 0.78);
+}
+
+.nav-links a:hover {
+  border-color: rgba(216, 184, 76, 0.16);
+  background: rgba(216, 184, 76, 0.08);
+  color: var(--text);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+}
+
+.nav-links a.is-current {
+  border-color: rgba(216, 184, 76, 0.26);
+  background: linear-gradient(180deg, rgba(216, 184, 76, 0.16) 0%, rgba(216, 184, 76, 0.08) 100%);
+  color: var(--accent-deep);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.24);
+}
+
+.hero-copy,
+.page-summary,
+.page-sidecard,
+.teaser-card,
+.feature,
+.agenda-item,
+.news-card,
+.contact-copy,
+.contact-form,
+.home-preview-side,
+.agenda-metric-card,
+.agenda-table,
+.admin-auth-card,
+.admin-section-card,
+.admin-list-card,
+.admin-metric,
+.admin-item,
+.admin-social-card,
+.intelligence-card {
+  border-color: rgba(216, 184, 76, 0.12);
+  background:
+    linear-gradient(180deg, rgba(12, 13, 17, 0.96), rgba(18, 20, 26, 0.92));
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.28);
+}
+
+body[data-page="home"] .hero-copy {
+  border-color: rgba(216, 184, 76, 0.14);
+  background:
+    radial-gradient(circle at top right, rgba(216, 184, 76, 0.18), transparent 32%),
+    linear-gradient(160deg, #060606 0%, #0b0c10 46%, #14171d 100%);
+}
+
+.hero-copy::before,
+.page-summary::before,
+.feature-main::before,
+.newsletter-card::before {
+  background: radial-gradient(circle, rgba(216, 184, 76, 0.16), transparent 72%);
+}
+
+.hero-copy::after,
+.page-summary::after,
+.market-panel::after,
+.newsletter-card::after,
+.teaser-card--rich::after,
+.intelligence-lead::after,
+.home-preview-main::after {
+  opacity: 0.12;
+}
+
+.eyebrow,
+.section-kicker,
+.tag,
+.panel-label,
+.news-category-chip,
+.agenda-impact.is-medium,
+.admin-chip.is-live {
+  border-color: rgba(216, 184, 76, 0.16);
+  background: rgba(216, 184, 76, 0.1);
+  color: var(--accent-deep);
+}
+
+.panel-label,
+.feature-main .tag,
+.newsletter-card .section-kicker,
+body[data-page="home"] .hero-copy .eyebrow {
+  border-color: rgba(216, 184, 76, 0.18);
+  background: rgba(216, 184, 76, 0.1);
+  color: var(--accent-deep);
+}
+
+.button-primary,
+.filter-button.is-active {
+  background: linear-gradient(135deg, #d8b84c 0%, #f0d67a 100%);
+  color: #090909;
+  box-shadow: 0 18px 34px rgba(216, 184, 76, 0.18);
+}
+
+.button-primary:hover {
+  box-shadow: 0 22px 40px rgba(216, 184, 76, 0.24);
+}
+
+.button-secondary,
+.filter-button,
+.share-button {
+  border-color: rgba(216, 184, 76, 0.16);
+  background: rgba(18, 19, 25, 0.9);
+  color: var(--text);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+}
+
+.share-button:hover,
+.filter-button:hover,
+.button-secondary:hover {
+  border-color: rgba(216, 184, 76, 0.26);
+  background: rgba(216, 184, 76, 0.1);
+  color: var(--accent-deep);
+}
+
+.market-panel,
+.feature-main,
+.newsletter-card,
+.intelligence-lead,
+.home-preview-main,
+.hero-strip-card {
+  border-color: rgba(216, 184, 76, 0.14);
+  background:
+    radial-gradient(circle at top right, rgba(216, 184, 76, 0.18), transparent 34%),
+    linear-gradient(160deg, #060606 0%, #0c0d11 46%, #14171d 100%);
+}
+
+.market-panel::before {
+  background: radial-gradient(circle, rgba(216, 184, 76, 0.22), transparent 72%);
+}
+
+.market-item,
+.ticker span,
+.market-ribbon-item,
+.agenda-region-badge,
+.admin-chip,
+.option-card {
+  border-color: rgba(216, 184, 76, 0.14);
+  background: rgba(21, 23, 29, 0.92);
+}
+
+.market-item-region,
+.market-item-time,
+.agenda-sync-status,
+.admin-panel-status,
+.admin-item-meta,
+.teaser-meta,
+.share-label,
+.news-meta {
+  color: var(--text-faint);
+}
+
+.home-mini-item,
+.intelligence-points span {
+  border-color: rgba(216, 184, 76, 0.14);
+  background: rgba(21, 23, 29, 0.92);
+}
+
+.home-mini-item strong,
+.home-mini-item span,
+.home-mini-item p,
+.intelligence-points span {
+  color: var(--text);
+}
+
+.market-item-price,
+.feature-main h3,
+.feature-main .feature-link,
+.newsletter-card h2,
+.hero-strip-card strong,
+.home-preview-main h3,
+.panel-card strong,
+body[data-page="home"] .hero-copy h1 {
+  color: var(--panel-text);
+}
+
+.feature-main p,
+.newsletter-card p,
+.newsletter-benefits,
+.hero-strip-card p,
+.home-preview-main p,
+.home-preview-main ul,
+body[data-page="home"] .hero-copy p,
+.intelligence-lead p,
+.market-panel .panel-card p {
+  color: var(--panel-muted);
+}
+
+.newsletter-benefits li::marker,
+.teaser-points li::marker,
+.page-bullets li::marker,
+.contact-benefits li::marker,
+.home-preview-list li::marker {
+  color: var(--accent);
+}
+
+.teaser-card:hover,
+.feature:hover,
+.news-card:hover,
+.option-card:hover {
+  border-color: rgba(216, 184, 76, 0.18);
+  box-shadow: 0 30px 68px rgba(0, 0, 0, 0.32);
+}
+
+.agenda-table-head {
+  border-bottom-color: rgba(216, 184, 76, 0.12);
+  color: rgba(251, 248, 241, 0.52);
+}
+
+.agenda-row {
+  border-bottom-color: rgba(216, 184, 76, 0.08);
+}
+
+.agenda-timebox,
+.agenda-date {
+  border-color: rgba(216, 184, 76, 0.18);
+  background: linear-gradient(180deg, rgba(216, 184, 76, 0.14) 0%, rgba(216, 184, 76, 0.06) 100%);
+}
+
+.agenda-timebox strong,
+.agenda-date,
+.agenda-impact.is-high {
+  color: var(--accent-deep);
+}
+
+.agenda-timebox span {
+  color: rgba(251, 248, 241, 0.62);
+}
+
+.agenda-impact.is-low {
+  background: rgba(251, 248, 241, 0.08);
+  color: var(--text-soft);
+}
+
+.field input,
+.field select,
+.field textarea,
+.newsletter-form input {
+  border-color: rgba(216, 184, 76, 0.14);
+  background: rgba(15, 16, 21, 0.94);
+  color: var(--text);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.newsletter-form input:focus {
+  border-color: rgba(216, 184, 76, 0.3);
+  box-shadow: 0 0 0 4px rgba(216, 184, 76, 0.08);
+}
+
+.field input[readonly] {
+  background: rgba(20, 21, 26, 0.86);
+  color: var(--text-faint);
+}
+
+.field input::placeholder,
+.field textarea::placeholder,
+.field select:invalid,
+.newsletter-form input::placeholder {
+  color: var(--text-faint);
+}
+
+.option-card span,
+.field span,
+.field-group-label,
+.agenda-event-copy h3,
+.agenda-metric-card strong,
+.intelligence-card strong,
+.admin-item-head strong,
+.admin-note strong {
+  color: var(--text);
+}
+
+.option-card:has(input:checked) {
+  border-color: rgba(216, 184, 76, 0.26);
+  background: linear-gradient(180deg, rgba(216, 184, 76, 0.18) 0%, rgba(216, 184, 76, 0.08) 100%);
+  box-shadow: 0 20px 32px rgba(216, 184, 76, 0.12);
+}
+
+.admin-note {
+  border-color: rgba(216, 184, 76, 0.16);
+  background: rgba(216, 184, 76, 0.08);
+  color: var(--text-soft);
+}
+
+.admin-empty {
+  border-color: rgba(216, 184, 76, 0.18);
+  color: var(--text-faint);
+}
+
+.admin-toolbar p,
+.admin-auth-card p,
+.admin-list-card p,
+.contact-status,
+.news-status {
+  color: var(--text-faint);
+}
+
+.home-preview-side,
+.contact-copy,
+.contact-form,
+.agenda-metric-card,
+.admin-auth-card,
+.admin-section-card,
+.admin-list-card,
+.admin-metric,
+.admin-item,
+.admin-social-card {
+  backdrop-filter: blur(16px);
 }
 
 .whatsapp-float {
