@@ -93,6 +93,83 @@ const fallbackNews = [
   },
 ];
 
+const categoryKeywords = {
+  markets: [
+    "market",
+    "markets",
+    "stock",
+    "stocks",
+    "bond",
+    "bonds",
+    "oil",
+    "gold",
+    "silver",
+    "inflation",
+    "rates",
+    "interest rate",
+    "fed",
+    "central bank",
+    "treasury",
+    "forex",
+    "dollar",
+    "wall street",
+    "nasdaq",
+    "dow",
+    "s&p",
+    "investor",
+    "investors",
+    "trading",
+    "futures",
+    "rally",
+    "crude",
+    "economy",
+    "economic",
+  ],
+  companies: [
+    "company",
+    "companies",
+    "earnings",
+    "revenue",
+    "profit",
+    "results",
+    "guidance",
+    "analyst",
+    "ceo",
+    "ipo",
+    "merger",
+    "acquisition",
+    "shares",
+    "stock rises",
+    "stock falls",
+    "business",
+    "firm",
+    "corporate",
+    "vaccine",
+    "apple",
+    "tesla",
+    "microsoft",
+    "amazon",
+    "meta",
+    "nvidia",
+    "pfizer",
+    "blackrock",
+    "chevron",
+  ],
+  crypto: [
+    "bitcoin",
+    "crypto",
+    "ethereum",
+    "blockchain",
+    "token",
+    "stablecoin",
+    "digital asset",
+    "digital assets",
+    "solana",
+    "etf",
+    "defi",
+  ],
+};
+
 function normalizeCategory(category) {
   return categoryFeeds[category] ? category : "latest";
 }
@@ -136,14 +213,23 @@ async function fetchNewsFromNewsApi({ apiKey, category, fetchImpl }) {
 
   return (payload.articles || [])
     .filter((article) => article.title && article.title !== "[Removed]")
-    .map((article) => ({
-      category: safeCategory === "latest" ? inferCategory(article) : safeCategory,
-      source: article.source?.name || getSourceHostname(article.url),
-      publishedAt: article.publishedAt,
-      title: article.title,
-      description: article.description || article.content || "Sem descricao disponivel.",
-      url: article.url,
-    }));
+    .map((article) => {
+      const inferredCategory = safeCategory === "latest" ? inferCategory(article) : safeCategory;
+
+      if (inferredCategory === "other" || !isRelevantToCategory(article, inferredCategory)) {
+        return null;
+      }
+
+      return {
+        category: inferredCategory,
+        source: article.source?.name || getSourceHostname(article.url),
+        publishedAt: article.publishedAt,
+        title: article.title,
+        description: article.description || article.content || "Sem descricao disponivel.",
+        url: article.url,
+      };
+    })
+    .filter(Boolean);
 }
 
 async function fetchNewsFromRss({ category, fetchImpl }) {
@@ -211,6 +297,14 @@ function buildNewsItemFromRss(rawItem, source, category) {
 
   const inferredCategory =
     category === "latest" ? inferCategory({ title, description }) : category;
+
+  if (inferredCategory === "other") {
+    return null;
+  }
+
+  if (!isRelevantToCategory({ title, description }, inferredCategory)) {
+    return null;
+  }
 
   return {
     category: inferredCategory,
@@ -288,29 +382,34 @@ function getSourceHostname(url) {
 function inferCategory(article) {
   const text = `${article.title || ""} ${article.description || ""}`.toLowerCase();
 
-  if (
-    text.includes("bitcoin") ||
-    text.includes("crypto") ||
-    text.includes("ethereum") ||
-    text.includes("blockchain") ||
-    text.includes("token")
-  ) {
+  if (matchesKeywords(text, categoryKeywords.crypto)) {
     return "crypto";
   }
 
-  if (
-    text.includes("earnings") ||
-    text.includes("company") ||
-    text.includes("companies") ||
-    text.includes("ipo") ||
-    text.includes("merger") ||
-    text.includes("acquisition") ||
-    text.includes("business")
-  ) {
+  if (matchesKeywords(text, categoryKeywords.companies)) {
     return "companies";
   }
 
-  return "markets";
+  if (matchesKeywords(text, categoryKeywords.markets)) {
+    return "markets";
+  }
+
+  return "other";
+}
+
+function isRelevantToCategory(article, category) {
+  const text = `${article.title || ""} ${article.description || ""}`.toLowerCase();
+  const keywords = categoryKeywords[category];
+
+  if (!keywords) {
+    return false;
+  }
+
+  return matchesKeywords(text, keywords);
+}
+
+function matchesKeywords(text, keywords) {
+  return keywords.some((keyword) => text.includes(keyword));
 }
 
 module.exports = {
