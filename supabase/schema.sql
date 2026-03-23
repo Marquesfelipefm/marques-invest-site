@@ -69,6 +69,12 @@ create table if not exists public.contact_leads (
   created_at timestamptz not null default timezone('utc', now())
 );
 
+alter table public.contact_leads
+add column if not exists objective text,
+add column if not exists horizon text,
+add column if not exists patrimony_band text,
+add column if not exists already_invests text;
+
 alter table public.site_settings enable row level security;
 alter table public.site_content enable row level security;
 alter table public.posts enable row level security;

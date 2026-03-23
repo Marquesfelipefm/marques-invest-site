@@ -517,24 +517,50 @@
   }
 
   async function saveContactLead(values) {
-    return insert(
-      "contact_leads",
-      {
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-        cep: values.cep,
-        street: values.street,
-        number: values.number,
-        complement: values.complement || null,
-        district: values.district,
-        city: values.city,
-        state: values.state,
-        service: values.service,
-        investment_range: values.investmentRange,
-      },
-      { requireAuth: false }
-    );
+    const basePayload = {
+      name: values.name,
+      email: values.email,
+      phone: values.phone,
+      cep: values.cep,
+      street: values.street,
+      number: values.number,
+      complement: values.complement || null,
+      district: values.district,
+      city: values.city,
+      state: values.state,
+      service: values.service,
+      investment_range: values.investmentRange,
+    };
+
+    const extendedPayload = {
+      ...basePayload,
+      objective: values.objective || null,
+      horizon: values.horizon || null,
+      patrimony_band: values.patrimonyBand || null,
+      already_invests: values.alreadyInvests || null,
+    };
+
+    try {
+      return await insert("contact_leads", extendedPayload, { requireAuth: false });
+    } catch (error) {
+      const qualificationNotes = [
+        values.objective ? `Objetivo: ${values.objective}` : "",
+        values.horizon ? `Horizonte: ${values.horizon}` : "",
+        values.patrimonyBand ? `Patrimonio: ${values.patrimonyBand}` : "",
+        values.alreadyInvests ? `Ja investe: ${values.alreadyInvests}` : "",
+      ]
+        .filter(Boolean)
+        .join(" | ");
+
+      return insert(
+        "contact_leads",
+        {
+          ...basePayload,
+          complement: [values.complement || "", qualificationNotes].filter(Boolean).join(" | ") || null,
+        },
+        { requireAuth: false }
+      );
+    }
   }
 
   async function listContactLeads() {

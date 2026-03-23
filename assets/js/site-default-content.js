@@ -10,52 +10,53 @@ window.MARQUES_DEFAULT_CONTENT = {
     },
   },
   home: {
-    eyebrow: "Portal editorial para investidores",
-    title: "Analise, noticias e inteligencia de mercado em um portal so.",
+    eyebrow: "Estrategia patrimonial com logica, prazo e gestao de risco",
+    title:
+      "Transformamos leitura de mercado em decisoes patrimoniais para longo prazo, aposentadoria e cripto com disciplina.",
     description:
-      "A home agora antecipa o que o leitor encontra em cada pagina, com leitura editorial, noticias conectadas, agenda macro e canais de relacionamento.",
-    teaserTitle: "Previa de cada pagina antes do clique",
+      "A Marques Invest une inteligencia de mercado, planejamento e gestao de risco para ajudar clientes a construir patrimonio com mais clareza, metodo e consistencia.",
+    teaserTitle: "Conteudo que sustenta a tese de alocacao",
     teasers: [
       {
-        tag: "Editorial",
+        tag: "Visao",
         title: "Analise da semana",
         description:
-          "Espaco para o conteudo mais importante da semana, com leitura de mercado, contexto macro e direcoes estrategicas.",
+          "Leitura executiva do periodo, conectando cenario macro, valuation, risco e implicacoes praticas para carteira.",
         link: "analise-semana.html",
       },
       {
-        tag: "Conteudo",
+        tag: "Leitura",
         title: "Destaques",
         description:
-          "Reuniao dos principais temas editoriais, cards de abertura e chamadas para materias premium.",
+          "Seleciona os temas que merecem atencao imediata e organiza a hierarquia da leitura para quem precisa decidir melhor.",
         link: "destaques.html",
       },
       {
-        tag: "Atualizacao",
+        tag: "Fluxo",
         title: "Noticias",
         description:
-          "Cobertura separada por mais recentes, mercado financeiro, empresas e criptoativos com fontes integradas.",
+          "O noticiario deixa de ser fim em si mesmo e passa a funcionar como contexto para alocacao e leitura de risco.",
         link: "noticias.html",
       },
       {
         tag: "Macro",
         title: "Agenda",
         description:
-          "Calendario dos eventos economicos que podem mexer com juros, cambio, bolsa e sentimento do mercado.",
+          "Calendario com eventos que podem alterar juros, cambio, bolsa e comportamento tatico da carteira ao longo do dia.",
         link: "agenda.html",
       },
       {
-        tag: "Relacionamento",
-        title: "Newsletter",
+        tag: "Autoridade",
+        title: "Carta Marques",
         description:
-          "Pagina dedicada para captacao de leads e assinatura do resumo do mercado ao fim do dia.",
+          "Uma newsletter com leitura objetiva de mercado e impacto pratico na alocacao, pensada como produto de relacionamento.",
         link: "newsletter.html",
       },
       {
-        tag: "Comercial",
-        title: "Contato",
+        tag: "Conversao",
+        title: "Diagnostico patrimonial",
         description:
-          "Formulario para consultoria de investimento ou planejamento empresarial com preenchimento automatico de CEP.",
+          "Uma triagem comercial mais clara para entender objetivo, horizonte, aporte e perfil antes do primeiro contato.",
         link: "contato.html",
       },
     ],
@@ -97,23 +98,23 @@ window.MARQUES_DEFAULT_CONTENT = {
     ],
   },
   newsletter: {
-    kicker: "Newsletter",
-    title: "Receba um resumo do fechamento do mercado",
+    kicker: "Carta Marques",
+    title: "Receba a leitura do mercado com impacto pratico na sua alocacao.",
     description:
-      "Pagina pronta para captacao de leads, automacao de e-mail e estrategia de relacionamento com investidores.",
-    buttonLabel: "Quero receber",
+      "Uma newsletter pensada para transformar ruido em clareza, com visao macro, leitura de risco e reflexo real em carteira, aposentadoria e exposicao a cripto.",
+    buttonLabel: "Quero receber a carta",
   },
   contact: {
-    kicker: "Contato",
-    title: "Cadastre seus dados para atendimento especializado",
-    tag: "Atendimento",
-    heading: "Consultoria para investidores e planejamento empresarial",
+    kicker: "Diagnostico",
+    title: "Agende um diagnostico patrimonial inicial",
+    tag: "Triagem comercial",
+    heading: "Uma abordagem mais clara para transformar interesse em proposta.",
     description:
-      "Preencha o cadastro para que a equipe entre em contato. O CEP busca automaticamente o endereco e voce so completa numero e complemento.",
+      "Preencha seus dados, objetivo e momento patrimonial. O formulario ajuda a Marques Invest a entender melhor o seu caso antes do primeiro contato consultivo.",
     benefits: [
-      "Atendimento personalizado",
-      "Triagem rapida do perfil",
-      "Formulario preparado para integracao futura com CRM",
+      "Clareza sobre objetivo, horizonte e capacidade de aporte",
+      "Triagem orientada para os servicos centrais da marca",
+      "Contato consultivo com mais contexto e menos ruido",
     ],
   },
 };

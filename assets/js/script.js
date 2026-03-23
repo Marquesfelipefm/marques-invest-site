@@ -1032,14 +1032,18 @@ if (contactForm) {
           city: formData.get("city"),
           state: formData.get("state"),
           service: formData.get("service"),
+          objective: formData.get("objective"),
+          horizon: formData.get("horizon"),
+          patrimonyBand: formData.get("patrimonyBand"),
+          alreadyInvests: formData.get("alreadyInvests"),
           investmentRange: formData.get("investmentRange"),
         });
       }
 
-      submitButton.textContent = "Cadastro enviado";
+      submitButton.textContent = "Diagnostico solicitado";
       submitButton.disabled = true;
       setContactStatus(
-        "Cadastro registrado com sucesso. O painel online ja pode receber esse lead.",
+        "Diagnostico registrado com sucesso. A equipe ja pode analisar esse lead no painel.",
         "success"
       );
     } catch (error) {

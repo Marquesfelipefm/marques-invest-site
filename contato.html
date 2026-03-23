@@ -51,20 +51,24 @@
       <main>
         <section class="section contact-section">
           <div class="section-heading">
-            <span class="section-kicker" id="contact-kicker">Contato</span>
-            <h2 id="contact-title">Cadastre seus dados para atendimento especializado</h2>
+            <span class="section-kicker" id="contact-kicker">Diagnostico</span>
+            <h2 id="contact-title">Agende um diagnostico patrimonial inicial</h2>
           </div>
 
           <div class="contact-card">
             <div class="contact-copy">
-              <span class="tag" id="contact-tag">Atendimento</span>
-              <h3 id="contact-heading">Consultoria para investidores e planejamento empresarial</h3>
+              <span class="tag" id="contact-tag">Triagem comercial</span>
+              <h3 id="contact-heading">Uma abordagem mais clara para transformar interesse em proposta.</h3>
               <p id="contact-description">
-                Preencha o cadastro para que a equipe entre em contato. O CEP
-                busca automaticamente o endereco e voce so completa numero e
-                complemento.
+                Preencha seus dados, objetivo e momento patrimonial. O formulario
+                ajuda a Marques Invest a entender melhor o seu caso antes do
+                primeiro contato consultivo.
               </p>
-              <ul class="contact-benefits" id="contact-benefits"></ul>
+              <ul class="contact-benefits" id="contact-benefits">
+                <li>Clareza sobre objetivo, horizonte e capacidade de aporte</li>
+                <li>Triagem orientada para os servicos centrais da marca</li>
+                <li>Contato consultivo com mais contexto e menos ruido</li>
+              </ul>
             </div>
 
             <form class="contact-form" id="contact-form">
@@ -157,20 +161,74 @@
               </div>
 
               <div class="field-group">
-                <span class="field-group-label">Tipo de atendimento</span>
+                <span class="field-group-label">Qual servico faz mais sentido para voce hoje?</span>
                 <div class="option-grid">
                   <label class="option-card">
-                    <input
-                      type="radio"
-                      name="service"
-                      value="consultoria-de-investimento"
-                      checked
-                    />
-                    <span>Consultoria de investimento</span>
+                    <input type="radio" name="service" value="carteiras-por-objetivo" checked />
+                    <span>Carteiras por objetivo</span>
                   </label>
                   <label class="option-card">
-                    <input type="radio" name="service" value="planejamento-empresarial" />
-                    <span>Planejamento empresarial</span>
+                    <input type="radio" name="service" value="planejamento-de-aposentadoria" />
+                    <span>Planejamento de aposentadoria</span>
+                  </label>
+                  <label class="option-card">
+                    <input type="radio" name="service" value="cripto-com-gestao-de-risco" />
+                    <span>Cripto com gestao de risco</span>
+                  </label>
+                  <label class="option-card">
+                    <input type="radio" name="service" value="diagnostico-patrimonial-inicial" />
+                    <span>Diagnostico patrimonial inicial</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-grid form-grid-qualification">
+                <label class="field field-full">
+                  <span>Objetivo principal</span>
+                  <select name="objective" required>
+                    <option value="">Selecione seu objetivo</option>
+                    <option value="construir-patrimonio">Construir patrimonio com mais metodo</option>
+                    <option value="organizar-carteira">Organizar a carteira atual</option>
+                    <option value="planejar-aposentadoria">Planejar aposentadoria</option>
+                    <option value="investir-em-cripto">Entrar ou melhorar exposicao em cripto</option>
+                    <option value="proteger-patrimonio">Proteger patrimonio e reduzir risco</option>
+                  </select>
+                </label>
+
+                <label class="field">
+                  <span>Horizonte de investimento</span>
+                  <select name="horizon" required>
+                    <option value="">Selecione um horizonte</option>
+                    <option value="ate-2-anos">Ate 2 anos</option>
+                    <option value="2-a-5-anos">De 2 a 5 anos</option>
+                    <option value="5-a-10-anos">De 5 a 10 anos</option>
+                    <option value="mais-de-10-anos">Mais de 10 anos</option>
+                  </select>
+                </label>
+
+                <label class="field">
+                  <span>Patrimonio aproximado</span>
+                  <select name="patrimonyBand" required>
+                    <option value="">Selecione uma faixa</option>
+                    <option value="ate-50-mil">Ate R$ 50 mil</option>
+                    <option value="50-a-200-mil">R$ 50 mil a R$ 200 mil</option>
+                    <option value="200-a-500-mil">R$ 200 mil a R$ 500 mil</option>
+                    <option value="500-a-1-milhao">R$ 500 mil a R$ 1 milhao</option>
+                    <option value="mais-de-1-milhao">Acima de R$ 1 milhao</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="field-group">
+                <span class="field-group-label">Voce ja investe hoje?</span>
+                <div class="option-grid option-grid--compact">
+                  <label class="option-card option-card--compact">
+                    <input type="radio" name="alreadyInvests" value="sim" checked />
+                    <span>Sim, ja invisto</span>
+                  </label>
+                  <label class="option-card option-card--compact">
+                    <input type="radio" name="alreadyInvests" value="nao" />
+                    <span>Nao, estou estruturando isso agora</span>
                   </label>
                 </div>
               </div>
@@ -193,7 +251,7 @@
               </p>
 
               <button type="submit" class="button button-primary contact-submit">
-                Enviar cadastro
+                Solicitar diagnostico
               </button>
             </form>
           </div>

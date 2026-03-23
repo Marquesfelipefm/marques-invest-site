@@ -81,34 +81,34 @@
   function getHomePreviewPoints(item) {
     const pointsByLink = {
       "analise-semana.html": [
-        "Leitura estrategica da semana",
+        "Resumo executivo da semana",
         "Cenarios para juros, bolsa e cambio",
         "Teses para carteira e posicionamento",
       ],
       "destaques.html": [
-        "Cards editoriais com visual premium",
-        "Materia principal em evidencia",
-        "Chamadas para conteudos-chave",
+        "Materia principal com contexto",
+        "Cards de leitura rapida",
+        "Curadoria visual para leitura eficiente",
       ],
       "noticias.html": [
         "Mais recentes, mercado, empresas e cripto",
-        "Fontes conectadas e atualizacao continua",
-        "Compartilhamento por rede social",
+        "Fontes conectadas para rotina diaria",
+        "Leitura orientada para tomada de decisao",
       ],
       "agenda.html": [
         "Eventos macro que movem o mercado",
         "Horarios e impacto esperado",
-        "Leitura rapida para o dia",
+        "Radar rapido para o dia",
       ],
       "newsletter.html": [
-        "Captacao de leads e relacionamento",
-        "Resumo do mercado no fechamento",
-        "Estrutura pronta para automacao",
+        "Cenario da semana",
+        "Leitura macro com reflexo em carteira",
+        "Visao sobre risco e oportunidade",
       ],
       "contato.html": [
-        "Formulario comercial completo",
-        "CEP com preenchimento automatico",
-        "Triagem entre investimento e empresa",
+        "Diagnostico patrimonial inicial",
+        "Qualificacao por objetivo e horizonte",
+        "Contato comercial com mais contexto",
       ],
     };
 
@@ -117,6 +117,112 @@
       "Leitura objetiva e rapida",
       "CTA para aprofundar na pagina",
     ];
+  }
+
+  function upgradeLegacyContent(content) {
+    const defaults = window.MARQUES_DEFAULT_CONTENT || {};
+
+    if (!content.home) {
+      content.home = clone(defaults.home || {});
+    }
+
+    if (
+      content.home.eyebrow === "Portal editorial para investidores" ||
+      content.home.eyebrow === "Para investidores"
+    ) {
+      content.home.eyebrow = defaults.home.eyebrow;
+    }
+
+    if (content.home.title === "Analise, noticias e inteligencia de mercado em um portal so.") {
+      content.home.title = defaults.home.title;
+    }
+
+    if (
+      typeof content.home.description === "string" &&
+      content.home.description.includes("A Marques Invest nasce com um propósito claro")
+    ) {
+      content.home.description = defaults.home.description;
+    }
+
+    if (content.home.teaserTitle === "Previa de cada pagina antes do clique") {
+      content.home.teaserTitle = defaults.home.teaserTitle;
+    }
+
+    if (
+      Array.isArray(content.home.teasers) &&
+      content.home.teasers.some(
+        (item) =>
+          item.title === "Newsletter" ||
+          item.tag === "Relacionamento" ||
+          String(item.description || "").includes("preenchimento automatico de CEP")
+      )
+    ) {
+      content.home.teasers = clone(defaults.home.teasers);
+    }
+
+    if (!content.newsletter) {
+      content.newsletter = clone(defaults.newsletter || {});
+    }
+
+    if (content.newsletter.kicker === "Newsletter") {
+      content.newsletter.kicker = defaults.newsletter.kicker;
+    }
+
+    if (content.newsletter.title === "Receba um resumo do fechamento do mercado") {
+      content.newsletter.title = defaults.newsletter.title;
+    }
+
+    if (
+      content.newsletter.description ===
+      "Pagina pronta para captacao de leads, automacao de e-mail e estrategia de relacionamento com investidores."
+    ) {
+      content.newsletter.description = defaults.newsletter.description;
+    }
+
+    if (content.newsletter.buttonLabel === "Quero receber") {
+      content.newsletter.buttonLabel = defaults.newsletter.buttonLabel;
+    }
+
+    if (!content.contact) {
+      content.contact = clone(defaults.contact || {});
+    }
+
+    if (content.contact.kicker === "Contato") {
+      content.contact.kicker = defaults.contact.kicker;
+    }
+
+    if (content.contact.title === "Cadastre seus dados para atendimento especializado") {
+      content.contact.title = defaults.contact.title;
+    }
+
+    if (content.contact.tag === "Atendimento") {
+      content.contact.tag = defaults.contact.tag;
+    }
+
+    if (content.contact.heading === "Consultoria para investidores e planejamento empresarial") {
+      content.contact.heading = defaults.contact.heading;
+    }
+
+    if (
+      content.contact.description ===
+      "Preencha o cadastro para que a equipe entre em contato. O CEP busca automaticamente o endereco e voce so completa numero e complemento."
+    ) {
+      content.contact.description = defaults.contact.description;
+    }
+
+    if (
+      Array.isArray(content.contact.benefits) &&
+      content.contact.benefits.some(
+        (item) =>
+          item === "Atendimento personalizado" ||
+          item === "Triagem rapida do perfil" ||
+          item === "Formulario preparado para integracao futura com CRM"
+      )
+    ) {
+      content.contact.benefits = clone(defaults.contact.benefits);
+    }
+
+    return content;
   }
 
   function renderHome(content) {
@@ -137,7 +243,7 @@
           <article class="teaser-card teaser-card--rich">
             <div class="teaser-card-top">
               <span class="tag">${item.tag}</span>
-              <span class="teaser-meta">Previa da pagina</span>
+              <span class="teaser-meta">${item.link === "contato.html" ? "Passo comercial" : item.link === "newsletter.html" ? "Produto editorial" : "Prova de autoridade"}</span>
             </div>
             <h3>${item.title}</h3>
             <p>${item.description}</p>
@@ -209,14 +315,14 @@
     const localContent = loadLocalContent();
 
     if (!window.MarquesSupabase?.isConfigured()) {
-      return localContent;
+      return upgradeLegacyContent(localContent);
     }
 
     try {
       const remoteContent = await window.MarquesSupabase.loadSiteSnapshot();
-      return merge(localContent, remoteContent);
+      return upgradeLegacyContent(merge(localContent, remoteContent));
     } catch (error) {
-      return localContent;
+      return upgradeLegacyContent(localContent);
     }
   }
 
