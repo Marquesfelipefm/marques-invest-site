@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Montserrat:wght@600;700&display=swap");
+
 :root {
   --bg: #f5f7fb;
   --bg-soft: #eef2f9;
@@ -206,9 +208,10 @@ h3 {
   position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
-  width: min(100%, 320px);
-  padding: 12px 76px 12px 16px;
+  justify-content: space-between;
+  gap: 14px;
+  width: min(100%, 350px);
+  padding: 14px 18px 14px 20px;
   border: 1px solid rgba(21, 32, 61, 0.08);
   border-radius: 24px;
   background:
@@ -217,24 +220,51 @@ h3 {
   overflow: hidden;
 }
 
-.brand::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: 14px;
-  width: 52px;
-  height: 52px;
-  transform: translateY(-50%);
-  background: url("../img/logo-mark.svg") center/contain no-repeat;
-}
-
-.brand img {
+.brand-wordmark {
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.brand-name {
+  position: relative;
+  display: block;
+  color: #15203d;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 2.02rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 0.92;
+}
+
+.brand-invest {
+  display: block;
+  margin-top: 6px;
+  padding-left: 44px;
+  color: #d99b35;
+  font-family: "Montserrat", "Space Grotesk", sans-serif;
+  font-size: 1.14rem;
+  font-weight: 700;
+  letter-spacing: 0.33em;
+  line-height: 1;
+}
+
+.brand-star {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 60px;
+  height: 60px;
+  color: #15203d;
+  transform: translateY(-2px);
+}
+
+.brand-star svg {
   display: block;
   width: 100%;
-  max-width: 210px;
-  height: auto;
+  height: 100%;
 }
 
 .nav-links {
@@ -2031,8 +2061,23 @@ body[data-page="home"] .hero-copy .eyebrow {
   }
 
   .brand {
-    width: min(100%, 300px);
-    padding: 10px 66px 10px 14px;
+    width: min(100%, 318px);
+    padding: 12px 14px 12px 16px;
+  }
+
+  .brand-name {
+    font-size: 1.74rem;
+  }
+
+  .brand-invest {
+    padding-left: 32px;
+    font-size: 0.94rem;
+    letter-spacing: 0.26em;
+  }
+
+  .brand-star {
+    width: 50px;
+    height: 50px;
   }
 
   .nav-links a {
