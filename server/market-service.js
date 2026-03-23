@@ -163,6 +163,11 @@ function buildFmpBatchIndexUrl(apiKey) {
   return `https://financialmodelingprep.com/stable/batch-index-quotes?${params.toString()}`;
 }
 
+function buildYahooChartUrl(symbol) {
+  const encoded = encodeURIComponent(symbol);
+  return `https://query1.finance.yahoo.com/v8/finance/chart/${encoded}?interval=1m&range=1d`;
+}
+
 async function fetchMarketOverviewFromFmp({ apiKey, fetchImpl }) {
   const response = await fetchImpl(buildFmpBatchIndexUrl(apiKey));
 
@@ -196,6 +201,67 @@ async function fetchMarketOverviewFromFmp({ apiKey, fetchImpl }) {
       updatedAt: normalizeTimestamp(quote.timestamp, fallback?.updatedAt),
     };
   });
+}
+
+async function fetchMarketOverviewFromYahoo({ fetchImpl }) {
+  const responses = await Promise.all(
+    trackedIndices.map(async (indexConfig) => {
+      const fallback = fallbackMarkets.find((item) => item.symbol === indexConfig.symbol);
+
+      try {
+        const response = await fetchImpl(buildYahooChartUrl(indexConfig.symbol), {
+          headers: {
+            Accept: "application/json",
+            "User-Agent": "Mozilla/5.0",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Falha Yahoo para ${indexConfig.symbol}`);
+        }
+
+        const payload = await response.json();
+        const result = payload?.chart?.result?.[0];
+        const meta = result?.meta;
+
+        if (!meta) {
+          throw new Error(`Resposta incompleta para ${indexConfig.symbol}`);
+        }
+
+        const price = getFirstNumber(meta.regularMarketPrice, fallback?.price);
+        const previousClose = getFirstNumber(meta.previousClose, meta.chartPreviousClose, price);
+        const change = price - previousClose;
+        const changePercent =
+          previousClose && !Number.isNaN(previousClose) ? (change / previousClose) * 100 : 0;
+
+        return {
+          symbol: indexConfig.symbol,
+          name: indexConfig.name,
+          region: indexConfig.region,
+          price,
+          change,
+          changePercent,
+          updatedAt: normalizeTimestamp(meta.regularMarketTime, fallback?.updatedAt),
+        };
+      } catch (error) {
+        return fallback;
+      }
+    })
+  );
+
+  return responses;
+}
+
+async function fetchMarketOverview({ apiKey, fetchImpl }) {
+  if (apiKey) {
+    try {
+      return await fetchMarketOverviewFromFmp({ apiKey, fetchImpl });
+    } catch (error) {
+      return fetchMarketOverviewFromYahoo({ fetchImpl });
+    }
+  }
+
+  return fetchMarketOverviewFromYahoo({ fetchImpl });
 }
 
 function findQuote(quotes, aliases) {
@@ -261,5 +327,7 @@ function normalizeTimestamp(timestamp, fallback) {
 module.exports = {
   trackedIndices,
   getFallbackMarkets,
+  fetchMarketOverview,
   fetchMarketOverviewFromFmp,
+  fetchMarketOverviewFromYahoo,
 };

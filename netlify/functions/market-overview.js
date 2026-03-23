@@ -1,31 +1,14 @@
 const {
   trackedIndices,
   getFallbackMarkets,
-  fetchMarketOverviewFromFmp,
+  fetchMarketOverview,
 } = require("../../server/market-service");
 
 exports.handler = async function handler() {
   const apiKey = process.env.FMP_API_KEY;
 
-  if (!apiKey) {
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "public, max-age=60",
-      },
-      body: JSON.stringify({
-        mode: "fallback",
-        tracked: trackedIndices,
-        message:
-          "Panorama de referencia exibido no momento. A atualizacao ao vivo das bolsas sera habilitada em breve.",
-        items: getFallbackMarkets(),
-      }),
-    };
-  }
-
   try {
-    const items = await fetchMarketOverviewFromFmp({
+    const items = await fetchMarketOverview({
       apiKey,
       fetchImpl: fetch,
     });
@@ -39,6 +22,7 @@ exports.handler = async function handler() {
       body: JSON.stringify({
         mode: "live",
         tracked: trackedIndices,
+        provider: apiKey ? "fmp" : "yahoo",
         items,
       }),
     };
