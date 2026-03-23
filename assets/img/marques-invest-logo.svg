@@ -1,31 +1,36 @@
 <svg
-  width="680"
-  height="220"
-  viewBox="0 0 680 220"
+  width="920"
+  height="240"
+  viewBox="0 0 920 240"
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
   preserveAspectRatio="xMinYMid meet"
 >
   <title>Marques Invest</title>
+  <defs>
+    <linearGradient id="marques-gold" x1="120" y1="36" x2="520" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F2D27B" />
+      <stop offset="0.48" stop-color="#D4A646" />
+      <stop offset="1" stop-color="#B8872E" />
+    </linearGradient>
+  </defs>
   <text
-    x="18"
-    y="122"
-    fill="#15203D"
-    font-family="Georgia, 'Times New Roman', serif"
-    font-size="98"
-    letter-spacing="1.5"
+    x="24"
+    y="166"
+    fill="url(#marques-gold)"
+    font-family="Cormorant Garamond, Georgia, serif"
+    font-size="138"
+    font-weight="600"
+    letter-spacing="6"
   >
-    MARQUES
+    MARQU&#202;S
   </text>
-  <text
-    x="170"
-    y="188"
-    fill="#D99B35"
-    font-family="Arial, Helvetica, sans-serif"
-    font-size="58"
-    font-weight="700"
-    letter-spacing="7"
-  >
-    INVEST
-  </text>
+  <path
+    d="M610 98L714 78L736 22L768 116L717 164L610 98Z"
+    stroke="#D4A646"
+    stroke-width="12"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path d="M738 127L848 141L758 161L739 228L731 179L738 127Z" fill="#F6F3EE" />
 </svg>
