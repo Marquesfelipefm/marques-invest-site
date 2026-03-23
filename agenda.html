@@ -35,33 +35,75 @@
 
       <main>
         <section class="section agenda-section">
-          <div class="section-heading">
-            <span class="section-kicker">Agenda Economica</span>
-            <h2>Eventos que podem mexer com o humor do mercado</h2>
+          <div class="page-hero agenda-hero">
+            <article class="page-summary">
+              <span class="eyebrow">Agenda Economica</span>
+              <h1>Calendario de eventos para juros, bolsa, cambio e sentimento do mercado.</h1>
+              <p>
+                Uma leitura mais profissional da agenda do dia, com horario, regiao,
+                impacto esperado e contexto rapido para acompanhar os eventos que mais
+                importam para a tomada de decisao.
+              </p>
+            </article>
+
+            <aside class="page-sidecard agenda-sidecard">
+              <span class="tag">Como usar</span>
+              <h2>Use a agenda como radar de risco e oportunidade.</h2>
+              <ul class="page-bullets">
+                <li>Priorize eventos de impacto alto antes da abertura e do fechamento.</li>
+                <li>Combine o calendario com o comportamento de bolsa, dolar e juros.</li>
+                <li>Leia a coluna final para entender o que pode ficar mais sensivel.</li>
+              </ul>
+            </aside>
           </div>
 
-          <div class="agenda-list" id="agenda-list">
-            <article class="agenda-item">
-              <span class="agenda-date">08:00</span>
-              <div>
-                <h3>IPCA e leitura de inflacao</h3>
-                <p>Atualizacao importante para expectativas de juros e consumo.</p>
-              </div>
+          <div class="agenda-metrics">
+            <article class="agenda-metric-card">
+              <span class="agenda-metric-label">Eventos do dia</span>
+              <strong id="agenda-count">0</strong>
             </article>
-            <article class="agenda-item">
-              <span class="agenda-date">14:00</span>
-              <div>
-                <h3>Leilao do Tesouro</h3>
-                <p>Indicador relevante para renda fixa e percepcao de risco.</p>
-              </div>
+            <article class="agenda-metric-card">
+              <span class="agenda-metric-label">Impacto alto</span>
+              <strong id="agenda-high-impact">0</strong>
             </article>
-            <article class="agenda-item">
-              <span class="agenda-date">16:30</span>
-              <div>
-                <h3>Discurso de dirigente de banco central</h3>
-                <p>Pode alterar projecoes para taxa basica e cambio.</p>
-              </div>
+            <article class="agenda-metric-card">
+              <span class="agenda-metric-label">Regioes no radar</span>
+              <strong id="agenda-region-count">0</strong>
             </article>
+          </div>
+
+          <div class="agenda-toolbar">
+            <div class="agenda-legend">
+              <span class="agenda-impact is-high">Alta</span>
+              <span class="agenda-impact is-medium">Media</span>
+              <span class="agenda-impact is-low">Baixa</span>
+            </div>
+            <p class="agenda-sync-status" id="agenda-sync-status">Carregando agenda economica.</p>
+          </div>
+
+          <div class="agenda-table">
+            <div class="agenda-table-head">
+              <span>Horario</span>
+              <span>Regiao</span>
+              <span>Evento</span>
+              <span>Impacto</span>
+              <span>Leitura rapida</span>
+            </div>
+            <div class="agenda-list agenda-list--table" id="agenda-list">
+              <article class="agenda-row">
+                <div class="agenda-timebox">
+                  <strong>08:00</strong>
+                  <span>Hoje</span>
+                </div>
+                <span class="agenda-region-badge">Brasil</span>
+                <div class="agenda-event-copy">
+                  <h3>IPCA e leitura de inflacao</h3>
+                  <p>Atualizacao importante para expectativas de juros e consumo.</p>
+                </div>
+                <span class="agenda-impact is-high">Alta</span>
+                <p class="agenda-context">Pode alterar a percepcao sobre juros, consumo e curva.</p>
+              </article>
+            </div>
           </div>
         </section>
       </main>

@@ -124,6 +124,20 @@ const fallbackAgenda = [
     impact: "Alta",
     region: "Global",
   },
+  {
+    title: "Payroll e abertura de vagas",
+    summary: "Indicador-chave para juros, dolar e leitura de atividade nos EUA.",
+    event_at: "2026-03-22T09:30:00Z",
+    impact: "Alta",
+    region: "Estados Unidos",
+  },
+  {
+    title: "Estoques de petroleo e leitura de energia",
+    summary: "Dado relevante para commodities, inflacao e empresas ligadas a petroleo.",
+    event_at: "2026-03-22T17:30:00Z",
+    impact: "Media",
+    region: "Estados Unidos",
+  },
 ];
 
 const categoryDefinitions = {
@@ -195,6 +209,10 @@ const newsStatus = document.querySelector("#news-status");
 const marketBoard = document.querySelector("#market-board");
 const marketStatus = document.querySelector("#market-status");
 const agendaList = document.querySelector("#agenda-list");
+const agendaCount = document.querySelector("#agenda-count");
+const agendaHighImpact = document.querySelector("#agenda-high-impact");
+const agendaRegionCount = document.querySelector("#agenda-region-count");
+const agendaSyncStatus = document.querySelector("#agenda-sync-status");
 const filterButtons = document.querySelectorAll(".filter-button");
 const newsletterForm = document.querySelector(".newsletter-form");
 const contactForm = document.querySelector("#contact-form");
@@ -215,6 +233,28 @@ const shareNetworks = [
 let currentCategory = "latest";
 let marketRefreshTimer;
 let lastFetchedCep = "";
+
+function ensureMarketRibbon() {
+  const hero = document.querySelector(".hero");
+  const topbar = document.querySelector(".topbar");
+
+  if (!hero || !topbar) {
+    return null;
+  }
+
+  let ribbon = document.querySelector("#market-ribbon");
+
+  if (!ribbon) {
+    ribbon = document.createElement("div");
+    ribbon.className = "market-ribbon";
+    ribbon.id = "market-ribbon";
+    ribbon.innerHTML =
+      '<span class="market-ribbon-label">Mercado agora</span><div class="market-ribbon-items" id="market-ribbon-items"></div>';
+    topbar.insertAdjacentElement("afterend", ribbon);
+  }
+
+  return ribbon.querySelector("#market-ribbon-items");
+}
 
 function slugify(value) {
   return value
@@ -490,19 +530,113 @@ function renderAgenda(items) {
     return;
   }
 
+  if (!items.length) {
+    agendaList.innerHTML = `
+      <article class="agenda-row">
+        <div class="agenda-timebox">
+          <strong>--:--</strong>
+          <span>Hoje</span>
+        </div>
+        <span class="agenda-region-badge">Sem dados</span>
+        <div class="agenda-event-copy">
+          <h3>Agenda indisponivel no momento</h3>
+          <p>Tente novamente em instantes para atualizar os eventos.</p>
+        </div>
+        <span class="agenda-impact is-low">Baixa</span>
+        <p class="agenda-context">Nenhum evento carregado.</p>
+      </article>
+    `;
+    return;
+  }
+
   agendaList.innerHTML = items
     .map(
       (item) => `
-        <article class="agenda-item">
-          <span class="agenda-date">${formatEventTime(item.event_at)}</span>
-          <div>
+        <article class="agenda-row">
+          <div class="agenda-timebox">
+            <strong>${formatEventTime(item.event_at)}</strong>
+            <span>${formatAgendaDay(item.event_at)}</span>
+          </div>
+          <span class="agenda-region-badge">${item.region || "Global"}</span>
+          <div class="agenda-event-copy">
             <h3>${item.title}</h3>
             <p>${item.summary}</p>
           </div>
+          <span class="agenda-impact ${getAgendaImpactClass(item.impact)}">${item.impact}</span>
+          <p class="agenda-context">${getAgendaContext(item)}</p>
         </article>
       `
     )
     .join("");
+}
+
+function formatAgendaDay(value) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Hoje";
+  }
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+  }).format(date);
+}
+
+function getAgendaImpactClass(impact) {
+  const normalized = String(impact || "").toLowerCase();
+
+  if (normalized.includes("alta")) {
+    return "is-high";
+  }
+
+  if (normalized.includes("media")) {
+    return "is-medium";
+  }
+
+  return "is-low";
+}
+
+function getAgendaContext(item) {
+  const text = `${item.title || ""} ${item.summary || ""}`.toLowerCase();
+
+  if (text.includes("inflacao") || text.includes("ipca") || text.includes("payroll")) {
+    return "Pode mover juros, dolar e percepcao sobre a atividade.";
+  }
+
+  if (text.includes("tesouro") || text.includes("leilao")) {
+    return "Importante para curva, renda fixa e apetite por risco.";
+  }
+
+  if (text.includes("petroleo") || text.includes("energia")) {
+    return "Ganha peso em commodities, inflacao e empresas do setor.";
+  }
+
+  return "Evento relevante para monitorar o humor do mercado ao longo do dia.";
+}
+
+function updateAgendaMetrics(items) {
+  if (agendaCount) {
+    agendaCount.textContent = String(items.length);
+  }
+
+  if (agendaHighImpact) {
+    agendaHighImpact.textContent = String(
+      items.filter((item) => String(item.impact || "").toLowerCase().includes("alta")).length
+    );
+  }
+
+  if (agendaRegionCount) {
+    agendaRegionCount.textContent = String(
+      new Set(items.map((item) => item.region || "Global")).size
+    );
+  }
+}
+
+function setAgendaStatus(message) {
+  if (agendaSyncStatus) {
+    agendaSyncStatus.textContent = message;
+  }
 }
 
 function updateStatus(message, tone = "default") {
@@ -551,6 +685,31 @@ function renderMarketBoard(items) {
     .join("");
 }
 
+function renderMarketRibbon(items) {
+  const ribbonItems = ensureMarketRibbon();
+
+  if (!ribbonItems) {
+    return;
+  }
+
+  ribbonItems.innerHTML = items
+    .slice(0, 6)
+    .map(
+      (item) => `
+        <article class="market-ribbon-item">
+          <div>
+            <span class="market-ribbon-symbol">${item.name}</span>
+            <span class="market-ribbon-price">${formatMarketPrice(item.price)}</span>
+          </div>
+          <span class="market-ribbon-change ${getMarketTone(item.changePercent)}">
+            ${formatMarketPercent(item.changePercent)}
+          </span>
+        </article>
+      `
+    )
+    .join("");
+}
+
 async function fetchMarketOverview() {
   if (window.location.protocol === "file:") {
     throw new Error("Local file mode");
@@ -587,6 +746,7 @@ async function loadMarketOverview() {
     const payload = await fetchMarketOverview();
     const items = Array.isArray(payload.items) && payload.items.length ? payload.items : fallbackMarkets;
     renderMarketBoard(items);
+    renderMarketRibbon(items);
 
     if (payload.mode === "live") {
       updateMarketStatus(
@@ -602,6 +762,7 @@ async function loadMarketOverview() {
     );
   } catch (error) {
     renderMarketBoard(fallbackMarkets);
+    renderMarketRibbon(fallbackMarkets);
     updateMarketStatus(
       "Panorama de referencia exibido no momento. A atualizacao ao vivo sera habilitada em breve.",
       "fallback"
@@ -769,6 +930,8 @@ async function loadAgendaEvents() {
 
       if (Array.isArray(events) && events.length) {
         renderAgenda(events);
+        updateAgendaMetrics(events);
+        setAgendaStatus("Agenda carregada do painel online em tempo real.");
         return;
       }
     } catch (error) {
@@ -777,6 +940,8 @@ async function loadAgendaEvents() {
   }
 
   renderAgenda(fallbackAgenda);
+  updateAgendaMetrics(fallbackAgenda);
+  setAgendaStatus("Agenda de referencia exibida no momento.");
 }
 
 if (filterButtons.length) {
@@ -913,9 +1078,15 @@ document.addEventListener("click", async (event) => {
 
 if (marketBoard) {
   renderMarketBoard(fallbackMarkets);
+  renderMarketRibbon(fallbackMarkets);
   loadMarketOverview();
   clearInterval(marketRefreshTimer);
   marketRefreshTimer = setInterval(loadMarketOverview, 60000);
+}
+
+if (!marketBoard) {
+  renderMarketRibbon(fallbackMarkets);
+  loadMarketOverview();
 }
 
 if (newsGrid) {
