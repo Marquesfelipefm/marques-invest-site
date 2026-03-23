@@ -1,0 +1,15 @@
+{
+  "name": "Marques Invest",
+  "short_name": "Marques",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#101b34",
+  "icons": [
+    {
+      "src": "assets/img/logo-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

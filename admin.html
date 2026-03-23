@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marques Invest | Painel Admin</title>
+    <meta name="theme-color" content="#f5f7fb" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Sans+3:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body data-page="admin">
+    <div class="site-shell">
+      <header class="hero hero--compact">
+        <nav class="topbar">
+          <a class="brand" href="index.html" aria-label="Marques Invest">
+            <img src="assets/img/marques-invest-logo.svg" alt="Marques Invest" />
+          </a>
+          <div class="nav-links">
+            <a class="is-current" href="admin.html">Painel Admin</a>
+            <a href="index.html">Ver site</a>
+          </div>
+        </nav>
+      </header>
+
+      <main>
+        <section class="section">
+          <div class="page-hero">
+            <article class="page-summary">
+              <span class="eyebrow">Painel online</span>
+              <h1>Gerencie o site com login, banco e publicacao real.</h1>
+              <p>
+                Esta versao usa Supabase como camada online para autenticacao,
+                conteudo, posts, agenda, newsletter, contato e configuracao do
+                WhatsApp.
+              </p>
+            </article>
+
+            <aside class="page-sidecard">
+              <span class="tag">Estrutura</span>
+              <h2>O que o painel controla</h2>
+              <ul class="page-bullets">
+                <li>Conteudo das paginas institucionais</li>
+                <li>Cadastro e publicacao de posts/noticias</li>
+                <li>Agenda economica com CRUD</li>
+                <li>Leads de newsletter, contato e WhatsApp</li>
+              </ul>
+            </aside>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="admin-layout">
+            <aside class="admin-sidebar">
+              <div class="admin-auth-card">
+                <span class="tag">Acesso</span>
+                <h3>Entrar no painel</h3>
+                <p>Use um usuario criado no Auth do Supabase.</p>
+                <form class="contact-form" id="admin-login-form">
+                  <div class="form-grid">
+                    <label class="field field-full">
+                      <span>E-mail</span>
+                      <input type="email" id="admin-email" placeholder="admin@marquesinvest.com" required />
+                    </label>
+                    <label class="field field-full">
+                      <span>Senha</span>
+                      <input type="password" id="admin-password" placeholder="Sua senha" required />
+                    </label>
+                  </div>
+                  <p class="contact-status" id="admin-login-status">
+                    Configure o Supabase e faca login para administrar online.
+                  </p>
+                  <button type="submit" class="button button-primary contact-submit" id="admin-login-button">
+                    Entrar
+                  </button>
+                </form>
+              </div>
+
+              <div class="admin-note" id="admin-config-note">
+                <strong>Configuracao necessaria</strong>
+                Preencha `assets/js/supabase-config.js` com a URL e a anon key do
+                seu projeto Supabase antes do primeiro login.
+              </div>
+            </aside>
+
+            <div class="admin-shell" id="admin-shell" hidden>
+              <div class="admin-metrics">
+                <article class="admin-metric">
+                  <span>Posts</span>
+                  <strong id="metric-posts">0</strong>
+                </article>
+                <article class="admin-metric">
+                  <span>Agenda</span>
+                  <strong id="metric-agenda">0</strong>
+                </article>
+                <article class="admin-metric">
+                  <span>Newsletter</span>
+                  <strong id="metric-newsletter">0</strong>
+                </article>
+                <article class="admin-metric">
+                  <span>Contato</span>
+                  <strong id="metric-contact">0</strong>
+                </article>
+              </div>
+
+              <div class="admin-section-card">
+                <div class="admin-toolbar">
+                  <div>
+                    <h3>Centro de administracao</h3>
+                    <p>Publique conteudo, atualize dados do site e acompanhe as entradas.</p>
+                  </div>
+                  <div class="admin-actions">
+                    <button type="button" class="button button-secondary" id="admin-refresh">
+                      Atualizar dados
+                    </button>
+                    <button type="button" class="button button-secondary" id="admin-logout">
+                      Sair
+                    </button>
+                  </div>
+                </div>
+
+                <div class="filters" role="tablist" aria-label="Secoes do painel">
+                  <button class="filter-button is-active" type="button" data-admin-tab="settings">Configuracoes</button>
+                  <button class="filter-button" type="button" data-admin-tab="social">Postar nas redes</button>
+                  <button class="filter-button" type="button" data-admin-tab="content">Conteudo</button>
+                  <button class="filter-button" type="button" data-admin-tab="posts">Posts</button>
+                  <button class="filter-button" type="button" data-admin-tab="agenda">Agenda</button>
+                  <button class="filter-button" type="button" data-admin-tab="newsletter">Newsletter</button>
+                  <button class="filter-button" type="button" data-admin-tab="contact">Contato</button>
+                </div>
+
+                <div class="admin-tab" data-admin-panel="settings">
+                  <form id="admin-settings-form">
+                    <div class="form-grid">
+                      <label class="field field-full">
+                        <span>Link do WhatsApp</span>
+                        <input type="text" name="settings.whatsappLink" placeholder="https://wa.me/5511999999999" />
+                      </label>
+                    </div>
+                    <div class="hero-actions">
+                      <button type="submit" class="button button-primary">Salvar configuracoes</button>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="admin-tab" data-admin-panel="social" hidden>
+                  <div class="admin-toolbar">
+                    <div>
+                      <h3>Postar nas redes</h3>
+                      <p>Cadastre os links de acesso/postagem e abra cada rede direto do painel.</p>
+                    </div>
+                  </div>
+
+                  <form id="admin-social-form">
+                    <div class="admin-social-grid">
+                      <label class="field admin-social-card">
+                        <span>X</span>
+                        <input type="url" name="settings.socialLinks.x" placeholder="https://x.com/compose/post ou login" />
+                        <button type="button" class="button button-secondary" data-social-open="x">Abrir X</button>
+                      </label>
+
+                      <label class="field admin-social-card">
+                        <span>Facebook</span>
+                        <input type="url" name="settings.socialLinks.facebook" placeholder="https://business.facebook.com/..." />
+                        <button type="button" class="button button-secondary" data-social-open="facebook">Abrir Facebook</button>
+                      </label>
+
+                      <label class="field admin-social-card">
+                        <span>Instagram</span>
+                        <input type="url" name="settings.socialLinks.instagram" placeholder="https://business.facebook.com/... ou login" />
+                        <button type="button" class="button button-secondary" data-social-open="instagram">Abrir Instagram</button>
+                      </label>
+
+                      <label class="field admin-social-card">
+                        <span>LinkedIn</span>
+                        <input type="url" name="settings.socialLinks.linkedin" placeholder="https://www.linkedin.com/feed/..." />
+                        <button type="button" class="button button-secondary" data-social-open="linkedin">Abrir LinkedIn</button>
+                      </label>
+
+                      <label class="field admin-social-card">
+                        <span>YouTube</span>
+                        <input type="url" name="settings.socialLinks.youtube" placeholder="https://studio.youtube.com/..." />
+                        <button type="button" class="button button-secondary" data-social-open="youtube">Abrir YouTube</button>
+                      </label>
+                    </div>
+
+                    <div class="hero-actions">
+                      <button type="submit" class="button button-primary">Salvar links das redes</button>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="admin-tab" data-admin-panel="content" hidden>
+                  <form id="admin-content-form">
+                    <div class="form-grid">
+                      <label class="field field-full">
+                        <span>Eyebrow da home</span>
+                        <input type="text" name="home.eyebrow" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Titulo da home</span>
+                        <input type="text" name="home.title" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Descricao da home</span>
+                        <textarea name="home.description"></textarea>
+                      </label>
+                      <label class="field field-full">
+                        <span>Titulo da secao de previews</span>
+                        <input type="text" name="home.teaserTitle" />
+                      </label>
+
+                      <label class="field field-full">
+                        <span>Eyebrow da analise</span>
+                        <input type="text" name="analysis.eyebrow" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Titulo da analise</span>
+                        <input type="text" name="analysis.title" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Descricao da analise</span>
+                        <textarea name="analysis.description"></textarea>
+                      </label>
+                      <label class="field">
+                        <span>Tag lateral da analise</span>
+                        <input type="text" name="analysis.sideTag" />
+                      </label>
+                      <label class="field">
+                        <span>Titulo lateral da analise</span>
+                        <input type="text" name="analysis.sideTitle" />
+                      </label>
+
+                      <label class="field">
+                        <span>Kicker dos destaques</span>
+                        <input type="text" name="highlights.kicker" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Titulo dos destaques</span>
+                        <input type="text" name="highlights.title" />
+                      </label>
+
+                      <label class="field">
+                        <span>Kicker da newsletter</span>
+                        <input type="text" name="newsletter.kicker" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Titulo da newsletter</span>
+                        <input type="text" name="newsletter.title" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Descricao da newsletter</span>
+                        <textarea name="newsletter.description"></textarea>
+                      </label>
+                      <label class="field">
+                        <span>Texto do botao da newsletter</span>
+                        <input type="text" name="newsletter.buttonLabel" />
+                      </label>
+
+                      <label class="field">
+                        <span>Kicker do contato</span>
+                        <input type="text" name="contact.kicker" />
+                      </label>
+                      <label class="field">
+                        <span>Tag do card de contato</span>
+                        <input type="text" name="contact.tag" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Titulo da pagina de contato</span>
+                        <input type="text" name="contact.title" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Heading do card de contato</span>
+                        <input type="text" name="contact.heading" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Descricao do contato</span>
+                        <textarea name="contact.description"></textarea>
+                      </label>
+                    </div>
+
+                    <div class="hero-actions">
+                      <button type="submit" class="button button-primary">Salvar conteudo</button>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="admin-tab" data-admin-panel="posts" hidden>
+                  <form id="admin-post-form">
+                    <input type="hidden" name="id" />
+                    <div class="form-grid">
+                      <label class="field field-full">
+                        <span>Titulo do post</span>
+                        <input type="text" name="title" required />
+                      </label>
+                      <label class="field">
+                        <span>Slug</span>
+                        <input type="text" name="slug" placeholder="gerado-automaticamente" />
+                      </label>
+                      <label class="field">
+                        <span>Categoria</span>
+                        <select name="category" required>
+                          <option value="markets">Mercado financeiro</option>
+                          <option value="companies">Empresas</option>
+                          <option value="crypto">Criptoativos</option>
+                          <option value="latest">Mais recentes</option>
+                        </select>
+                      </label>
+                      <label class="field">
+                        <span>Status</span>
+                        <select name="status" required>
+                          <option value="draft">Rascunho</option>
+                          <option value="published">Publicado</option>
+                        </select>
+                      </label>
+                      <label class="field">
+                        <span>Fonte</span>
+                        <input type="text" name="source" placeholder="Marques Invest" />
+                      </label>
+                      <label class="field">
+                        <span>Data de publicacao</span>
+                        <input type="datetime-local" name="published_at" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Link externo</span>
+                        <input type="url" name="external_url" placeholder="https://..." />
+                      </label>
+                      <label class="field field-full">
+                        <span>Imagem de capa</span>
+                        <input type="url" name="cover_url" placeholder="https://..." />
+                      </label>
+                      <label class="field field-full">
+                        <span>Resumo</span>
+                        <textarea name="excerpt" required></textarea>
+                      </label>
+                      <label class="field field-full">
+                        <span>Conteudo</span>
+                        <textarea name="content"></textarea>
+                      </label>
+                    </div>
+
+                    <div class="hero-actions">
+                      <button type="submit" class="button button-primary">Salvar post</button>
+                      <button type="button" class="button button-secondary" id="admin-post-reset">Limpar formulario</button>
+                    </div>
+                  </form>
+
+                  <div class="admin-list-card">
+                    <h3>Posts cadastrados</h3>
+                    <p>Edite ou exclua os posts publicados no site.</p>
+                    <div class="admin-list" id="admin-post-list"></div>
+                  </div>
+                </div>
+
+                <div class="admin-tab" data-admin-panel="agenda" hidden>
+                  <form id="admin-agenda-form">
+                    <input type="hidden" name="id" />
+                    <div class="form-grid">
+                      <label class="field field-full">
+                        <span>Titulo do evento</span>
+                        <input type="text" name="title" required />
+                      </label>
+                      <label class="field field-full">
+                        <span>Resumo</span>
+                        <textarea name="summary" required></textarea>
+                      </label>
+                      <label class="field">
+                        <span>Data e hora</span>
+                        <input type="datetime-local" name="event_at" required />
+                      </label>
+                      <label class="field">
+                        <span>Impacto</span>
+                        <select name="impact" required>
+                          <option value="Alta">Alta</option>
+                          <option value="Media">Media</option>
+                          <option value="Baixa">Baixa</option>
+                        </select>
+                      </label>
+                      <label class="field">
+                        <span>Regiao</span>
+                        <input type="text" name="region" placeholder="Brasil, EUA, Global..." />
+                      </label>
+                      <label class="field">
+                        <span>Status</span>
+                        <select name="status" required>
+                          <option value="draft">Rascunho</option>
+                          <option value="published">Publicado</option>
+                        </select>
+                      </label>
+                    </div>
+
+                    <div class="hero-actions">
+                      <button type="submit" class="button button-primary">Salvar evento</button>
+                      <button type="button" class="button button-secondary" id="admin-agenda-reset">Limpar formulario</button>
+                    </div>
+                  </form>
+
+                  <div class="admin-list-card">
+                    <h3>Agenda cadastrada</h3>
+                    <p>Controle os eventos exibidos na pagina de agenda.</p>
+                    <div class="admin-list" id="admin-agenda-list"></div>
+                  </div>
+                </div>
+
+                <div class="admin-tab" data-admin-panel="newsletter" hidden>
+                  <div class="admin-list-card">
+                    <h3>Leads da newsletter</h3>
+                    <p>Lista de inscritos recebidos pelo formulario do site.</p>
+                    <div class="admin-list" id="admin-newsletter-list"></div>
+                  </div>
+                </div>
+
+                <div class="admin-tab" data-admin-panel="contact" hidden>
+                  <div class="admin-list-card">
+                    <h3>Leads de contato</h3>
+                    <p>Cadastros enviados pela pagina comercial do portal.</p>
+                    <div class="admin-list" id="admin-contact-list"></div>
+                  </div>
+                </div>
+
+                <p class="admin-panel-status" id="admin-panel-status">
+                  O painel online sera habilitado assim que o Supabase estiver configurado.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="assets/js/supabase-config.js"></script>
+    <script src="assets/js/supabase-api.js"></script>
+    <script src="assets/js/site-default-content.js"></script>
+    <script src="assets/js/admin.js"></script>
+  </body>
+</html>
