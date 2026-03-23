@@ -1669,6 +1669,106 @@ h3 {
   font-size: 0.98rem;
 }
 
+.market-intelligence {
+  padding-top: 8px;
+}
+
+.intelligence-grid {
+  display: grid;
+  grid-template-columns: 1.2fr repeat(3, minmax(0, 0.8fr));
+  gap: 18px;
+}
+
+.intelligence-lead,
+.intelligence-card {
+  position: relative;
+  overflow: hidden;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  box-shadow: var(--shadow);
+}
+
+.intelligence-lead {
+  background:
+    radial-gradient(circle at top right, rgba(74, 222, 128, 0.18), transparent 30%),
+    linear-gradient(155deg, #0f1b35 0%, #17325d 100%);
+}
+
+.intelligence-lead h3,
+.intelligence-lead p,
+.intelligence-lead .tag {
+  position: relative;
+  z-index: 1;
+}
+
+.intelligence-lead h3 {
+  margin: 14px 0 10px;
+  color: #ffffff;
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  line-height: 0.95;
+}
+
+.intelligence-lead p {
+  margin: 0;
+  color: var(--panel-muted);
+}
+
+.intelligence-lead::after {
+  content: "";
+  position: absolute;
+  right: -14px;
+  bottom: -18px;
+  width: 130px;
+  height: 130px;
+  background: url("../img/logo-mark.svg") center/contain no-repeat;
+  opacity: 0.12;
+}
+
+.intelligence-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.intelligence-points span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #d7fbe3;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.intelligence-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 248, 255, 0.92));
+}
+
+.intelligence-card strong {
+  display: block;
+  margin-top: 12px;
+  color: var(--text);
+  font-size: 1.22rem;
+  line-height: 1.15;
+}
+
+.intelligence-card p {
+  margin: 12px 0 0;
+  color: var(--text-faint);
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.intelligence-card--accent {
+  background:
+    radial-gradient(circle at top right, rgba(74, 222, 128, 0.14), transparent 32%),
+    linear-gradient(180deg, rgba(236, 255, 242, 0.96), rgba(244, 248, 255, 0.92));
+}
+
 .home-preview-grid {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
@@ -1865,6 +1965,7 @@ body[data-page="home"] .hero-copy .eyebrow {
   .teaser-grid,
   .home-preview-grid,
   .hero-strip,
+  .intelligence-grid,
   .admin-layout,
   .admin-metrics,
   .admin-social-grid {
