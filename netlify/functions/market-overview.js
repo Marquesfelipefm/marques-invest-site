@@ -18,7 +18,7 @@ exports.handler = async function handler() {
         mode: "fallback",
         tracked: trackedIndices,
         message:
-          "FMP_API_KEY nao configurada no deploy. Exibindo panorama demonstrativo das bolsas.",
+          "Panorama de referencia exibido no momento. A atualizacao ao vivo das bolsas sera habilitada em breve.",
         items: getFallbackMarkets(),
       }),
     };
@@ -53,7 +53,7 @@ exports.handler = async function handler() {
         mode: "fallback",
         tracked: trackedIndices,
         message:
-          "A API de mercado falhou temporariamente. O painel entrou em modo seguro com dados demonstrativos.",
+          "Atualizacao ao vivo temporariamente indisponivel. Exibindo panorama de referencia das bolsas.",
         error: error.message,
         items: getFallbackMarkets(),
       }),

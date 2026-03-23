@@ -17,7 +17,7 @@ module.exports = async function handler(req, res) {
       category,
       sources: sourceDomains,
       message:
-        "NEWSAPI_KEY nao configurada no deploy. Exibindo noticias demonstrativas ate a API ser conectada.",
+        "Noticias de referencia exibidas no momento. A atualizacao automatica sera habilitada em breve.",
       items: getFallbackNews(category),
     });
     return;
@@ -42,7 +42,7 @@ module.exports = async function handler(req, res) {
       category,
       sources: sourceDomains,
       message:
-        "A API de noticias falhou temporariamente. O site entrou em modo seguro com conteudo de demonstracao.",
+        "Atualizacao automatica temporariamente indisponivel. Exibindo noticias de referencia.",
       error: error.message,
       items: getFallbackNews(category),
     });

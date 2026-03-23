@@ -597,14 +597,13 @@ async function loadMarketOverview() {
     }
 
     updateMarketStatus(
-      payload.message ||
-        "API de mercado ainda nao configurada. Exibindo panorama demonstrativo das bolsas.",
+      "Panorama de referencia exibido no momento. A atualizacao ao vivo sera habilitada em breve.",
       "fallback"
     );
   } catch (error) {
     renderMarketBoard(fallbackMarkets);
     updateMarketStatus(
-      "Preview local ativo. Configure a API de mercado no deploy para atualizar intraday.",
+      "Panorama de referencia exibido no momento. A atualizacao ao vivo sera habilitada em breve.",
       "fallback"
     );
   }
@@ -747,14 +746,13 @@ async function loadNews(category) {
     }
 
     updateStatus(
-      payload.message ||
-        "API ainda nao configurada. Exibindo noticias de demonstracao para preview local.",
+      "Noticias de referencia exibidas no momento. A atualizacao automatica sera habilitada em breve.",
       "fallback"
     );
   } catch (error) {
     renderNews(getFallbackNews(category));
     updateStatus(
-      "Preview local ativo. Configure a API ou publique posts no painel para carregar noticias reais.",
+      "Noticias de referencia exibidas no momento. A atualizacao automatica sera habilitada em breve.",
       "fallback"
     );
   }
