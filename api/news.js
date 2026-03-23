@@ -1,7 +1,7 @@
 const {
   sourceDomains,
   getFallbackNews,
-  fetchNewsFromNewsApi,
+  fetchNews,
 } = require("../server/news-service");
 
 module.exports = async function handler(req, res) {
@@ -11,20 +11,8 @@ module.exports = async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate=600");
 
-  if (!apiKey) {
-    res.status(200).json({
-      mode: "fallback",
-      category,
-      sources: sourceDomains,
-      message:
-        "Noticias de referencia exibidas no momento. A atualizacao automatica sera habilitada em breve.",
-      items: getFallbackNews(category),
-    });
-    return;
-  }
-
   try {
-    const items = await fetchNewsFromNewsApi({
+    const items = await fetchNews({
       apiKey,
       category,
       fetchImpl: fetch,
@@ -34,6 +22,7 @@ module.exports = async function handler(req, res) {
       mode: "live",
       category,
       sources: sourceDomains,
+      provider: apiKey ? "newsapi" : "rss",
       items,
     });
   } catch (error) {

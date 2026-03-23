@@ -1,13 +1,47 @@
 const sourceDomains = [
-  "bloomberg.com",
-  "wsj.com",
-  "economist.com",
-  "theblock.co",
-  "investing.com",
-  "reuters.com",
   "cnbc.com",
-  "coindesk.com",
+  "marketwatch.com",
+  "investing.com",
 ];
+
+const categoryFeeds = {
+  latest: [
+    {
+      source: "CNBC",
+      url: "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+    },
+    {
+      source: "MarketWatch",
+      url: "https://feeds.marketwatch.com/marketwatch/topstories/",
+    },
+    {
+      source: "Investing.com",
+      url: "https://www.investing.com/rss/news_301.rss",
+    },
+  ],
+  markets: [
+    {
+      source: "CNBC",
+      url: "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+    },
+    {
+      source: "MarketWatch",
+      url: "https://feeds.marketwatch.com/marketwatch/topstories/",
+    },
+  ],
+  companies: [
+    {
+      source: "CNBC",
+      url: "https://www.cnbc.com/id/10001147/device/rss/rss.html",
+    },
+  ],
+  crypto: [
+    {
+      source: "Investing.com",
+      url: "https://www.investing.com/rss/news_301.rss",
+    },
+  ],
+};
 
 const categoryQueries = {
   latest:
@@ -60,7 +94,7 @@ const fallbackNews = [
 ];
 
 function normalizeCategory(category) {
-  return categoryQueries[category] ? category : "latest";
+  return categoryFeeds[category] ? category : "latest";
 }
 
 function getFallbackNews(category) {
@@ -112,6 +146,137 @@ async function fetchNewsFromNewsApi({ apiKey, category, fetchImpl }) {
     }));
 }
 
+async function fetchNewsFromRss({ category, fetchImpl }) {
+  const safeCategory = normalizeCategory(category);
+  const feeds = categoryFeeds[safeCategory] || categoryFeeds.latest;
+
+  const collections = await Promise.all(
+    feeds.map(async (feed) => {
+      try {
+        const response = await fetchImpl(feed.url, {
+          headers: {
+            Accept: "application/rss+xml, application/xml, text/xml",
+            "User-Agent": "Mozilla/5.0",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Falha no feed ${feed.source}`);
+        }
+
+        const xml = await response.text();
+        return parseRssFeed(xml, feed.source, safeCategory);
+      } catch (error) {
+        return [];
+      }
+    })
+  );
+
+  return dedupeNewsItems(collections.flat())
+    .sort((left, right) => new Date(right.publishedAt) - new Date(left.publishedAt))
+    .slice(0, 18);
+}
+
+async function fetchNews({ apiKey, category, fetchImpl }) {
+  if (apiKey) {
+    try {
+      return await fetchNewsFromNewsApi({ apiKey, category, fetchImpl });
+    } catch (error) {
+      return fetchNewsFromRss({ category, fetchImpl });
+    }
+  }
+
+  return fetchNewsFromRss({ category, fetchImpl });
+}
+
+function parseRssFeed(xml, source, category) {
+  const items = [...xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)];
+
+  return items
+    .map((match) => buildNewsItemFromRss(match[1], source, category))
+    .filter(Boolean);
+}
+
+function buildNewsItemFromRss(rawItem, source, category) {
+  const title = cleanText(extractTag(rawItem, "title"));
+  const link = cleanText(extractTag(rawItem, "link"));
+  const description = cleanText(
+    extractTag(rawItem, "description") || extractTag(rawItem, "content:encoded")
+  );
+  const pubDate = normalizePublishedAt(extractTag(rawItem, "pubDate"));
+
+  if (!title || !link) {
+    return null;
+  }
+
+  const inferredCategory =
+    category === "latest" ? inferCategory({ title, description }) : category;
+
+  return {
+    category: inferredCategory,
+    source,
+    publishedAt: pubDate,
+    title,
+    description: description || "Sem descricao disponivel.",
+    url: link,
+  };
+}
+
+function extractTag(xml, tagName) {
+  const escaped = tagName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`<${escaped}\\b[^>]*>([\\s\\S]*?)<\\/${escaped}>`, "i");
+  return regex.exec(xml)?.[1]?.trim() || "";
+}
+
+function cleanText(value) {
+  return decodeHtmlEntities(stripHtml(stripCdata(value || ""))).replace(/\s+/g, " ").trim();
+}
+
+function stripCdata(value) {
+  return value.replace(/^<!\[CDATA\[/, "").replace(/\]\]>$/, "");
+}
+
+function stripHtml(value) {
+  return value.replace(/<[^>]+>/g, " ");
+}
+
+function decodeHtmlEntities(value) {
+  return value
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCharCode(parseInt(code, 16)))
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'");
+}
+
+function normalizePublishedAt(value) {
+  const date = new Date(value);
+
+  if (!Number.isNaN(date.getTime())) {
+    return date.toISOString();
+  }
+
+  return new Date().toISOString();
+}
+
+function dedupeNewsItems(items) {
+  const seen = new Set();
+
+  return items.filter((item) => {
+    const key = item.url || item.title;
+
+    if (!key || seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
+}
+
 function getSourceHostname(url) {
   try {
     return new URL(url).hostname;
@@ -139,7 +304,8 @@ function inferCategory(article) {
     text.includes("companies") ||
     text.includes("ipo") ||
     text.includes("merger") ||
-    text.includes("acquisition")
+    text.includes("acquisition") ||
+    text.includes("business")
   ) {
     return "companies";
   }
@@ -150,5 +316,7 @@ function inferCategory(article) {
 module.exports = {
   sourceDomains,
   getFallbackNews,
+  fetchNews,
   fetchNewsFromNewsApi,
+  fetchNewsFromRss,
 };
