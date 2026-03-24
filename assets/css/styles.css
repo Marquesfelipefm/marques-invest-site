@@ -3002,6 +3002,38 @@ body[data-page="home"] .hero-copy p {
   line-height: 1;
 }
 
+.office-card {
+  margin-top: 28px;
+  padding: 22px 24px;
+  border: 1px solid rgba(212, 166, 70, 0.16);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top right, rgba(212, 166, 70, 0.1), transparent 28%),
+    linear-gradient(180deg, rgba(13, 24, 46, 0.94), rgba(10, 19, 37, 0.9));
+}
+
+.office-card h4 {
+  margin: 14px 0 12px;
+  color: var(--panel-text);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.7rem;
+  line-height: 1.05;
+}
+
+.office-details {
+  margin: 0;
+  padding-left: 18px;
+  color: rgba(246, 243, 238, 0.78);
+}
+
+.office-details li + li {
+  margin-top: 8px;
+}
+
+.office-details strong {
+  color: var(--text);
+}
+
 .field input,
 .field select,
 .field textarea,
@@ -3068,6 +3100,14 @@ body[data-page="home"] .hero-copy p {
 .footer p {
   max-width: 760px;
   margin: 0 auto;
+}
+
+.footer-address {
+  display: block;
+  margin-top: 10px;
+  color: rgba(246, 243, 238, 0.72);
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .admin-note {
