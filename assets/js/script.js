@@ -204,6 +204,7 @@ const fallbackNews = [
   },
 ];
 
+const newsLead = document.querySelector("#news-lead");
 const newsGrid = document.querySelector("#news-grid");
 const newsStatus = document.querySelector("#news-status");
 const marketBoard = document.querySelector("#market-board");
@@ -263,6 +264,15 @@ function slugify(value) {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function getShareIcon(network) {
@@ -383,11 +393,15 @@ function getMarketTone(value) {
 
 function getArticleUrl(item) {
   if (item.url && item.url !== "#") {
-    return item.url;
+    try {
+      return new URL(item.url, window.location.href).toString();
+    } catch (error) {
+      return item.url;
+    }
   }
 
-  const baseUrl = window.location.href.split("#")[0];
-  return `${baseUrl}#${slugify(item.title)}`;
+  const slug = item.slug || slugify(item.title);
+  return new URL(`noticia.html?slug=${encodeURIComponent(slug)}`, window.location.href).toString();
 }
 
 function getShareLinks(item) {
@@ -458,6 +472,9 @@ function normalizeNewsItems(items, activeCategory) {
     title: item.title || "Sem titulo",
     description: item.description || item.excerpt || "Conteudo indisponivel no momento.",
     url: item.url || item.external_url || "#",
+    slug: item.slug || slugify(item.title || "noticia"),
+    coverUrl: item.coverUrl || item.cover_url || "",
+    isExternal: true,
   }));
 }
 
@@ -468,11 +485,19 @@ function normalizePosts(items, activeCategory) {
     publishedAt: item.published_at || item.created_at || new Date().toISOString(),
     title: item.title || "Sem titulo",
     description: item.excerpt || item.content || "Conteudo indisponivel no momento.",
-    url: item.external_url || `#${item.slug || slugify(item.title || "post")}`,
+    url: `noticia.html?slug=${encodeURIComponent(item.slug || slugify(item.title || "post"))}`,
+    slug: item.slug || slugify(item.title || "post"),
+    coverUrl: item.cover_url || "",
+    isExternal: false,
   }));
 }
 
 function renderEmptyState() {
+  if (newsLead) {
+    newsLead.innerHTML = "";
+    newsLead.hidden = true;
+  }
+
   if (!newsGrid) {
     return;
   }
@@ -481,6 +506,57 @@ function renderEmptyState() {
     <article class="news-card news-card-empty">
       <h3>Sem noticias no momento</h3>
       <p>Tente outra categoria ou publique novos posts no painel.</p>
+    </article>
+  `;
+}
+
+function getNewsCoverMarkup(item, lead = false) {
+  if (!item.coverUrl) {
+    return "";
+  }
+
+  const className = lead ? "news-lead-media" : "news-card-cover";
+  const alt = `Capa da materia ${item.title}`;
+
+  return `
+    <div class="${className}">
+      <img src="${escapeHtml(item.coverUrl)}" alt="${escapeHtml(alt)}" loading="lazy" />
+    </div>
+  `;
+}
+
+function renderNewsLead(item) {
+  if (!newsLead) {
+    return;
+  }
+
+  if (!item) {
+    newsLead.innerHTML = "";
+    newsLead.hidden = true;
+    return;
+  }
+
+  const targetAttributes = item.isExternal ? 'target="_blank" rel="noreferrer"' : "";
+
+  newsLead.hidden = false;
+  newsLead.innerHTML = `
+    <article class="news-lead-card">
+      ${getNewsCoverMarkup(item, true)}
+      <div class="news-lead-copy">
+        <span class="tag">Destaque editorial</span>
+        <div class="news-meta news-meta--lead">
+          <span>${escapeHtml(item.source)}</span>
+          <span>${escapeHtml(formatPublishedAt(item.publishedAt))}</span>
+        </div>
+        <h3>${escapeHtml(item.title)}</h3>
+        <p>${escapeHtml(item.description)}</p>
+        <div class="news-lead-actions">
+          <span class="news-category-chip">${escapeHtml(getCategoryLabel(item.category))}</span>
+          <a href="${escapeHtml(item.url)}" class="button button-primary" ${targetAttributes}>
+            ${item.isExternal ? "Abrir materia" : "Ler materia"}
+          </a>
+        </div>
+      </div>
     </article>
   `;
 }
@@ -495,22 +571,33 @@ function renderNews(items) {
     return;
   }
 
-  newsGrid.innerHTML = items
+  const leadItem = newsLead ? items[0] : null;
+  const gridItems = newsLead ? items.slice(1) : items;
+
+  renderNewsLead(leadItem);
+
+  if (!gridItems.length) {
+    newsGrid.innerHTML = "";
+    return;
+  }
+
+  newsGrid.innerHTML = gridItems
     .map(
       (item) => `
         <article class="news-card">
+          ${getNewsCoverMarkup(item)}
           <div class="news-meta">
-            <span>${item.source}</span>
-            <span>${formatPublishedAt(item.publishedAt)}</span>
+            <span>${escapeHtml(item.source)}</span>
+            <span>${escapeHtml(formatPublishedAt(item.publishedAt))}</span>
           </div>
-          <h3>${item.title}</h3>
-          <p>${item.description}</p>
+          <h3>${escapeHtml(item.title)}</h3>
+          <p>${escapeHtml(item.description)}</p>
           <div class="news-card-footer">
-            <span class="news-category-chip">${getCategoryLabel(item.category)}</span>
-            <a href="${item.url}" class="news-link" ${
-              item.url !== "#" ? 'target="_blank" rel="noreferrer"' : ""
+            <span class="news-category-chip">${escapeHtml(getCategoryLabel(item.category))}</span>
+            <a href="${escapeHtml(item.url)}" class="news-link" ${
+              item.isExternal && item.url !== "#" ? 'target="_blank" rel="noreferrer"' : ""
             }>
-              Abrir noticia
+              ${item.isExternal ? "Abrir noticia" : "Ler materia"}
             </a>
           </div>
           <div class="share-bar">

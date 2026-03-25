@@ -416,6 +416,20 @@
     });
   }
 
+  async function getPublicPostBySlug(slug) {
+    const rows = await list("posts", {
+      select:
+        "id,title,slug,excerpt,content,category,source,external_url,cover_url,status,published_at,created_at,updated_at",
+      filters: [
+        { column: "status", operator: "eq", value: "published" },
+        { column: "slug", operator: "eq", value: slug },
+      ],
+      limit: 1,
+    });
+
+    return Array.isArray(rows) ? rows[0] || null : null;
+  }
+
   async function listAdminPosts() {
     return list("posts", {
       select:
@@ -589,6 +603,7 @@
     loadSiteSnapshot,
     saveSiteSnapshot,
     listPublicPosts,
+    getPublicPostBySlug,
     listAdminPosts,
     savePost,
     deletePost,

@@ -82,6 +82,11 @@
       .replace(/^-|-$/g, "");
   }
 
+  function getPublicPostUrl(post) {
+    const slug = post?.slug || slugify(post?.title || "post");
+    return `noticia.html?slug=${encodeURIComponent(slug)}`;
+  }
+
   function toDatetimeLocal(value) {
     if (!value) {
       return "";
@@ -251,10 +256,20 @@
               </div>
             </div>
             <div class="admin-item-meta">
+              Slug: ${escapeHtml(post.slug || slugify(post.title || "post"))}<br />
               Fonte: ${escapeHtml(post.source || "Marques Invest")}<br />
               Publicacao: ${escapeHtml(formatDate(post.published_at || post.updated_at))}
             </div>
             <div class="admin-item-actions">
+              ${
+                post.status === "published"
+                  ? `
+                    <a class="button button-secondary" href="${getPublicPostUrl(post)}" target="_blank" rel="noreferrer">
+                      Abrir post
+                    </a>
+                  `
+                  : ""
+              }
               <button type="button" class="button button-secondary" data-post-edit="${post.id}">Editar</button>
               <button type="button" class="button button-secondary" data-post-delete="${post.id}">Excluir</button>
             </div>
