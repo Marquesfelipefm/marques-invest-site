@@ -474,6 +474,8 @@ function normalizeNewsItems(items, activeCategory) {
     url: item.url || item.external_url || "#",
     slug: item.slug || slugify(item.title || "noticia"),
     coverUrl: item.coverUrl || item.cover_url || "",
+    coverAlt: item.coverAlt || item.cover_alt || "",
+    featured: Boolean(item.featured),
     isExternal: true,
   }));
 }
@@ -488,6 +490,8 @@ function normalizePosts(items, activeCategory) {
     url: `noticia.html?slug=${encodeURIComponent(item.slug || slugify(item.title || "post"))}`,
     slug: item.slug || slugify(item.title || "post"),
     coverUrl: item.cover_url || "",
+    coverAlt: item.cover_alt || "",
+    featured: Boolean(item.featured),
     isExternal: false,
   }));
 }
@@ -516,7 +520,7 @@ function getNewsCoverMarkup(item, lead = false) {
   }
 
   const className = lead ? "news-lead-media" : "news-card-cover";
-  const alt = `Capa da materia ${item.title}`;
+  const alt = item.coverAlt || `Capa da materia ${item.title}`;
 
   return `
     <div class="${className}">
@@ -571,8 +575,9 @@ function renderNews(items) {
     return;
   }
 
-  const leadItem = newsLead ? items[0] : null;
-  const gridItems = newsLead ? items.slice(1) : items;
+  const leadCandidate = items.find((item) => item.featured) || items[0];
+  const leadItem = newsLead ? leadCandidate : null;
+  const gridItems = newsLead ? items.filter((item) => item !== leadCandidate) : items;
 
   renderNewsLead(leadItem);
 

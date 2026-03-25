@@ -135,7 +135,7 @@
                   <div class="news-card-cover">
                     <img
                       src="${escapeHtml(item.cover_url)}"
-                      alt="${escapeHtml(`Capa da materia ${item.title}`)}"
+                      alt="${escapeHtml(item.cover_alt || `Capa da materia ${item.title}`)}"
                       loading="lazy"
                     />
                   </div>
@@ -178,7 +178,7 @@
       articleCover.innerHTML = `
         <img
           src="${escapeHtml(post.cover_url)}"
-          alt="${escapeHtml(`Capa da materia ${post.title}`)}"
+          alt="${escapeHtml(post.cover_alt || `Capa da materia ${post.title}`)}"
           loading="eager"
         />
       `;
@@ -196,8 +196,8 @@
       articleSourceLink.removeAttribute("href");
     }
 
-    document.title = `${post.title} | Marques Invest`;
-    setMeta("description", post.excerpt || post.title);
+    document.title = post.seo_title || `${post.title} | Marques Invest`;
+    setMeta("description", post.seo_description || post.excerpt || post.title);
   }
 
   function renderMissing() {

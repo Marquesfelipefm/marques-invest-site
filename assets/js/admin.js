@@ -12,6 +12,9 @@
   const contentForm = document.querySelector("#admin-content-form");
   const postForm = document.querySelector("#admin-post-form");
   const postResetButton = document.querySelector("#admin-post-reset");
+  const postTitleInput = postForm?.querySelector("[name='title']");
+  const postSlugInput = postForm?.querySelector("[name='slug']");
+  const postSeoTitleInput = postForm?.querySelector("[name='seo_title']");
   const agendaForm = document.querySelector("#admin-agenda-form");
   const agendaResetButton = document.querySelector("#admin-agenda-reset");
   const refreshButton = document.querySelector("#admin-refresh");
@@ -31,6 +34,8 @@
   let agendaItems = [];
   let newsletterEntries = [];
   let contactEntries = [];
+  let lastAutoPostSlug = "";
+  let lastAutoSeoTitle = "";
 
   if (!loginForm || !window.MarquesSupabase || !window.MARQUES_DEFAULT_CONTENT) {
     return;
@@ -224,6 +229,32 @@
   function resetPostForm() {
     postForm.reset();
     postForm.querySelector("[name='id']").value = "";
+    if (postSeoTitleInput) {
+      postSeoTitleInput.value = "";
+    }
+    lastAutoPostSlug = "";
+    lastAutoSeoTitle = "";
+  }
+
+  function syncPostDerivedFields() {
+    if (!postTitleInput || !postSlugInput || !postSeoTitleInput) {
+      return;
+    }
+
+    const rawTitle = postTitleInput.value.trim();
+    const nextSlug = slugify(rawTitle);
+    const nextSeoTitle = rawTitle ? `${rawTitle} | Marques Invest` : "";
+
+    if (!postSlugInput.value.trim() || postSlugInput.value === lastAutoPostSlug) {
+      postSlugInput.value = nextSlug;
+    }
+
+    if (!postSeoTitleInput.value.trim() || postSeoTitleInput.value === lastAutoSeoTitle) {
+      postSeoTitleInput.value = nextSeoTitle;
+    }
+
+    lastAutoPostSlug = nextSlug;
+    lastAutoSeoTitle = nextSeoTitle;
   }
 
   function resetAgendaForm() {
@@ -253,6 +284,7 @@
                   ${escapeHtml(post.status)}
                 </span>
                 <span class="admin-chip">${escapeHtml(post.category)}</span>
+                ${post.featured ? '<span class="admin-chip is-live">destaque</span>' : ""}
               </div>
             </div>
             <div class="admin-item-meta">
@@ -391,8 +423,14 @@
     postForm.querySelector("[name='published_at']").value = toDatetimeLocal(item.published_at);
     postForm.querySelector("[name='external_url']").value = item.external_url || "";
     postForm.querySelector("[name='cover_url']").value = item.cover_url || "";
+    postForm.querySelector("[name='cover_alt']").value = item.cover_alt || "";
     postForm.querySelector("[name='excerpt']").value = item.excerpt || "";
+    postForm.querySelector("[name='seo_title']").value = item.seo_title || "";
+    postForm.querySelector("[name='seo_description']").value = item.seo_description || "";
+    postForm.querySelector("[name='featured']").checked = Boolean(item.featured);
     postForm.querySelector("[name='content']").value = item.content || "";
+    lastAutoPostSlug = item.slug || slugify(item.title || "post");
+    lastAutoSeoTitle = item.seo_title || `${item.title || ""} | Marques Invest`;
     switchTab("posts");
   }
 
@@ -548,7 +586,11 @@
         published_at: publishedAt,
         external_url: formData.get("external_url"),
         cover_url: formData.get("cover_url"),
+        cover_alt: formData.get("cover_alt"),
         excerpt: formData.get("excerpt"),
+        seo_title: formData.get("seo_title"),
+        seo_description: formData.get("seo_description"),
+        featured: postForm.querySelector("[name='featured']").checked,
         content: formData.get("content"),
       });
 
@@ -585,6 +627,10 @@
 
   postResetButton.addEventListener("click", resetPostForm);
   agendaResetButton.addEventListener("click", resetAgendaForm);
+
+  if (postTitleInput) {
+    postTitleInput.addEventListener("input", syncPostDerivedFields);
+  }
 
   refreshButton.addEventListener("click", async () => {
     await loadAllData();

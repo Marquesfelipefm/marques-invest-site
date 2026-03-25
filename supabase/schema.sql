@@ -32,6 +32,12 @@ create table if not exists public.posts (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+alter table public.posts
+add column if not exists seo_title text,
+add column if not exists seo_description text,
+add column if not exists cover_alt text,
+add column if not exists featured boolean not null default false;
+
 create table if not exists public.agenda_events (
   id uuid primary key default gen_random_uuid(),
   title text not null,

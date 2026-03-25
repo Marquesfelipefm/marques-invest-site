@@ -1,5 +1,8 @@
 (function () {
   const SESSION_KEY = "marques-supabase-session";
+  const POST_BASE_SELECT =
+    "id,title,slug,excerpt,content,category,source,external_url,cover_url,status,published_at,created_at,updated_at";
+  const POST_EDITORIAL_SELECT = `${POST_BASE_SELECT},seo_title,seo_description,cover_alt,featured`;
 
   function getConfig() {
     const config = window.MARQUES_SUPABASE_CONFIG || {};
@@ -407,41 +410,69 @@
       filters.push({ column: "category", operator: "eq", value: category });
     }
 
-    return list("posts", {
-      select:
-        "id,title,slug,excerpt,content,category,source,external_url,cover_url,status,published_at,created_at,updated_at",
-      filters,
-      order: "published_at.desc",
-      limit: 24,
-    });
+    try {
+      return await list("posts", {
+        select: POST_EDITORIAL_SELECT,
+        filters,
+        order: "published_at.desc",
+        limit: 24,
+      });
+    } catch (error) {
+      return list("posts", {
+        select: POST_BASE_SELECT,
+        filters,
+        order: "published_at.desc",
+        limit: 24,
+      });
+    }
   }
 
   async function getPublicPostBySlug(slug) {
-    const rows = await list("posts", {
-      select:
-        "id,title,slug,excerpt,content,category,source,external_url,cover_url,status,published_at,created_at,updated_at",
-      filters: [
-        { column: "status", operator: "eq", value: "published" },
-        { column: "slug", operator: "eq", value: slug },
-      ],
-      limit: 1,
-    });
+    let rows;
+
+    try {
+      rows = await list("posts", {
+        select: POST_EDITORIAL_SELECT,
+        filters: [
+          { column: "status", operator: "eq", value: "published" },
+          { column: "slug", operator: "eq", value: slug },
+        ],
+        limit: 1,
+      });
+    } catch (error) {
+      rows = await list("posts", {
+        select: POST_BASE_SELECT,
+        filters: [
+          { column: "status", operator: "eq", value: "published" },
+          { column: "slug", operator: "eq", value: slug },
+        ],
+        limit: 1,
+      });
+    }
 
     return Array.isArray(rows) ? rows[0] || null : null;
   }
 
   async function listAdminPosts() {
-    return list("posts", {
-      select:
-        "id,title,slug,excerpt,content,category,source,external_url,cover_url,status,published_at,created_at,updated_at",
-      order: "updated_at.desc",
-      limit: 100,
-      requireAuth: true,
-    });
+    try {
+      return await list("posts", {
+        select: POST_EDITORIAL_SELECT,
+        order: "updated_at.desc",
+        limit: 100,
+        requireAuth: true,
+      });
+    } catch (error) {
+      return list("posts", {
+        select: POST_BASE_SELECT,
+        order: "updated_at.desc",
+        limit: 100,
+        requireAuth: true,
+      });
+    }
   }
 
   async function savePost(values) {
-    const payload = {
+    const basePayload = {
       title: values.title,
       slug: values.slug,
       excerpt: values.excerpt,
@@ -454,11 +485,31 @@
       published_at: values.published_at || null,
     };
 
-    if (values.id) {
-      return update("posts", payload, [{ column: "id", value: values.id }], { requireAuth: true });
-    }
+    const editorialPayload = {
+      ...basePayload,
+      seo_title: values.seo_title || null,
+      seo_description: values.seo_description || null,
+      cover_alt: values.cover_alt || null,
+      featured: Boolean(values.featured),
+    };
 
-    return insert("posts", payload, { requireAuth: true });
+    try {
+      if (values.id) {
+        return await update("posts", editorialPayload, [{ column: "id", value: values.id }], {
+          requireAuth: true,
+        });
+      }
+
+      return await insert("posts", editorialPayload, { requireAuth: true });
+    } catch (error) {
+      if (values.id) {
+        return update("posts", basePayload, [{ column: "id", value: values.id }], {
+          requireAuth: true,
+        });
+      }
+
+      return insert("posts", basePayload, { requireAuth: true });
+    }
   }
 
   async function deletePost(id) {

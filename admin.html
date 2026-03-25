@@ -337,8 +337,27 @@
                         <input type="url" name="cover_url" placeholder="https://..." />
                       </label>
                       <label class="field field-full">
+                        <span>Texto alternativo da capa</span>
+                        <input type="text" name="cover_alt" placeholder="Descricao curta da imagem" />
+                      </label>
+                      <label class="field field-full field-checkbox">
+                        <input type="checkbox" name="featured" />
+                        <div>
+                          <span>Post em destaque</span>
+                          <small>Quando marcado, esta materia ganha prioridade no topo da pagina de noticias.</small>
+                        </div>
+                      </label>
+                      <label class="field field-full">
                         <span>Resumo</span>
                         <textarea name="excerpt" required></textarea>
+                      </label>
+                      <label class="field field-full">
+                        <span>SEO title</span>
+                        <input type="text" name="seo_title" placeholder="Titulo otimizado para navegador e busca" />
+                      </label>
+                      <label class="field field-full">
+                        <span>SEO description</span>
+                        <textarea name="seo_description" placeholder="Descricao curta para a materia"></textarea>
                       </label>
                       <label class="field field-full">
                         <span>Conteudo</span>
