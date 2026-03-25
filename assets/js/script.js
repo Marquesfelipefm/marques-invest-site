@@ -207,6 +207,9 @@ const fallbackNews = [
 const newsLead = document.querySelector("#news-lead");
 const newsGrid = document.querySelector("#news-grid");
 const newsStatus = document.querySelector("#news-status");
+const analysisMarquesSection = document.querySelector("#analysis-marques-section");
+const analysisMarquesGrid = document.querySelector("#analysis-marques-grid");
+const analysisStatus = document.querySelector("#analysis-status");
 const marketBoard = document.querySelector("#market-board");
 const marketStatus = document.querySelector("#market-status");
 const agendaList = document.querySelector("#agenda-list");
@@ -309,6 +312,28 @@ function getShareIcon(network) {
 
 function getCategoryLabel(category) {
   return categoryDefinitions[category]?.label || "Noticias";
+}
+
+function normalizeText(value) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+function inferPostType(item) {
+  const declaredType = normalizeText(item.contentType || item.content_type);
+
+  if (declaredType === "analysis") {
+    return "analysis";
+  }
+
+  if (normalizeText(item.source) === "analise marques") {
+    return "analysis";
+  }
+
+  return "news";
 }
 
 function formatPublishedAt(value) {
@@ -476,6 +501,7 @@ function normalizeNewsItems(items, activeCategory) {
     coverUrl: item.coverUrl || item.cover_url || "",
     coverAlt: item.coverAlt || item.cover_alt || "",
     featured: Boolean(item.featured),
+    contentType: "news",
     isExternal: true,
   }));
 }
@@ -492,6 +518,7 @@ function normalizePosts(items, activeCategory) {
     coverUrl: item.cover_url || "",
     coverAlt: item.cover_alt || "",
     featured: Boolean(item.featured),
+    contentType: inferPostType(item),
     isExternal: false,
   }));
 }
@@ -614,7 +641,81 @@ function renderNews(items) {
         </article>
       `
     )
-    .join("");
+      .join("");
+}
+
+function renderAnalysisMarques(items) {
+  if (!analysisMarquesGrid || !analysisMarquesSection) {
+    return;
+  }
+
+  if (!items.length) {
+    analysisMarquesGrid.classList.add("is-single");
+    analysisMarquesGrid.innerHTML = `
+      <article class="analysis-marques-empty">
+        <span class="tag">Analise Marques</span>
+        <h3>Publique seu primeiro artigo autoral.</h3>
+        <p>
+          Os artigos cadastrados nessa linha editorial aparecem aqui, no cabecalho da pagina de
+          noticias, com o mesmo padrao visual e link para leitura completa.
+        </p>
+      </article>
+    `;
+    return;
+  }
+
+  const leadItem = items.find((item) => item.featured) || items[0];
+  const secondaryItems = items.filter((item) => item !== leadItem).slice(0, 3);
+  const leadMarkup = `
+    <article class="analysis-marques-lead">
+      ${getNewsCoverMarkup(leadItem, true)}
+      <div class="analysis-marques-copy">
+        <span class="tag">Analise Marques</span>
+        <div class="news-meta news-meta--lead">
+          <span>${escapeHtml(leadItem.source || "Analise Marques")}</span>
+          <span>${escapeHtml(formatPublishedAt(leadItem.publishedAt))}</span>
+        </div>
+        <h3>${escapeHtml(leadItem.title)}</h3>
+        <p>${escapeHtml(leadItem.description)}</p>
+        <div class="analysis-marques-actions">
+          <span class="news-category-chip">${escapeHtml(getCategoryLabel(leadItem.category))}</span>
+          <a class="button button-primary" href="${escapeHtml(leadItem.url)}">Ler artigo</a>
+        </div>
+      </div>
+    </article>
+  `;
+
+  if (!secondaryItems.length) {
+    analysisMarquesGrid.classList.add("is-single");
+    analysisMarquesGrid.innerHTML = leadMarkup;
+    return;
+  }
+
+  analysisMarquesGrid.classList.remove("is-single");
+  analysisMarquesGrid.innerHTML = `
+    ${leadMarkup}
+    <div class="analysis-marques-stack">
+      ${secondaryItems
+        .map(
+          (item) => `
+            <article class="analysis-marques-card">
+              ${item.coverUrl ? getNewsCoverMarkup(item) : ""}
+              <div class="news-meta">
+                <span>${escapeHtml(item.source || "Analise Marques")}</span>
+                <span>${escapeHtml(formatPublishedAt(item.publishedAt))}</span>
+              </div>
+              <h4>${escapeHtml(item.title)}</h4>
+              <p>${escapeHtml(item.description)}</p>
+              <div class="analysis-marques-actions">
+                <span class="news-category-chip">${escapeHtml(getCategoryLabel(item.category))}</span>
+                <a class="news-link" href="${escapeHtml(item.url)}">Ler artigo</a>
+              </div>
+            </article>
+          `
+        )
+        .join("")}
+    </div>
+  `;
 }
 
 function renderAgenda(items) {
@@ -968,8 +1069,13 @@ async function loadNews(category) {
 
   if (window.MarquesSupabase?.isConfigured()) {
     try {
-      const remotePosts = await window.MarquesSupabase.listPublicPosts(category);
-      const normalizedPosts = normalizePosts(remotePosts || [], category);
+      const remotePosts = await window.MarquesSupabase.listPublicPosts({
+        category,
+        contentType: "news",
+      });
+      const normalizedPosts = normalizePosts(remotePosts || [], category).filter(
+        (item) => item.contentType === "news"
+      );
 
       if (normalizedPosts.length) {
         renderNews(normalizedPosts);
@@ -1008,6 +1114,40 @@ async function loadNews(category) {
       "Noticias de referencia exibidas no momento. A atualizacao automatica sera habilitada em breve.",
       "fallback"
     );
+  }
+}
+
+async function loadAnalysisMarques() {
+  if (!analysisMarquesGrid || !analysisStatus) {
+    return;
+  }
+
+  analysisStatus.textContent = "Carregando os artigos autorais da Analise Marques...";
+
+  if (!window.MarquesSupabase?.isConfigured()) {
+    renderAnalysisMarques([]);
+    analysisStatus.textContent =
+      "Conecte o painel online para publicar artigos autorais na area Analise Marques.";
+    return;
+  }
+
+  try {
+    const analysisPosts = await window.MarquesSupabase.listPublicPosts({
+      contentType: "analysis",
+      limit: 6,
+    });
+    const normalizedPosts = normalizePosts(analysisPosts || [], "latest").filter(
+      (item) => item.contentType === "analysis"
+    );
+
+    renderAnalysisMarques(normalizedPosts);
+    analysisStatus.textContent = normalizedPosts.length
+      ? "Artigos autorais publicados pela Marques Invest."
+      : "Publique seu primeiro artigo na area Analise Marques pelo painel.";
+  } catch (error) {
+    renderAnalysisMarques([]);
+    analysisStatus.textContent =
+      "Nao foi possivel carregar os artigos autorais agora. Tente atualizar a pagina em instantes.";
   }
 }
 
@@ -1188,6 +1328,10 @@ if (!marketBoard) {
 if (newsGrid) {
   renderNews(getFallbackNews(currentCategory));
   loadNews(currentCategory);
+}
+
+if (analysisMarquesGrid) {
+  loadAnalysisMarques();
 }
 
 if (agendaList) {

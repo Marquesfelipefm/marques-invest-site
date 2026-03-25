@@ -15,11 +15,26 @@
   const postTitleInput = postForm?.querySelector("[name='title']");
   const postSlugInput = postForm?.querySelector("[name='slug']");
   const postSeoTitleInput = postForm?.querySelector("[name='seo_title']");
+  const postCoverUrlInput = postForm?.querySelector("[name='cover_url']");
+  const postCoverAltInput = postForm?.querySelector("[name='cover_alt']");
+  const postCoverFileInput = document.querySelector("#admin-post-cover-file");
+  const postCoverPreview = document.querySelector("#admin-post-cover-preview");
+  const analysisForm = document.querySelector("#admin-analysis-form");
+  const analysisResetButton = document.querySelector("#admin-analysis-reset");
+  const analysisTemplateButton = document.querySelector("#admin-analysis-template");
+  const analysisTitleInput = analysisForm?.querySelector("[name='title']");
+  const analysisSlugInput = analysisForm?.querySelector("[name='slug']");
+  const analysisSeoTitleInput = analysisForm?.querySelector("[name='seo_title']");
+  const analysisCoverUrlInput = analysisForm?.querySelector("[name='cover_url']");
+  const analysisCoverAltInput = analysisForm?.querySelector("[name='cover_alt']");
+  const analysisCoverFileInput = document.querySelector("#admin-analysis-cover-file");
+  const analysisCoverPreview = document.querySelector("#admin-analysis-cover-preview");
   const agendaForm = document.querySelector("#admin-agenda-form");
   const agendaResetButton = document.querySelector("#admin-agenda-reset");
   const refreshButton = document.querySelector("#admin-refresh");
   const logoutButton = document.querySelector("#admin-logout");
   const postList = document.querySelector("#admin-post-list");
+  const analysisList = document.querySelector("#admin-analysis-list");
   const agendaList = document.querySelector("#admin-agenda-list");
   const newsletterList = document.querySelector("#admin-newsletter-list");
   const contactList = document.querySelector("#admin-contact-list");
@@ -34,8 +49,34 @@
   let agendaItems = [];
   let newsletterEntries = [];
   let contactEntries = [];
-  let lastAutoPostSlug = "";
-  let lastAutoSeoTitle = "";
+  let postDraftState = {
+    lastSlug: "",
+    lastSeoTitle: "",
+  };
+  let analysisDraftState = {
+    lastSlug: "",
+    lastSeoTitle: "",
+  };
+
+  const ANALYSIS_TEMPLATE = [
+    "## Tese central",
+    "Resuma em uma frase a principal leitura do artigo.",
+    "",
+    "## O que mudou",
+    "- Ponto principal 1",
+    "- Ponto principal 2",
+    "- Ponto principal 3",
+    "",
+    "## Impacto patrimonial",
+    "Explique como o tema afeta carteira, prazo, liquidez e gestao de risco.",
+    "",
+    "## O que observar agora",
+    "- Variavel 1",
+    "- Variavel 2",
+    "",
+    "## Leitura Marques",
+    "Feche com a implicacao pratica para patrimonio e o proximo passo do investidor.",
+  ].join("\n");
 
   if (!loginForm || !window.MarquesSupabase || !window.MARQUES_DEFAULT_CONTENT) {
     return;
@@ -134,6 +175,47 @@
     return path.split(".").reduce((current, key) => current?.[key], target);
   }
 
+  function normalizeText(value) {
+    return String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim();
+  }
+
+  function inferPostType(post) {
+    const declaredType = normalizeText(post?.content_type);
+
+    if (declaredType === "analysis") {
+      return "analysis";
+    }
+
+    if (normalizeText(post?.source) === "analise marques") {
+      return "analysis";
+    }
+
+    return "news";
+  }
+
+  function getPostsByType(type) {
+    return posts.filter((post) => inferPostType(post) === type);
+  }
+
+  function setFieldValue(form, name, value) {
+    const field = form?.querySelector(`[name='${name}']`);
+
+    if (!field) {
+      return;
+    }
+
+    if (field.type === "checkbox") {
+      field.checked = Boolean(value);
+      return;
+    }
+
+    field.value = typeof value === "string" ? value : value || "";
+  }
+
   function assignPath(target, path, value) {
     const keys = path.split(".");
     let current = target;
@@ -226,35 +308,149 @@
     });
   }
 
-  function resetPostForm() {
-    postForm.reset();
-    postForm.querySelector("[name='id']").value = "";
-    if (postSeoTitleInput) {
-      postSeoTitleInput.value = "";
-    }
-    lastAutoPostSlug = "";
-    lastAutoSeoTitle = "";
-  }
-
-  function syncPostDerivedFields() {
-    if (!postTitleInput || !postSlugInput || !postSeoTitleInput) {
+  function updateCoverPreview(previewElement, url, altText, label) {
+    if (!previewElement) {
       return;
     }
 
-    const rawTitle = postTitleInput.value.trim();
+    if (!url) {
+      previewElement.hidden = true;
+      previewElement.innerHTML = "";
+      return;
+    }
+
+    previewElement.hidden = false;
+    previewElement.innerHTML = `
+      <span class="cover-preview-label">${escapeHtml(label)}</span>
+      <img src="${escapeHtml(url)}" alt="${escapeHtml(altText || label)}" loading="lazy" />
+    `;
+  }
+
+  async function fileToDataUrl(file) {
+    if (!file || !file.type.startsWith("image/")) {
+      throw new Error("Selecione uma imagem valida para a capa.");
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+
+    try {
+      const image = await new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("Nao foi possivel abrir a imagem enviada."));
+        img.src = objectUrl;
+      });
+
+      const maxWidth = 1600;
+      const ratio = Math.min(1, maxWidth / image.width);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(image.width * ratio));
+      canvas.height = Math.max(1, Math.round(image.height * ratio));
+
+      const context = canvas.getContext("2d");
+
+      if (!context) {
+        throw new Error("Nao foi possivel preparar a imagem da capa.");
+      }
+
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      if (file.type === "image/png") {
+        return canvas.toDataURL("image/png");
+      }
+
+      return canvas.toDataURL("image/jpeg", 0.84);
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
+  }
+
+  function attachCoverField(form, fileInput, urlInput, altInput, previewElement, label) {
+    if (!form || !urlInput || !previewElement) {
+      return;
+    }
+
+    const syncPreview = () => {
+      updateCoverPreview(previewElement, urlInput.value.trim(), altInput?.value.trim(), label);
+    };
+
+    urlInput.addEventListener("input", syncPreview);
+
+    if (altInput) {
+      altInput.addEventListener("input", syncPreview);
+    }
+
+    if (fileInput) {
+      fileInput.addEventListener("change", async () => {
+        const file = fileInput.files?.[0];
+
+        if (!file) {
+          syncPreview();
+          return;
+        }
+
+        try {
+          setPanelStatus("Otimizando imagem de capa...");
+          const dataUrl = await fileToDataUrl(file);
+          urlInput.value = dataUrl;
+
+          if (altInput && !altInput.value.trim()) {
+            const baseName = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
+            altInput.value = baseName ? `Capa: ${baseName}` : "";
+          }
+
+          syncPreview();
+          setPanelStatus("Imagem de capa pronta para publicacao.", "success");
+        } catch (error) {
+          setPanelStatus(error.message || "Falha ao preparar a imagem da capa.", "error");
+        } finally {
+          fileInput.value = "";
+        }
+      });
+    }
+
+    syncPreview();
+  }
+
+  function resetEditorialForm(form, state, previewElement) {
+    if (!form) {
+      return;
+    }
+
+    form.reset();
+    setFieldValue(form, "id", "");
+
+    if (state) {
+      state.lastSlug = "";
+      state.lastSeoTitle = "";
+    }
+
+    if (previewElement) {
+      updateCoverPreview(previewElement, "", "", "Capa selecionada");
+    }
+  }
+
+  function syncEditorialDerivedFields(titleInput, slugInput, seoTitleInput, state) {
+    if (!titleInput || !slugInput || !seoTitleInput || !state) {
+      return;
+    }
+
+    const rawTitle = titleInput.value.trim();
     const nextSlug = slugify(rawTitle);
     const nextSeoTitle = rawTitle ? `${rawTitle} | Marques Invest` : "";
 
-    if (!postSlugInput.value.trim() || postSlugInput.value === lastAutoPostSlug) {
-      postSlugInput.value = nextSlug;
+    if (!slugInput.value.trim() || slugInput.value === state.lastSlug) {
+      slugInput.value = nextSlug;
     }
 
-    if (!postSeoTitleInput.value.trim() || postSeoTitleInput.value === lastAutoSeoTitle) {
-      postSeoTitleInput.value = nextSeoTitle;
+    if (!seoTitleInput.value.trim() || seoTitleInput.value === state.lastSeoTitle) {
+      seoTitleInput.value = nextSeoTitle;
     }
 
-    lastAutoPostSlug = nextSlug;
-    lastAutoSeoTitle = nextSeoTitle;
+    state.lastSlug = nextSlug;
+    state.lastSeoTitle = nextSeoTitle;
   }
 
   function resetAgendaForm() {
@@ -262,15 +458,22 @@
     agendaForm.querySelector("[name='id']").value = "";
   }
 
-  function renderPosts() {
-    metricPosts.textContent = String(posts.length);
-
-    if (!posts.length) {
-      postList.innerHTML = '<div class="admin-empty">Nenhum post cadastrado ainda.</div>';
+  function renderPostCollection(listElement, items, options = {}) {
+    if (!listElement) {
       return;
     }
 
-    postList.innerHTML = posts
+    if (!items.length) {
+      listElement.innerHTML = `<div class="admin-empty">${escapeHtml(
+        options.emptyMessage || "Nenhuma publicacao cadastrada ainda."
+      )}</div>`;
+      return;
+    }
+
+    const openLabel = options.openLabel || "Abrir post";
+    const typeChip = options.typeChip ? `<span class="admin-chip">${escapeHtml(options.typeChip)}</span>` : "";
+
+    listElement.innerHTML = items
       .map(
         (post) => `
           <article class="admin-item">
@@ -284,6 +487,7 @@
                   ${escapeHtml(post.status)}
                 </span>
                 <span class="admin-chip">${escapeHtml(post.category)}</span>
+                ${typeChip}
                 ${post.featured ? '<span class="admin-chip is-live">destaque</span>' : ""}
               </div>
             </div>
@@ -297,7 +501,7 @@
                 post.status === "published"
                   ? `
                     <a class="button button-secondary" href="${getPublicPostUrl(post)}" target="_blank" rel="noreferrer">
-                      Abrir post
+                      ${escapeHtml(openLabel)}
                     </a>
                   `
                   : ""
@@ -309,6 +513,22 @@
         `
       )
       .join("");
+  }
+
+  function renderPosts() {
+    metricPosts.textContent = String(posts.length);
+
+    renderPostCollection(postList, getPostsByType("news"), {
+      emptyMessage: "Nenhuma noticia diaria cadastrada ainda.",
+      openLabel: "Abrir noticia",
+      typeChip: "noticia",
+    });
+
+    renderPostCollection(analysisList, getPostsByType("analysis"), {
+      emptyMessage: "Nenhum artigo da Analise Marques cadastrado ainda.",
+      openLabel: "Abrir artigo",
+      typeChip: "analise",
+    });
   }
 
   function renderAgenda() {
@@ -407,6 +627,41 @@
       .join("");
   }
 
+  function fillEditorialForm(form, item, state, previewElement) {
+    if (!form || !item) {
+      return;
+    }
+
+    setFieldValue(form, "id", item.id);
+    setFieldValue(form, "title", item.title || "");
+    setFieldValue(form, "slug", item.slug || "");
+    setFieldValue(form, "category", item.category || "markets");
+    setFieldValue(form, "status", item.status || "draft");
+    setFieldValue(form, "source", item.source || "");
+    setFieldValue(form, "published_at", toDatetimeLocal(item.published_at));
+    setFieldValue(form, "external_url", item.external_url || "");
+    setFieldValue(form, "cover_url", item.cover_url || "");
+    setFieldValue(form, "cover_alt", item.cover_alt || "");
+    setFieldValue(form, "excerpt", item.excerpt || "");
+    setFieldValue(form, "seo_title", item.seo_title || "");
+    setFieldValue(form, "seo_description", item.seo_description || "");
+    setFieldValue(form, "featured", Boolean(item.featured));
+    setFieldValue(form, "content", item.content || "");
+    setFieldValue(form, "content_type", inferPostType(item));
+
+    if (state) {
+      state.lastSlug = item.slug || slugify(item.title || "post");
+      state.lastSeoTitle = item.seo_title || `${item.title || ""} | Marques Invest`;
+    }
+
+    updateCoverPreview(
+      previewElement,
+      item.cover_url || "",
+      item.cover_alt || "",
+      inferPostType(item) === "analysis" ? "Capa do artigo" : "Capa da noticia"
+    );
+  }
+
   function loadPostIntoForm(id) {
     const item = posts.find((post) => post.id === id);
 
@@ -414,23 +669,13 @@
       return;
     }
 
-    postForm.querySelector("[name='id']").value = item.id;
-    postForm.querySelector("[name='title']").value = item.title || "";
-    postForm.querySelector("[name='slug']").value = item.slug || "";
-    postForm.querySelector("[name='category']").value = item.category || "markets";
-    postForm.querySelector("[name='status']").value = item.status || "draft";
-    postForm.querySelector("[name='source']").value = item.source || "";
-    postForm.querySelector("[name='published_at']").value = toDatetimeLocal(item.published_at);
-    postForm.querySelector("[name='external_url']").value = item.external_url || "";
-    postForm.querySelector("[name='cover_url']").value = item.cover_url || "";
-    postForm.querySelector("[name='cover_alt']").value = item.cover_alt || "";
-    postForm.querySelector("[name='excerpt']").value = item.excerpt || "";
-    postForm.querySelector("[name='seo_title']").value = item.seo_title || "";
-    postForm.querySelector("[name='seo_description']").value = item.seo_description || "";
-    postForm.querySelector("[name='featured']").checked = Boolean(item.featured);
-    postForm.querySelector("[name='content']").value = item.content || "";
-    lastAutoPostSlug = item.slug || slugify(item.title || "post");
-    lastAutoSeoTitle = item.seo_title || `${item.title || ""} | Marques Invest`;
+    if (inferPostType(item) === "analysis") {
+      fillEditorialForm(analysisForm, item, analysisDraftState, analysisCoverPreview);
+      switchTab("analysis");
+      return;
+    }
+
+    fillEditorialForm(postForm, item, postDraftState, postCoverPreview);
     switchTab("posts");
   }
 
@@ -497,6 +742,39 @@
         "error"
       );
     }
+  }
+
+  async function handleEditorialSubmit(form, state, options = {}) {
+    const formData = new FormData(form);
+    const title = String(formData.get("title") || "").trim();
+    const slug = String(formData.get("slug") || slugify(title)).trim();
+    const status = formData.get("status");
+    const publishedAt =
+      status === "published"
+        ? fromDatetimeLocal(formData.get("published_at")) || new Date().toISOString()
+        : fromDatetimeLocal(formData.get("published_at"));
+
+    await window.MarquesSupabase.savePost({
+      id: formData.get("id"),
+      title,
+      slug,
+      category: formData.get("category"),
+      status,
+      content_type: formData.get("content_type") || options.contentType || "news",
+      source: formData.get("source") || options.source || "Marques Invest",
+      published_at: publishedAt,
+      external_url: formData.get("external_url"),
+      cover_url: formData.get("cover_url"),
+      cover_alt: formData.get("cover_alt"),
+      excerpt: formData.get("excerpt"),
+      seo_title: formData.get("seo_title"),
+      seo_description: formData.get("seo_description"),
+      featured: form.querySelector("[name='featured']")?.checked,
+      content: formData.get("content"),
+    });
+
+    resetEditorialForm(form, state, options.previewElement);
+    await loadCollections();
   }
 
   loginForm.addEventListener("submit", async (event) => {
@@ -566,39 +844,30 @@
 
   postForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const formData = new FormData(postForm);
-    const title = formData.get("title");
-    const slug = formData.get("slug") || slugify(title);
-    const status = formData.get("status");
-    const publishedAt =
-      status === "published"
-        ? fromDatetimeLocal(formData.get("published_at")) || new Date().toISOString()
-        : fromDatetimeLocal(formData.get("published_at"));
 
     try {
-      await window.MarquesSupabase.savePost({
-        id: formData.get("id"),
-        title,
-        slug,
-        category: formData.get("category"),
-        status,
-        source: formData.get("source"),
-        published_at: publishedAt,
-        external_url: formData.get("external_url"),
-        cover_url: formData.get("cover_url"),
-        cover_alt: formData.get("cover_alt"),
-        excerpt: formData.get("excerpt"),
-        seo_title: formData.get("seo_title"),
-        seo_description: formData.get("seo_description"),
-        featured: postForm.querySelector("[name='featured']").checked,
-        content: formData.get("content"),
+      await handleEditorialSubmit(postForm, postDraftState, {
+        contentType: "news",
+        previewElement: postCoverPreview,
       });
-
-      resetPostForm();
-      await loadCollections();
-      setPanelStatus("Post salvo com sucesso.", "success");
+      setPanelStatus("Noticia salva com sucesso.", "success");
     } catch (error) {
-      setPanelStatus(error.message || "Falha ao salvar o post.", "error");
+      setPanelStatus(error.message || "Falha ao salvar a noticia.", "error");
+    }
+  });
+
+  analysisForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    try {
+      await handleEditorialSubmit(analysisForm, analysisDraftState, {
+        contentType: "analysis",
+        source: "Analise Marques",
+        previewElement: analysisCoverPreview,
+      });
+      setPanelStatus("Artigo da Analise Marques salvo com sucesso.", "success");
+    } catch (error) {
+      setPanelStatus(error.message || "Falha ao salvar o artigo.", "error");
     }
   });
 
@@ -625,12 +894,75 @@
     }
   });
 
-  postResetButton.addEventListener("click", resetPostForm);
+  postResetButton.addEventListener("click", () => {
+    resetEditorialForm(postForm, postDraftState, postCoverPreview);
+  });
+  analysisResetButton.addEventListener("click", () => {
+    resetEditorialForm(analysisForm, analysisDraftState, analysisCoverPreview);
+  });
   agendaResetButton.addEventListener("click", resetAgendaForm);
 
   if (postTitleInput) {
-    postTitleInput.addEventListener("input", syncPostDerivedFields);
+    postTitleInput.addEventListener("input", () => {
+      syncEditorialDerivedFields(postTitleInput, postSlugInput, postSeoTitleInput, postDraftState);
+    });
   }
+
+  if (analysisTitleInput) {
+    analysisTitleInput.addEventListener("input", () => {
+      syncEditorialDerivedFields(
+        analysisTitleInput,
+        analysisSlugInput,
+        analysisSeoTitleInput,
+        analysisDraftState
+      );
+    });
+  }
+
+  if (analysisTemplateButton) {
+    analysisTemplateButton.addEventListener("click", () => {
+      const contentField = analysisForm.querySelector("[name='content']");
+
+      if (!contentField) {
+        return;
+      }
+
+      if (contentField.value.trim()) {
+        const confirmed = window.confirm(
+          "Esse artigo ja tem conteudo. Deseja substituir pelo modelo padrao Analise Marques?"
+        );
+
+        if (!confirmed) {
+          return;
+        }
+      }
+
+      contentField.value = ANALYSIS_TEMPLATE;
+      if (!analysisForm.querySelector("[name='excerpt']").value.trim()) {
+        analysisForm.querySelector("[name='excerpt']").value =
+          "Resumo executivo com a tese central, o que mudou e a implicacao patrimonial da leitura.";
+      }
+      setPanelStatus("Modelo editorial Marques aplicado ao artigo.", "success");
+    });
+  }
+
+  attachCoverField(
+    postForm,
+    postCoverFileInput,
+    postCoverUrlInput,
+    postCoverAltInput,
+    postCoverPreview,
+    "Capa da noticia"
+  );
+
+  attachCoverField(
+    analysisForm,
+    analysisCoverFileInput,
+    analysisCoverUrlInput,
+    analysisCoverAltInput,
+    analysisCoverPreview,
+    "Capa do artigo"
+  );
 
   refreshButton.addEventListener("click", async () => {
     await loadAllData();
@@ -642,7 +974,7 @@
     setPanelStatus("Sessao encerrada.");
   });
 
-  postList.addEventListener("click", async (event) => {
+  async function handlePostListAction(event) {
     const editId = event.target.closest("[data-post-edit]")?.dataset.postEdit;
     const deleteId = event.target.closest("[data-post-delete]")?.dataset.postDelete;
 
@@ -668,7 +1000,10 @@
     } catch (error) {
       setPanelStatus(error.message || "Falha ao excluir o post.", "error");
     }
-  });
+  }
+
+  postList.addEventListener("click", handlePostListAction);
+  analysisList.addEventListener("click", handlePostListAction);
 
   agendaList.addEventListener("click", async (event) => {
     const editId = event.target.closest("[data-agenda-edit]")?.dataset.agendaEdit;

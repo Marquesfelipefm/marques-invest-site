@@ -33,6 +33,7 @@ create table if not exists public.posts (
 );
 
 alter table public.posts
+add column if not exists content_type text not null default 'news',
 add column if not exists seo_title text,
 add column if not exists seo_description text,
 add column if not exists cover_alt text,

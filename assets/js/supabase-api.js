@@ -2,7 +2,59 @@
   const SESSION_KEY = "marques-supabase-session";
   const POST_BASE_SELECT =
     "id,title,slug,excerpt,content,category,source,external_url,cover_url,status,published_at,created_at,updated_at";
-  const POST_EDITORIAL_SELECT = `${POST_BASE_SELECT},seo_title,seo_description,cover_alt,featured`;
+  const POST_EDITORIAL_SELECT = `${POST_BASE_SELECT},seo_title,seo_description,cover_alt,featured,content_type`;
+
+  function normalizeText(value) {
+    return String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim();
+  }
+
+  function inferPostType(post) {
+    if (normalizeText(post?.content_type) === "analysis") {
+      return "analysis";
+    }
+
+    if (normalizeText(post?.source) === "analise marques") {
+      return "analysis";
+    }
+
+    return "news";
+  }
+
+  function parsePostListArgs(categoryOrOptions, maybeOptions = {}) {
+    if (categoryOrOptions && typeof categoryOrOptions === "object") {
+      return {
+        category: categoryOrOptions.category || null,
+        contentType: categoryOrOptions.contentType || null,
+        limit: categoryOrOptions.limit || null,
+        requireAuth: Boolean(categoryOrOptions.requireAuth),
+      };
+    }
+
+    return {
+      category: categoryOrOptions || null,
+      contentType: maybeOptions.contentType || null,
+      limit: maybeOptions.limit || null,
+      requireAuth: Boolean(maybeOptions.requireAuth),
+    };
+  }
+
+  function filterPostCollection(rows, options = {}) {
+    return (rows || []).filter((row) => {
+      if (options.category && options.category !== "latest" && row.category !== options.category) {
+        return false;
+      }
+
+      if (options.contentType && inferPostType(row) !== options.contentType) {
+        return false;
+      }
+
+      return true;
+    });
+  }
 
   function getConfig() {
     const config = window.MARQUES_SUPABASE_CONFIG || {};
@@ -403,11 +455,16 @@
     ]);
   }
 
-  async function listPublicPosts(category) {
+  async function listPublicPosts(categoryOrOptions, maybeOptions = {}) {
+    const options = parsePostListArgs(categoryOrOptions, maybeOptions);
     const filters = [{ column: "status", operator: "eq", value: "published" }];
 
-    if (category && category !== "latest") {
-      filters.push({ column: "category", operator: "eq", value: category });
+    if (options.category && options.category !== "latest") {
+      filters.push({ column: "category", operator: "eq", value: options.category });
+    }
+
+    if (options.contentType) {
+      filters.push({ column: "content_type", operator: "eq", value: options.contentType });
     }
 
     try {
@@ -415,15 +472,17 @@
         select: POST_EDITORIAL_SELECT,
         filters,
         order: "published_at.desc",
-        limit: 24,
+        limit: options.limit || 24,
       });
     } catch (error) {
-      return list("posts", {
+      const fallbackRows = await list("posts", {
         select: POST_BASE_SELECT,
-        filters,
+        filters: filters.filter((filter) => filter.column !== "content_type"),
         order: "published_at.desc",
-        limit: 24,
+        limit: options.limit || 24,
       });
+
+      return filterPostCollection(fallbackRows, options);
     }
   }
 
@@ -453,21 +512,28 @@
     return Array.isArray(rows) ? rows[0] || null : null;
   }
 
-  async function listAdminPosts() {
+  async function listAdminPosts(options = {}) {
+    const parsedOptions = parsePostListArgs(options);
+
     try {
       return await list("posts", {
         select: POST_EDITORIAL_SELECT,
+        filters: parsedOptions.contentType
+          ? [{ column: "content_type", operator: "eq", value: parsedOptions.contentType }]
+          : [],
         order: "updated_at.desc",
-        limit: 100,
+        limit: parsedOptions.limit || 100,
         requireAuth: true,
       });
     } catch (error) {
-      return list("posts", {
+      const fallbackRows = await list("posts", {
         select: POST_BASE_SELECT,
         order: "updated_at.desc",
-        limit: 100,
+        limit: parsedOptions.limit || 100,
         requireAuth: true,
       });
+
+      return filterPostCollection(fallbackRows, parsedOptions);
     }
   }
 
@@ -491,6 +557,7 @@
       seo_description: values.seo_description || null,
       cover_alt: values.cover_alt || null,
       featured: Boolean(values.featured),
+      content_type: values.content_type || "news",
     };
 
     try {

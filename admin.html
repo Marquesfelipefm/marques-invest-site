@@ -130,7 +130,8 @@
                   <button class="filter-button is-active" type="button" data-admin-tab="settings">Configuracoes</button>
                   <button class="filter-button" type="button" data-admin-tab="social">Postar nas redes</button>
                   <button class="filter-button" type="button" data-admin-tab="content">Conteudo</button>
-                  <button class="filter-button" type="button" data-admin-tab="posts">Posts</button>
+                  <button class="filter-button" type="button" data-admin-tab="posts">Noticias diarias</button>
+                  <button class="filter-button" type="button" data-admin-tab="analysis">Analise Marques</button>
                   <button class="filter-button" type="button" data-admin-tab="agenda">Agenda</button>
               <button class="filter-button" type="button" data-admin-tab="newsletter">Carta Marques</button>
               <button class="filter-button" type="button" data-admin-tab="contact">Diagnostico</button>
@@ -295,9 +296,10 @@
                 <div class="admin-tab" data-admin-panel="posts" hidden>
                   <form id="admin-post-form">
                     <input type="hidden" name="id" />
+                    <input type="hidden" name="content_type" value="news" />
                     <div class="form-grid">
                       <label class="field field-full">
-                        <span>Titulo do post</span>
+                        <span>Titulo da noticia</span>
                         <input type="text" name="title" required />
                       </label>
                       <label class="field">
@@ -337,6 +339,14 @@
                         <input type="url" name="cover_url" placeholder="https://..." />
                       </label>
                       <label class="field field-full">
+                        <span>Adicionar foto</span>
+                        <input type="file" id="admin-post-cover-file" accept="image/*" />
+                        <small class="field-help">
+                          Envie uma imagem do computador. O painel otimiza e prepara a capa para a noticia.
+                        </small>
+                      </label>
+                      <div class="cover-preview field-full" id="admin-post-cover-preview" hidden></div>
+                      <label class="field field-full">
                         <span>Texto alternativo da capa</span>
                         <input type="text" name="cover_alt" placeholder="Descricao curta da imagem" />
                       </label>
@@ -366,15 +376,128 @@
                     </div>
 
                     <div class="hero-actions">
-                      <button type="submit" class="button button-primary">Salvar post</button>
+                      <button type="submit" class="button button-primary">Salvar noticia</button>
                       <button type="button" class="button button-secondary" id="admin-post-reset">Limpar formulario</button>
                     </div>
                   </form>
 
                   <div class="admin-list-card">
-                    <h3>Posts cadastrados</h3>
-                    <p>Edite ou exclua os posts publicados no site.</p>
+                    <h3>Noticias diarias cadastradas</h3>
+                    <p>Edite ou exclua as noticias que alimentam a grade principal da pagina de noticias.</p>
                     <div class="admin-list" id="admin-post-list"></div>
+                  </div>
+                </div>
+
+                <div class="admin-tab" data-admin-panel="analysis" hidden>
+                  <div class="admin-note">
+                    <strong>Padrao Analise Marques</strong>
+                    <p>
+                      Toda publicacao segue a mesma estrutura editorial: tese central, o que mudou, impacto patrimonial,
+                      o que observar agora e fechamento Marques. Isso garante consistencia na leitura e no cabecalho da
+                      pagina de noticias.
+                    </p>
+                  </div>
+
+                  <form id="admin-analysis-form">
+                    <input type="hidden" name="id" />
+                    <input type="hidden" name="content_type" value="analysis" />
+                    <input type="hidden" name="source" value="Analise Marques" />
+                    <div class="form-grid">
+                      <label class="field field-full">
+                        <span>Titulo do artigo</span>
+                        <input type="text" name="title" required />
+                      </label>
+                      <label class="field">
+                        <span>Slug</span>
+                        <input type="text" name="slug" placeholder="gerado-automaticamente" />
+                      </label>
+                      <label class="field">
+                        <span>Categoria</span>
+                        <select name="category" required>
+                          <option value="markets">Mercado financeiro</option>
+                          <option value="companies">Empresas</option>
+                          <option value="crypto">Criptoativos</option>
+                          <option value="latest">Mais recentes</option>
+                        </select>
+                      </label>
+                      <label class="field">
+                        <span>Status</span>
+                        <select name="status" required>
+                          <option value="draft">Rascunho</option>
+                          <option value="published">Publicado</option>
+                        </select>
+                      </label>
+                      <label class="field">
+                        <span>Data de publicacao</span>
+                        <input type="datetime-local" name="published_at" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Imagem de capa</span>
+                        <input type="url" name="cover_url" placeholder="https://..." />
+                      </label>
+                      <label class="field field-full">
+                        <span>Adicionar foto</span>
+                        <input type="file" id="admin-analysis-cover-file" accept="image/*" />
+                        <small class="field-help">
+                          Use uma imagem horizontal para dar unidade visual aos artigos da area Analise Marques.
+                        </small>
+                      </label>
+                      <div class="cover-preview field-full" id="admin-analysis-cover-preview" hidden></div>
+                      <label class="field field-full">
+                        <span>Texto alternativo da capa</span>
+                        <input type="text" name="cover_alt" placeholder="Descricao curta da imagem" />
+                      </label>
+                      <label class="field field-full field-checkbox">
+                        <input type="checkbox" name="featured" />
+                        <div>
+                          <span>Destacar no cabecalho de noticias</span>
+                          <small>Quando marcado, esse artigo ganha prioridade na vitrine Analise Marques.</small>
+                        </div>
+                      </label>
+                      <label class="field field-full">
+                        <span>Resumo executivo</span>
+                        <textarea
+                          name="excerpt"
+                          required
+                          placeholder="Abra com 2 ou 3 linhas explicando a tese do artigo e o impacto patrimonial."
+                        ></textarea>
+                      </label>
+                      <label class="field field-full">
+                        <span>SEO title</span>
+                        <input type="text" name="seo_title" placeholder="Titulo otimizado para navegador e busca" />
+                      </label>
+                      <label class="field field-full">
+                        <span>SEO description</span>
+                        <textarea
+                          name="seo_description"
+                          placeholder="Descricao curta para o artigo Analise Marques"
+                        ></textarea>
+                      </label>
+                      <label class="field field-full">
+                        <span>Artigo</span>
+                        <textarea
+                          name="content"
+                          required
+                          placeholder="Use o modelo editorial Marques para padronizar as publicacoes."
+                        ></textarea>
+                      </label>
+                    </div>
+
+                    <div class="hero-actions">
+                      <button type="button" class="button button-secondary" id="admin-analysis-template">
+                        Aplicar modelo Marques
+                      </button>
+                      <button type="submit" class="button button-primary">Salvar artigo</button>
+                      <button type="button" class="button button-secondary" id="admin-analysis-reset">
+                        Limpar formulario
+                      </button>
+                    </div>
+                  </form>
+
+                  <div class="admin-list-card">
+                    <h3>Artigos da area Analise Marques</h3>
+                    <p>Essa lista alimenta a vitrine editorial que fica no cabecalho da pagina de noticias.</p>
+                    <div class="admin-list" id="admin-analysis-list"></div>
                   </div>
                 </div>
 

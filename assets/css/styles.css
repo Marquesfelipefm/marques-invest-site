@@ -3746,3 +3746,160 @@ body[data-page="home"] .hero-copy .eyebrow {
 .field-checkbox small {
   color: rgba(246, 243, 238, 0.58);
 }
+
+.field-help {
+  display: block;
+  margin-top: 8px;
+  color: rgba(246, 243, 238, 0.58);
+  line-height: 1.45;
+}
+
+.cover-preview {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border: 1px dashed rgba(212, 166, 70, 0.18);
+  border-radius: 22px;
+  background: rgba(246, 243, 238, 0.02);
+}
+
+.cover-preview[hidden] {
+  display: none;
+}
+
+.cover-preview-label {
+  color: rgba(246, 243, 238, 0.72);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cover-preview img {
+  display: block;
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid rgba(212, 166, 70, 0.12);
+}
+
+.analysis-marques-block {
+  max-width: 1460px;
+  margin: 0 auto 34px;
+}
+
+.analysis-marques-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  gap: 20px;
+}
+
+.analysis-marques-grid.is-single {
+  grid-template-columns: 1fr;
+}
+
+.analysis-marques-lead,
+.analysis-marques-card,
+.analysis-marques-empty {
+  border: 1px solid rgba(212, 166, 70, 0.14);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(212, 166, 70, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(14, 26, 50, 0.98), rgba(10, 19, 37, 0.94));
+  box-shadow: 0 24px 58px rgba(0, 0, 0, 0.22);
+}
+
+.analysis-marques-lead {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.92fr) minmax(0, 1.08fr);
+  overflow: hidden;
+}
+
+.analysis-marques-copy,
+.analysis-marques-card,
+.analysis-marques-empty {
+  padding: clamp(24px, 3vw, 34px);
+}
+
+.analysis-marques-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+
+.analysis-marques-copy h3,
+.analysis-marques-card h4,
+.analysis-marques-empty h3 {
+  margin: 0;
+  color: var(--panel-text);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  line-height: 1.02;
+}
+
+.analysis-marques-copy h3 {
+  font-size: clamp(2.4rem, 4vw, 3.8rem);
+}
+
+.analysis-marques-card h4 {
+  font-size: 1.8rem;
+}
+
+.analysis-marques-copy p,
+.analysis-marques-card p,
+.analysis-marques-empty p {
+  margin: 0;
+  color: rgba(246, 243, 238, 0.76);
+  line-height: 1.65;
+}
+
+.analysis-marques-stack {
+  display: grid;
+  gap: 18px;
+}
+
+.analysis-marques-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.analysis-marques-actions,
+.article-share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.analysis-marques-actions {
+  margin-top: auto;
+}
+
+.analysis-marques-empty {
+  display: grid;
+  gap: 12px;
+}
+
+.article-share {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(212, 166, 70, 0.12);
+}
+
+@media (max-width: 1180px) {
+  .analysis-marques-grid,
+  .analysis-marques-lead {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 920px) {
+  .analysis-marques-actions,
+  .article-share {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
