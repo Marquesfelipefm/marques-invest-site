@@ -7,6 +7,7 @@ Projeto estatico de portal de investimentos com:
 - login com Supabase Auth
 - banco online para posts, agenda, newsletter, contato e configuracoes do site
 - fallback local para preview sem quebrar o layout
+- integracao opcional com API de noticias para banner, resumo e fonte externa
 
 ## Estrutura principal
 
@@ -53,6 +54,33 @@ Quando o Supabase estiver configurado:
 - o WhatsApp e o conteudo institucional passam a vir do banco
 
 Se o Supabase nao estiver configurado, o site continua usando preview e fallback local.
+
+## Noticias externas automatizadas
+
+A aba de noticias esta preparada para usar:
+
+- `MARKETAUX_API_KEY` como provedor principal
+- `NEWSAPI_KEY` como fallback opcional
+- feeds RSS como fallback final
+
+Com `Marketaux`, o site consegue carregar melhor:
+
+- imagem/banner da noticia
+- descricao ou snippet
+- fonte externa
+- data de publicacao
+- link para leitura na origem
+
+Edite [C:\Users\money\Documents\Modelos Personalizados do Office\.env.example](C:\Users\money\Documents\Modelos Personalizados do Office\.env.example) e configure no deploy:
+
+```env
+MARKETAUX_API_KEY=sua_chave_aqui
+NEWSAPI_KEY=opcional_fallback_newsapi
+FMP_API_KEY=coloque_sua_chave_aqui
+```
+
+Na `Vercel`, adicione essas variaveis em `Project Settings > Environment Variables`.
+Na `Netlify`, adicione em `Site configuration > Environment variables`.
 
 ## Como ativar o Supabase
 
@@ -145,3 +173,5 @@ O projeto continua pronto para deploy estatico.
 - [Supabase Auth](https://supabase.com/docs/guides/auth)
 - [Supabase Database](https://supabase.com/docs/guides/database)
 - [Supabase Row Level Security](https://supabase.com/docs/guides/database/postgres/row-level-security)
+- [Marketaux Documentation](https://www.marketaux.com/documentation)
+- [Marketaux Pricing](https://www.marketaux.com/pricing)

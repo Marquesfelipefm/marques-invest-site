@@ -6,14 +6,16 @@ const {
 
 module.exports = async function handler(req, res) {
   const category = req.query.category || "latest";
-  const apiKey = process.env.NEWSAPI_KEY;
+  const marketauxApiKey = process.env.MARKETAUX_API_KEY;
+  const newsApiKey = process.env.NEWSAPI_KEY;
 
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate=600");
 
   try {
-    const items = await fetchNews({
-      apiKey,
+    const { items, provider } = await fetchNews({
+      marketauxApiKey,
+      newsApiKey,
       category,
       fetchImpl: fetch,
     });
@@ -22,7 +24,7 @@ module.exports = async function handler(req, res) {
       mode: "live",
       category,
       sources: sourceDomains,
-      provider: apiKey ? "newsapi" : "rss",
+      provider,
       items,
     });
   } catch (error) {

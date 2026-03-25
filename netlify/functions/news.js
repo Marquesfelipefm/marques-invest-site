@@ -6,11 +6,13 @@ const {
 
 exports.handler = async function handler(event) {
   const category = event.queryStringParameters?.category || "latest";
-  const apiKey = process.env.NEWSAPI_KEY;
+  const marketauxApiKey = process.env.MARKETAUX_API_KEY;
+  const newsApiKey = process.env.NEWSAPI_KEY;
 
   try {
-    const items = await fetchNews({
-      apiKey,
+    const { items, provider } = await fetchNews({
+      marketauxApiKey,
+      newsApiKey,
       category,
       fetchImpl: fetch,
     });
@@ -25,7 +27,7 @@ exports.handler = async function handler(event) {
         mode: "live",
         category,
         sources: sourceDomains,
-        provider: apiKey ? "newsapi" : "rss",
+        provider,
         items,
       }),
     };

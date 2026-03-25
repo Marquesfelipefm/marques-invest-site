@@ -1,8 +1,34 @@
-const sourceDomains = [
-  "cnbc.com",
-  "marketwatch.com",
-  "investing.com",
-];
+const categorySourceDomains = {
+  latest: [
+    "benzinga.com",
+    "cnbc.com",
+    "marketwatch.com",
+    "reuters.com",
+    "investing.com",
+    "coindesk.com",
+    "theblock.co",
+  ],
+  markets: [
+    "cnbc.com",
+    "marketwatch.com",
+    "reuters.com",
+    "investing.com",
+  ],
+  companies: [
+    "benzinga.com",
+    "cnbc.com",
+    "marketwatch.com",
+    "reuters.com",
+  ],
+  crypto: [
+    "coindesk.com",
+    "theblock.co",
+    "investing.com",
+    "benzinga.com",
+  ],
+};
+
+const sourceDomains = [...new Set(Object.values(categorySourceDomains).flat())];
 
 const categoryFeeds = {
   latest: [
@@ -57,7 +83,7 @@ const categoryQueries = {
 const fallbackNews = [
   {
     category: "markets",
-    source: "Bloomberg",
+    source: "Reuters",
     publishedAt: "2026-03-22T12:10:00Z",
     title: "Mercados reavaliam juros globais apos nova rodada de dados macro",
     description:
@@ -66,7 +92,7 @@ const fallbackNews = [
   },
   {
     category: "companies",
-    source: "WSJ",
+    source: "CNBC",
     publishedAt: "2026-03-22T11:20:00Z",
     title: "Temporada de resultados recoloca grandes empresas no centro do fluxo",
     description:
@@ -75,7 +101,7 @@ const fallbackNews = [
   },
   {
     category: "crypto",
-    source: "The Block",
+    source: "CoinDesk",
     publishedAt: "2026-03-22T10:35:00Z",
     title: "Bitcoin e Ethereum operam com volatilidade em sessao de maior sensibilidade",
     description:
@@ -84,7 +110,7 @@ const fallbackNews = [
   },
   {
     category: "markets",
-    source: "Reuters",
+    source: "MarketWatch",
     publishedAt: "2026-03-22T09:55:00Z",
     title: "Dolar, bolsas e Treasuries ajustam precos com foco em politica monetaria",
     description:
@@ -144,14 +170,12 @@ const categoryKeywords = {
     "business",
     "firm",
     "corporate",
-    "vaccine",
     "apple",
     "tesla",
     "microsoft",
     "amazon",
     "meta",
     "nvidia",
-    "pfizer",
     "blackrock",
     "chevron",
   ],
@@ -200,6 +224,60 @@ function buildNewsApiUrl(apiKey, category) {
   return `https://newsapi.org/v2/everything?${params.toString()}`;
 }
 
+function buildMarketauxUrl(apiKey, category) {
+  const safeCategory = normalizeCategory(category);
+  const params = new URLSearchParams({
+    api_token: apiKey,
+    language: "en",
+    limit: "24",
+    sort: "published_desc",
+    must_have_entities: "true",
+    filter_entities: "true",
+    domains: (categorySourceDomains[safeCategory] || sourceDomains).join(","),
+  });
+
+  return `https://api.marketaux.com/v1/news/all?${params.toString()}`;
+}
+
+async function fetchNewsFromMarketaux({ apiKey, category, fetchImpl }) {
+  const safeCategory = normalizeCategory(category);
+  const response = await fetchImpl(buildMarketauxUrl(apiKey, safeCategory));
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || "Falha ao consultar Marketaux");
+  }
+
+  const payload = await response.json();
+
+  return dedupeNewsItems(payload.data || [])
+    .map((article) => {
+      const inferredCategory = safeCategory === "latest" ? inferCategory(article) : safeCategory;
+
+      if (inferredCategory === "other" || !isRelevantToCategory(article, inferredCategory)) {
+        return null;
+      }
+
+      return {
+        category: inferredCategory,
+        source: article.source || getSourceHostname(article.url),
+        publishedAt: article.published_at || new Date().toISOString(),
+        title: article.title || "Sem titulo",
+        description:
+          article.description ||
+          article.snippet ||
+          article.meta_description ||
+          "Sem descricao disponivel.",
+        url: article.url,
+        coverUrl: article.image_url || "",
+        coverAlt: article.title ? `Imagem da noticia ${article.title}` : "",
+      };
+    })
+    .filter(Boolean)
+    .sort((left, right) => new Date(right.publishedAt) - new Date(left.publishedAt))
+    .slice(0, 18);
+}
+
 async function fetchNewsFromNewsApi({ apiKey, category, fetchImpl }) {
   const safeCategory = normalizeCategory(category);
   const response = await fetchImpl(buildNewsApiUrl(apiKey, safeCategory));
@@ -227,6 +305,8 @@ async function fetchNewsFromNewsApi({ apiKey, category, fetchImpl }) {
         title: article.title,
         description: article.description || article.content || "Sem descricao disponivel.",
         url: article.url,
+        coverUrl: article.urlToImage || "",
+        coverAlt: article.title ? `Imagem da noticia ${article.title}` : "",
       };
     })
     .filter(Boolean);
@@ -263,16 +343,49 @@ async function fetchNewsFromRss({ category, fetchImpl }) {
     .slice(0, 18);
 }
 
-async function fetchNews({ apiKey, category, fetchImpl }) {
-  if (apiKey) {
+async function fetchNews({ marketauxApiKey, newsApiKey, category, fetchImpl }) {
+  if (marketauxApiKey) {
     try {
-      return await fetchNewsFromNewsApi({ apiKey, category, fetchImpl });
+      const items = await fetchNewsFromMarketaux({
+        apiKey: marketauxApiKey,
+        category,
+        fetchImpl,
+      });
+
+      if (items.length) {
+        return {
+          provider: "marketaux",
+          items,
+        };
+      }
     } catch (error) {
-      return fetchNewsFromRss({ category, fetchImpl });
+      // Fall through to next provider.
     }
   }
 
-  return fetchNewsFromRss({ category, fetchImpl });
+  if (newsApiKey) {
+    try {
+      const items = await fetchNewsFromNewsApi({
+        apiKey: newsApiKey,
+        category,
+        fetchImpl,
+      });
+
+      if (items.length) {
+        return {
+          provider: "newsapi",
+          items,
+        };
+      }
+    } catch (error) {
+      // Fall through to RSS.
+    }
+  }
+
+  return {
+    provider: "rss",
+    items: await fetchNewsFromRss({ category, fetchImpl }),
+  };
 }
 
 function parseRssFeed(xml, source, category) {
@@ -284,12 +397,12 @@ function parseRssFeed(xml, source, category) {
 }
 
 function buildNewsItemFromRss(rawItem, source, category) {
+  const rawDescription = extractTag(rawItem, "description") || extractTag(rawItem, "content:encoded");
   const title = cleanText(extractTag(rawItem, "title"));
   const link = cleanText(extractTag(rawItem, "link"));
-  const description = cleanText(
-    extractTag(rawItem, "description") || extractTag(rawItem, "content:encoded")
-  );
+  const description = cleanText(rawDescription);
   const pubDate = normalizePublishedAt(extractTag(rawItem, "pubDate"));
+  const coverUrl = extractRssImageUrl(rawItem, rawDescription);
 
   if (!title || !link) {
     return null;
@@ -313,6 +426,8 @@ function buildNewsItemFromRss(rawItem, source, category) {
     title,
     description: description || "Sem descricao disponivel.",
     url: link,
+    coverUrl,
+    coverAlt: coverUrl ? `Imagem da noticia ${title}` : "",
   };
 }
 
@@ -380,7 +495,7 @@ function getSourceHostname(url) {
 }
 
 function inferCategory(article) {
-  const text = `${article.title || ""} ${article.description || ""}`.toLowerCase();
+  const text = `${article.title || ""} ${article.description || ""} ${article.snippet || ""}`.toLowerCase();
 
   if (matchesKeywords(text, categoryKeywords.crypto)) {
     return "crypto";
@@ -398,7 +513,7 @@ function inferCategory(article) {
 }
 
 function isRelevantToCategory(article, category) {
-  const text = `${article.title || ""} ${article.description || ""}`.toLowerCase();
+  const text = `${article.title || ""} ${article.description || ""} ${article.snippet || ""}`.toLowerCase();
   const keywords = categoryKeywords[category];
 
   if (!keywords) {
@@ -412,10 +527,30 @@ function matchesKeywords(text, keywords) {
   return keywords.some((keyword) => text.includes(keyword));
 }
 
+function extractRssImageUrl(rawItem, rawDescription) {
+  const xmlMatch =
+    /<media:content\b[^>]*url=["']([^"']+)["']/i.exec(rawItem) ||
+    /<media:thumbnail\b[^>]*url=["']([^"']+)["']/i.exec(rawItem) ||
+    /<enclosure\b[^>]*url=["']([^"']+)["'][^>]*type=["']image\//i.exec(rawItem);
+
+  if (xmlMatch?.[1]) {
+    return decodeHtmlEntities(xmlMatch[1].trim());
+  }
+
+  const htmlMatch = /<img\b[^>]*src=["']([^"']+)["']/i.exec(rawDescription || "");
+
+  if (htmlMatch?.[1]) {
+    return decodeHtmlEntities(htmlMatch[1].trim());
+  }
+
+  return "";
+}
+
 module.exports = {
   sourceDomains,
   getFallbackNews,
   fetchNews,
+  fetchNewsFromMarketaux,
   fetchNewsFromNewsApi,
   fetchNewsFromRss,
 };

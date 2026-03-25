@@ -1,12 +1,11 @@
 const sourceLabels = [
-  "Bloomberg",
-  "WSJ",
-  "The Economist",
-  "The Block",
-  "Investing.com",
-  "Reuters",
+  "Benzinga",
   "CNBC",
+  "MarketWatch",
+  "Reuters",
+  "Investing.com",
   "CoinDesk",
+  "The Block",
 ];
 
 const fallbackMarkets = [
@@ -1097,8 +1096,14 @@ async function loadNews(category) {
     renderNews(items);
 
     if (payload.mode === "live") {
+      const liveMessage =
+        payload.provider === "marketaux"
+          ? "Feed externo ao vivo com banner, descricao e fonte de mercado."
+          : `Fontes ativas: ${sourceLabels.join(", ")}. Exibindo ${getCategoryLabel(
+              category
+            ).toLowerCase()}.`;
       updateStatus(
-        `Fontes ativas: ${sourceLabels.join(", ")}. Exibindo ${getCategoryLabel(category).toLowerCase()}.`,
+        liveMessage,
         "live"
       );
       return;
