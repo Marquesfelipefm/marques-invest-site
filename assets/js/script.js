@@ -209,6 +209,9 @@ const newsStatus = document.querySelector("#news-status");
 const analysisMarquesSection = document.querySelector("#analysis-marques-section");
 const analysisMarquesGrid = document.querySelector("#analysis-marques-grid");
 const analysisStatus = document.querySelector("#analysis-status");
+const homeNewsLead = document.querySelector("#home-news-lead");
+const homeNewsList = document.querySelector("#home-news-list");
+const homeNewsStatus = document.querySelector("#home-news-status");
 const marketBoard = document.querySelector("#market-board");
 const marketStatus = document.querySelector("#market-status");
 const agendaList = document.querySelector("#agenda-list");
@@ -538,6 +541,83 @@ function renderEmptyState() {
       <p>Tente outra categoria ou publique novos posts no painel.</p>
     </article>
   `;
+}
+
+function renderHomeNewsPreview(items) {
+  if (!homeNewsLead || !homeNewsList) {
+    return;
+  }
+
+  if (!items.length) {
+    homeNewsLead.innerHTML = `
+      <span class="tag">Leitura diaria</span>
+      <h3>Sem noticias disponiveis no momento.</h3>
+      <p>Tente novamente em instantes ou abra a pagina completa para revisar o fluxo do dia.</p>
+    `;
+    homeNewsList.innerHTML = `
+      <article class="home-mini-item">
+        <strong>Fluxo indisponivel</strong>
+        <p>Nenhuma materia foi carregada para a previa da home agora.</p>
+      </article>
+    `;
+    return;
+  }
+
+  const [leadItem, ...secondaryItems] = items;
+  const mainTarget = leadItem.isExternal && leadItem.url !== "#" ? 'target="_blank" rel="noreferrer"' : "";
+  const leadImage = leadItem.coverUrl
+    ? `
+        <div class="home-preview-media">
+          <img src="${escapeHtml(leadItem.coverUrl)}" alt="${escapeHtml(
+            leadItem.coverAlt || `Capa da noticia ${leadItem.title}`
+          )}" loading="lazy" />
+        </div>
+      `
+    : "";
+
+  homeNewsLead.innerHTML = `
+    ${leadImage}
+    <div class="home-preview-copy-block">
+      <span class="tag">${escapeHtml(getCategoryLabel(leadItem.category))}</span>
+      <span class="home-preview-meta">${escapeHtml(leadItem.source)} | ${escapeHtml(
+        formatPublishedAt(leadItem.publishedAt)
+      )}</span>
+      <h3>${escapeHtml(leadItem.title)}</h3>
+      <p>${escapeHtml(leadItem.description)}</p>
+      <a class="button button-primary" href="${escapeHtml(leadItem.url)}" ${mainTarget}>
+        ${leadItem.isExternal ? "Abrir noticia" : "Ler materia"}
+      </a>
+    </div>
+  `;
+
+  homeNewsList.innerHTML = secondaryItems.slice(0, 3)
+    .map((item) => {
+      const target = item.isExternal && item.url !== "#" ? 'target="_blank" rel="noreferrer"' : "";
+      const thumb = item.coverUrl
+        ? `
+            <div class="home-mini-thumb">
+              <img src="${escapeHtml(item.coverUrl)}" alt="${escapeHtml(
+                item.coverAlt || `Capa da noticia ${item.title}`
+              )}" loading="lazy" />
+            </div>
+          `
+        : "";
+
+      return `
+        <article class="home-mini-item home-mini-item--news">
+          ${thumb}
+          <div class="home-mini-copy">
+            <span>${escapeHtml(item.source)} | ${escapeHtml(formatPublishedAt(item.publishedAt))}</span>
+            <strong>${escapeHtml(item.title)}</strong>
+            <p>${escapeHtml(item.description)}</p>
+            <a class="news-link" href="${escapeHtml(item.url)}" ${target}>
+              ${item.isExternal ? "Abrir noticia" : "Ler materia"}
+            </a>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
 }
 
 function getNewsCoverMarkup(item, lead = false) {
@@ -1122,6 +1202,56 @@ async function loadNews(category) {
   }
 }
 
+async function loadHomeNewsPreview() {
+  if (!homeNewsLead || !homeNewsList || !homeNewsStatus) {
+    return;
+  }
+
+  homeNewsStatus.textContent = "Carregando a previa das noticias da aba principal...";
+
+  try {
+    const payload = await fetchNewsFromEndpoint("latest");
+    const items = normalizeNewsItems(payload.items || [], "latest").slice(0, 4);
+
+    if (items.length) {
+      renderHomeNewsPreview(items);
+      homeNewsStatus.textContent =
+        payload.mode === "live"
+          ? "Previa da cobertura diaria atualizada com imagem, resumo e caminho para leitura completa."
+          : "Previa de referencia exibida na home enquanto o feed principal estabiliza.";
+      return;
+    }
+  } catch (error) {
+    // Try panel-authored news as a secondary source.
+  }
+
+  if (window.MarquesSupabase?.isConfigured()) {
+    try {
+      const remotePosts = await window.MarquesSupabase.listPublicPosts({
+        category: "latest",
+        contentType: "news",
+        limit: 4,
+      });
+      const normalizedPosts = normalizePosts(remotePosts || [], "latest").filter(
+        (item) => item.contentType === "news"
+      );
+
+      if (normalizedPosts.length) {
+        renderHomeNewsPreview(normalizedPosts.slice(0, 4));
+        homeNewsStatus.textContent =
+          "Previa alimentada pelos posts publicados no painel online.";
+        return;
+      }
+    } catch (error) {
+      // Fall through to local fallback.
+    }
+  }
+
+  renderHomeNewsPreview(getFallbackNews("latest").slice(0, 4));
+  homeNewsStatus.textContent =
+    "Previa de referencia exibida na home enquanto novas noticias sao carregadas.";
+}
+
 async function loadAnalysisMarques() {
   if (!analysisMarquesGrid || !analysisStatus) {
     return;
@@ -1341,4 +1471,8 @@ if (analysisMarquesGrid) {
 
 if (agendaList) {
   loadAgendaEvents();
+}
+
+if (homeNewsLead && homeNewsList) {
+  loadHomeNewsPreview();
 }

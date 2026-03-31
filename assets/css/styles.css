@@ -1892,6 +1892,37 @@ h3 {
   line-height: 0.95;
 }
 
+.home-preview-main--news {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+
+.home-preview-media {
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(212, 166, 70, 0.14);
+  aspect-ratio: 1.75 / 1;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.home-preview-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-preview-copy-block {
+  display: grid;
+  gap: 12px;
+}
+
+.home-preview-meta {
+  color: var(--panel-muted);
+  font-size: 0.95rem;
+}
+
 .home-preview-main p,
 .home-preview-main ul {
   color: var(--panel-muted);
@@ -1939,6 +1970,37 @@ h3 {
   display: block;
   margin-bottom: 6px;
   color: var(--text);
+}
+
+.home-mini-item--news {
+  display: grid;
+  grid-template-columns: 124px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.home-mini-thumb {
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(212, 166, 70, 0.14);
+  aspect-ratio: 1.35 / 1;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.home-mini-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-mini-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.home-mini-copy .news-link {
+  justify-self: start;
 }
 
 .home-mini-item span,
@@ -2756,6 +2818,18 @@ body[data-page="home"] .hero-copy p {
   margin-bottom: 28px;
 }
 
+.section-heading--split {
+  max-width: 1460px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.section-heading--split > div {
+  max-width: 860px;
+}
+
 .section-heading h2 {
   margin: 12px 0 0;
   color: var(--text);
@@ -2962,6 +3036,15 @@ body[data-page="home"] .hero-copy p {
 .highlight-grid,
 .news-grid {
   gap: 20px;
+}
+
+.home-news-status {
+  margin-bottom: 18px;
+}
+
+.button-full {
+  width: 100%;
+  justify-content: center;
 }
 
 .teaser-card,
@@ -3720,6 +3803,10 @@ body[data-page="home"] .hero-copy .eyebrow {
 }
 
 @media (max-width: 720px) {
+  .home-mini-item--news {
+    grid-template-columns: 1fr;
+  }
+
   .news-lead-copy,
   .article-main,
   .article-sidecard {
@@ -3893,6 +3980,11 @@ body[data-page="home"] .hero-copy .eyebrow {
   .analysis-marques-grid,
   .analysis-marques-lead {
     grid-template-columns: 1fr;
+  }
+
+  .section-heading--split {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 
