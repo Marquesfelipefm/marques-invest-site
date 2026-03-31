@@ -4055,7 +4055,77 @@ body[data-page="home"] .hero-copy .eyebrow {
   border-top: 1px solid rgba(212, 166, 70, 0.12);
 }
 
+.intelligence-art,
+.newsletter-visual-card,
+.manifesto-card--visual,
+.page-sidecard--visual {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(212, 166, 70, 0.14);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.intelligence-art {
+  margin-top: 20px;
+}
+
+.intelligence-art img,
+.newsletter-visual-card img,
+.manifesto-visual-image,
+.page-sidecard-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.newsletter-stage {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+  gap: 24px;
+  max-width: 1460px;
+  margin: 0 auto;
+  align-items: stretch;
+}
+
+.newsletter-visual-card {
+  aspect-ratio: 1 / 1;
+  min-height: 100%;
+  box-shadow: 0 28px 60px rgba(4, 10, 23, 0.28);
+}
+
+.newsletter-card--form {
+  max-width: none;
+  margin: 0;
+}
+
+.manifesto-card--visual {
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  min-height: 100%;
+}
+
+.manifesto-card--visual::after {
+  display: none;
+}
+
+.page-sidecard--visual {
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  min-height: 100%;
+}
+
+.page-sidecard--visual::before,
+.page-sidecard--visual::after {
+  display: none;
+}
+
 @media (max-width: 1180px) {
+  .newsletter-stage {
+    grid-template-columns: 1fr;
+  }
+
   .analysis-marques-grid,
   .analysis-marques-lead {
     grid-template-columns: 1fr;
@@ -4231,6 +4301,27 @@ body[data-page="home"] .hero-copy .eyebrow {
   body[data-page="home"] .diagnostic-card {
     min-height: 100%;
   }
+
+  body[data-page="home"] .intelligence-lead {
+    display: flex;
+    flex-direction: column;
+  }
+
+  body[data-page="home"] .intelligence-art {
+    margin-top: auto;
+  }
+
+  body[data-page="home"] .intelligence-art img {
+    aspect-ratio: 1 / 1;
+  }
+
+  body[data-page="home"] .manifesto-card--visual {
+    min-height: 100%;
+  }
+
+  body[data-page="home"] .manifesto-visual-image {
+    min-height: 100%;
+  }
 }
 
 @media (min-width: 1181px) {
@@ -4262,5 +4353,17 @@ body[data-page="home"] .hero-copy .eyebrow {
   body[data-page="home"] .home-mini-item--news {
     grid-template-columns: 120px minmax(0, 1fr);
     align-items: start;
+  }
+
+  body[data-page="newsletter"] .newsletter-stage {
+    grid-template-columns: minmax(420px, 0.92fr) minmax(0, 1.08fr);
+  }
+
+  body[data-page="newsletter"] .newsletter-visual-card {
+    min-height: 100%;
+  }
+
+  body[data-page="news"] .page-sidecard--visual {
+    min-height: 100%;
   }
 }
