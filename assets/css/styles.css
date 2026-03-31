@@ -2845,6 +2845,17 @@ body[data-page="home"] .hero-copy p {
   line-height: 1;
 }
 
+.section-heading-main {
+  min-width: 0;
+}
+
+.section-heading-support {
+  max-width: 62ch;
+  margin: 14px 0 0;
+  color: rgba(246, 243, 238, 0.7);
+  line-height: 1.68;
+}
+
 .hero-actions {
   margin-top: 28px;
   gap: 14px;
@@ -4061,5 +4072,166 @@ body[data-page="home"] .hero-copy .eyebrow {
   .article-share {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (min-width: 1181px) {
+  body[data-page="home"] .section-heading--editorial {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+    align-items: end;
+    gap: 26px;
+  }
+
+  body[data-page="home"] .section-heading--wide {
+    max-width: 1280px;
+    margin-bottom: 34px;
+  }
+
+  body[data-page="home"] .section-heading-main {
+    max-width: 900px;
+  }
+
+  body[data-page="home"] .section-heading--wide h2 {
+    max-width: 18ch;
+    font-size: clamp(3.2rem, 4vw, 5.1rem);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+  }
+
+  body[data-page="home"] .section-heading-support {
+    max-width: 34ch;
+    margin: 0 0 8px;
+    color: rgba(246, 243, 238, 0.72);
+    font-size: 1.04rem;
+    line-height: 1.72;
+    text-align: left;
+  }
+
+  body[data-page="home"] .process-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  body[data-page="home"] .process-card {
+    display: grid;
+    align-content: start;
+    min-height: 250px;
+    padding: 34px 32px 30px;
+  }
+
+  body[data-page="home"] .process-card h3 {
+    margin: 24px 0 14px;
+    max-width: 10ch;
+    font-size: 2.15rem;
+  }
+
+  body[data-page="home"] .process-card p {
+    max-width: 36ch;
+    font-size: 1rem;
+    line-height: 1.62;
+  }
+
+  body[data-page="home"] .teaser-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: minmax(240px, auto);
+    gap: 24px;
+  }
+
+  body[data-page="home"] .teaser-card {
+    min-height: 0;
+    padding: 32px;
+  }
+
+  body[data-page="home"] .teaser-card--feature {
+    grid-column: span 2;
+    grid-row: span 2;
+    padding: 42px 40px 36px;
+  }
+
+  body[data-page="home"] .teaser-card--feature h3 {
+    max-width: 10ch;
+    font-size: clamp(3.1rem, 3.6vw, 4.5rem);
+    line-height: 0.92;
+  }
+
+  body[data-page="home"] .teaser-card--feature p {
+    max-width: 42ch;
+    font-size: 1.05rem;
+  }
+
+  body[data-page="home"] .teaser-card--side {
+    min-height: 0;
+  }
+
+  body[data-page="home"] .teaser-card--side h3 {
+    max-width: 9ch;
+    font-size: 2.25rem;
+    line-height: 0.98;
+  }
+
+  body[data-page="home"] .teaser-card:not(.teaser-card--feature):not(.teaser-card--side) h3 {
+    max-width: 11ch;
+  }
+
+  body[data-page="home"] .teaser-card-top {
+    align-items: flex-start;
+  }
+
+  body[data-page="home"] .teaser-meta {
+    max-width: 16ch;
+    line-height: 1.25;
+    text-align: right;
+  }
+
+  body[data-page="home"] .teaser-card p {
+    max-width: 34ch;
+  }
+
+  body[data-page="home"] .teaser-points {
+    margin-top: auto;
+  }
+
+  body[data-page="home"] .manifesto-grid {
+    grid-template-columns: minmax(0, 1.08fr) minmax(420px, 0.92fr);
+    gap: 22px;
+    align-items: stretch;
+  }
+
+  body[data-page="home"] .manifesto-card,
+  body[data-page="home"] .diagnostic-card {
+    min-height: 100%;
+  }
+}
+
+@media (min-width: 1181px) {
+  body[data-page="home"] .home-preview-grid {
+    grid-template-columns: minmax(0, 1.28fr) minmax(360px, 0.72fr);
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  body[data-page="home"] .home-preview-main--news {
+    min-height: 620px;
+  }
+
+  body[data-page="home"] .home-preview-main--news .home-preview-copy-block h3 {
+    max-width: 11ch;
+    font-size: clamp(3rem, 3.7vw, 4.6rem);
+    line-height: 0.92;
+  }
+
+  body[data-page="home"] .home-preview-side--news {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  body[data-page="home"] .home-mini-news {
+    gap: 16px;
+  }
+
+  body[data-page="home"] .home-mini-item--news {
+    grid-template-columns: 120px minmax(0, 1fr);
+    align-items: start;
   }
 }
