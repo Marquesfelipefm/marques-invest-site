@@ -2830,6 +2830,14 @@ body[data-page="home"] .hero-copy p {
   max-width: 860px;
 }
 
+.section-heading--wide {
+  max-width: 1120px;
+}
+
+.section-heading--wide h2 {
+  max-width: 18ch;
+}
+
 .section-heading h2 {
   margin: 12px 0 0;
   color: var(--text);
@@ -2977,6 +2985,13 @@ body[data-page="home"] .hero-copy p {
   box-shadow: var(--shadow-soft);
 }
 
+.process-card h3 {
+  margin: 18px 0 14px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.85rem;
+  line-height: 1.02;
+}
+
 .process-index {
   display: inline-flex;
   align-items: center;
@@ -3045,6 +3060,59 @@ body[data-page="home"] .hero-copy p {
 .button-full {
   width: 100%;
   justify-content: center;
+}
+
+@media (min-width: 1181px) {
+  body[data-page="home"] .section-heading--wide h2 {
+    max-width: 20ch;
+    font-size: clamp(3rem, 4.1vw, 4.9rem);
+    line-height: 0.94;
+  }
+
+  body[data-page="home"] .process-grid {
+    grid-template-columns: repeat(4, minmax(240px, 1fr));
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  body[data-page="home"] .process-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 248px;
+    padding: 30px 26px 26px;
+  }
+
+  body[data-page="home"] .process-card p {
+    max-width: 26ch;
+  }
+
+  body[data-page="home"] .teaser-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    align-items: stretch;
+  }
+
+  body[data-page="home"] .teaser-card {
+    min-height: 352px;
+  }
+
+  body[data-page="home"] .teaser-card-top {
+    min-height: 38px;
+    align-items: flex-start;
+  }
+
+  body[data-page="home"] .teaser-card h3 {
+    max-width: 13ch;
+  }
+
+  body[data-page="home"] .teaser-card p {
+    max-width: 32ch;
+  }
+
+  body[data-page="home"] .manifesto-grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
+    align-items: stretch;
+  }
 }
 
 .teaser-card,
