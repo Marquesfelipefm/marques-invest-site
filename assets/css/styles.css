@@ -4648,3 +4648,34 @@ body[data-page="home"] .hero-copy .eyebrow {
     margin-bottom: 18px;
   }
 }
+
+/* Official logo */
+.brand {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.brand-logo {
+  display: block;
+  width: clamp(190px, 17vw, 280px);
+  height: auto;
+  object-fit: contain;
+}
+
+.brand-lockup,
+.brand-wordmark,
+.brand-name,
+.brand-invest,
+.brand-star,
+.brand-mark {
+  display: none !important;
+}
+
+@media (max-width: 920px) {
+  .brand-logo {
+    width: clamp(150px, 34vw, 210px);
+  }
+}
