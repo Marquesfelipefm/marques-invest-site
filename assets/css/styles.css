@@ -4660,7 +4660,7 @@ body[data-page="home"] .hero-copy .eyebrow {
 
 .brand-logo {
   display: block;
-  width: clamp(190px, 17vw, 280px);
+  width: clamp(210px, 18vw, 300px);
   height: auto;
   object-fit: contain;
 }
@@ -4676,6 +4676,6 @@ body[data-page="home"] .hero-copy .eyebrow {
 
 @media (max-width: 920px) {
   .brand-logo {
-    width: clamp(150px, 34vw, 210px);
+    width: clamp(165px, 34vw, 230px);
   }
 }
