@@ -4679,3 +4679,410 @@ body[data-page="home"] .hero-copy .eyebrow {
     width: clamp(150px, 30vw, 205px);
   }
 }
+
+.telegraph-services-grid {
+  display: grid;
+  gap: 20px;
+}
+
+@media (min-width: 1181px) {
+  body[data-page="home"] .market-intelligence--telegraph,
+  body[data-page="home"] .process-section--telegraph,
+  body[data-page="home"] .authority-section--telegraph,
+  body[data-page="home"] .home-news-preview-section--telegraph {
+    max-width: 1460px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  body[data-page="home"] .section--split-rail {
+    display: block;
+  }
+
+  body[data-page="home"] .section--split-rail .section-rail {
+    position: static;
+    margin-bottom: 28px;
+  }
+
+  body[data-page="home"] .section--split-rail .section-content {
+    min-width: 0;
+  }
+
+  body[data-page="home"] .section-heading--editorial,
+  body[data-page="home"] .section-heading--split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
+    align-items: end;
+    gap: 28px;
+  }
+
+  body[data-page="home"] .section-heading--wide {
+    max-width: none;
+    margin-bottom: 0;
+  }
+
+  body[data-page="home"] .section-heading--wide h2,
+  body[data-page="home"] .section-heading--split h2 {
+    max-width: 10ch;
+    font-size: clamp(3.3rem, 4vw, 5.2rem);
+    line-height: 0.9;
+  }
+
+  body[data-page="home"] .section-heading-support {
+    max-width: 33ch;
+    margin: 0;
+    color: rgba(246, 243, 238, 0.72);
+    font-size: 1rem;
+    line-height: 1.72;
+  }
+
+  body[data-page="home"] .market-intelligence--telegraph .section-heading {
+    margin-bottom: 26px;
+  }
+
+  body[data-page="home"] .market-intelligence--telegraph .section-heading h2 {
+    max-width: 8ch;
+    font-size: clamp(3.6rem, 4.2vw, 5.4rem);
+    line-height: 0.88;
+  }
+
+  body[data-page="home"] .telegraph-services-grid {
+    grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+    gap: 0;
+    align-items: start;
+    border-top: 1px solid rgba(212, 166, 70, 0.18);
+    padding-top: 26px;
+  }
+
+  body[data-page="home"] .telegraph-services-grid .intelligence-flow {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(320px, 1fr);
+    gap: 26px;
+    padding-right: 36px;
+  }
+
+  body[data-page="home"] .telegraph-services-grid .intelligence-lead {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  body[data-page="home"] .telegraph-services-grid .intelligence-lead::after {
+    display: none;
+  }
+
+  body[data-page="home"] .telegraph-services-grid .intelligence-lead h3 {
+    max-width: 7.4ch;
+    font-size: clamp(4rem, 4.5vw, 5.5rem);
+    line-height: 0.86;
+  }
+
+  body[data-page="home"] .telegraph-services-grid .intelligence-lead p {
+    max-width: 43ch;
+    font-size: 1.08rem;
+  }
+
+  body[data-page="home"] .telegraph-services-grid .intelligence-points {
+    margin-top: 24px;
+  }
+
+  body[data-page="home"] .telegraph-services-grid .intelligence-visual {
+    min-height: 360px;
+    border: 0;
+    border-top: 1px solid rgba(212, 166, 70, 0.14);
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body[data-page="home"] .telegraph-services-grid .intelligence-service-list {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding-left: 36px;
+    border-left: 1px solid rgba(212, 166, 70, 0.14);
+  }
+
+  body[data-page="home"] .telegraph-services-grid .intelligence-card,
+  body[data-page="home"] .telegraph-services-grid .intelligence-card--accent {
+    min-height: 0;
+    padding: 22px 0;
+    border: 0;
+    border-top: 1px solid rgba(212, 166, 70, 0.14);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  body[data-page="home"] .telegraph-services-grid .intelligence-card:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  body[data-page="home"] .telegraph-services-grid .intelligence-card strong {
+    display: block;
+    max-width: 10ch;
+    font-size: 1.9rem;
+    line-height: 0.98;
+  }
+
+  body[data-page="home"] .telegraph-services-grid .intelligence-card p {
+    max-width: 34ch;
+  }
+
+  body[data-page="home"] .process-section--telegraph .section-content,
+  body[data-page="home"] .authority-section--telegraph .section-content {
+    border-top: 1px solid rgba(212, 166, 70, 0.18);
+    padding-top: 24px;
+  }
+
+  body[data-page="home"] .process-section--telegraph .process-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  body[data-page="home"] .process-section--telegraph .process-card {
+    min-height: 0;
+    padding: 18px 26px 16px;
+    border: 0;
+    border-left: 1px solid rgba(212, 166, 70, 0.14);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  body[data-page="home"] .process-section--telegraph .process-card:first-child {
+    border-left: 0;
+  }
+
+  body[data-page="home"] .process-section--telegraph .process-index {
+    width: auto;
+    height: auto;
+    margin: 0 0 16px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    font-size: 0.82rem;
+    letter-spacing: 0.18em;
+  }
+
+  body[data-page="home"] .process-section--telegraph .process-card h3 {
+    max-width: 8ch;
+    margin: 0 0 14px;
+    font-size: 2rem;
+    line-height: 0.98;
+  }
+
+  body[data-page="home"] .process-section--telegraph .process-card p {
+    max-width: 29ch;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .authority-flow {
+    grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+    gap: 0;
+    align-items: start;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .teaser-card--feature {
+    min-height: 0;
+    padding: 0 40px 0 0;
+    border: 0;
+    border-right: 1px solid rgba(212, 166, 70, 0.14);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .teaser-card--feature::after {
+    display: none;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .teaser-card--feature h3 {
+    max-width: 6.8ch;
+    font-size: clamp(4rem, 4.5vw, 5.5rem);
+    line-height: 0.86;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .teaser-card--feature p {
+    max-width: 40ch;
+    font-size: 1.08rem;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .teaser-card--feature .teaser-points {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px 18px;
+    margin-top: 28px;
+    padding: 22px 0 0;
+    border-top: 1px solid rgba(212, 166, 70, 0.14);
+    list-style: none;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .teaser-card--feature .teaser-points li {
+    padding-left: 0;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .teaser-card--feature .teaser-points li::before,
+  body[data-page="home"] .authority-section--telegraph .teaser-card--feature .teaser-points li::marker {
+    content: none;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .authority-column {
+    gap: 0;
+    padding-left: 36px;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .authority-column .teaser-card {
+    min-height: 0;
+    padding: 0 0 24px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .authority-column .teaser-card + .teaser-card {
+    padding-top: 24px;
+    border-top: 1px solid rgba(212, 166, 70, 0.14);
+  }
+
+  body[data-page="home"] .authority-section--telegraph .authority-column .teaser-card::after {
+    display: none;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .authority-column .teaser-card h3 {
+    max-width: 7ch;
+    font-size: 2.5rem;
+    line-height: 0.94;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .authority-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    margin-top: 28px;
+    border-top: 1px solid rgba(212, 166, 70, 0.18);
+  }
+
+  body[data-page="home"] .authority-section--telegraph .authority-list .teaser-card {
+    min-height: 0;
+    padding: 22px 24px 16px;
+    border: 0;
+    border-left: 1px solid rgba(212, 166, 70, 0.14);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .authority-list .teaser-card:first-child {
+    border-left: 0;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .authority-list .teaser-card::after {
+    display: none;
+  }
+
+  body[data-page="home"] .authority-section--telegraph .authority-list .teaser-card h3 {
+    max-width: 8ch;
+    font-size: 2.2rem;
+    line-height: 0.96;
+  }
+
+  body[data-page="home"] .home-news-preview-section--telegraph .section-heading {
+    margin-bottom: 0;
+  }
+
+  body[data-page="home"] .home-news-preview-section--telegraph .section-heading h2 {
+    max-width: 9ch;
+    font-size: clamp(3.3rem, 4vw, 5rem);
+    line-height: 0.9;
+  }
+
+  body[data-page="home"] .home-news-preview-section--telegraph .home-preview-grid {
+    grid-template-columns: minmax(0, 1.16fr) minmax(360px, 0.84fr);
+    gap: 0;
+    margin-top: 22px;
+    border-top: 1px solid rgba(212, 166, 70, 0.18);
+    padding-top: 26px;
+  }
+
+  body[data-page="home"] .home-news-preview-section--telegraph .home-preview-main--news {
+    min-height: 0;
+    padding: 0 36px 0 0;
+    border: 0;
+    border-right: 1px solid rgba(212, 166, 70, 0.14);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  body[data-page="home"] .home-news-preview-section--telegraph .home-preview-main--news::after {
+    display: none;
+  }
+
+  body[data-page="home"] .home-news-preview-section--telegraph .home-preview-main--news h3 {
+    max-width: 7.8ch;
+    font-size: clamp(4rem, 4.5vw, 5.2rem);
+    line-height: 0.86;
+  }
+
+  body[data-page="home"] .home-news-preview-section--telegraph .home-preview-side--news {
+    padding: 0 0 0 36px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  body[data-page="home"] .home-news-preview-section--telegraph .home-preview-side-visual {
+    min-height: 280px;
+    margin-bottom: 22px;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body[data-page="home"] .home-news-preview-section--telegraph .home-mini-news {
+    gap: 0;
+  }
+
+  body[data-page="home"] .home-news-preview-section--telegraph .home-mini-item {
+    padding: 18px 0;
+    border: 0;
+    border-top: 1px solid rgba(212, 166, 70, 0.14);
+    border-radius: 0;
+    background: transparent;
+  }
+
+  body[data-page="home"] .home-news-preview-section--telegraph .home-mini-item:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  body[data-page="home"] .home-news-preview-section--telegraph .manifesto-grid {
+    grid-template-columns: minmax(0, 1.04fr) minmax(360px, 0.96fr);
+    gap: 0;
+    margin-top: 34px;
+    border-top: 1px solid rgba(212, 166, 70, 0.18);
+    padding-top: 26px;
+  }
+
+  body[data-page="home"] .home-news-preview-section--telegraph .manifesto-card--visual {
+    padding: 0 36px 0 0;
+    border: 0;
+    border-right: 1px solid rgba(212, 166, 70, 0.14);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  body[data-page="home"] .home-news-preview-section--telegraph .diagnostic-card {
+    padding: 0 0 0 36px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+}
