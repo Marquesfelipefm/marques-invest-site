@@ -3950,6 +3950,102 @@ body[data-page="home"] .hero-copy .eyebrow {
   border: 1px solid rgba(212, 166, 70, 0.12);
 }
 
+.pdf-preview-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(212, 166, 70, 0.12);
+  border-radius: 20px;
+  background: rgba(246, 243, 238, 0.03);
+}
+
+.pdf-preview-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.pdf-preview-copy strong {
+  color: var(--panel-text);
+  font-size: 1rem;
+}
+
+.pdf-preview-copy p {
+  margin: 0;
+  color: rgba(246, 243, 238, 0.72);
+  line-height: 1.55;
+}
+
+.pdf-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.analysis-document-shell {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.82fr) minmax(0, 1.18fr);
+  gap: 24px;
+  max-width: 1460px;
+  margin: 0 auto;
+}
+
+.analysis-document-card,
+.analysis-document-viewer,
+.analysis-document-empty {
+  border: 1px solid rgba(212, 166, 70, 0.14);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(212, 166, 70, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(14, 26, 50, 0.98), rgba(10, 19, 37, 0.94));
+  box-shadow: 0 24px 58px rgba(0, 0, 0, 0.22);
+}
+
+.analysis-document-card {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding: clamp(26px, 3vw, 36px);
+}
+
+.analysis-document-card h2 {
+  margin: 0;
+  color: var(--panel-text);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(2.4rem, 3.2vw, 3.4rem);
+  line-height: 0.98;
+}
+
+.analysis-document-card p,
+.analysis-document-empty {
+  color: rgba(246, 243, 238, 0.76);
+  line-height: 1.65;
+}
+
+.analysis-document-empty {
+  display: grid;
+  gap: 10px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: rgba(246, 243, 238, 0.03);
+}
+
+.analysis-document-viewer {
+  overflow: hidden;
+  min-height: 980px;
+}
+
+.analysis-document-viewer iframe {
+  display: block;
+  width: 100%;
+  min-height: 980px;
+  border: 0;
+  background: #ffffff;
+}
+
+.analysis-document-viewer[hidden] {
+  display: none;
+}
+
 .analysis-marques-block {
   max-width: 1460px;
   margin: 0 auto 34px;
@@ -4072,6 +4168,22 @@ body[data-page="home"] .hero-copy .eyebrow {
   .article-share {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .pdf-preview-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 1180px) {
+  .analysis-document-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-document-viewer,
+  .analysis-document-viewer iframe {
+    min-height: 760px;
   }
 }
 

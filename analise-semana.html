@@ -60,6 +60,53 @@
             </aside>
           </div>
         </section>
+
+        <section class="section analysis-document-section">
+          <div class="analysis-document-shell">
+            <article class="analysis-document-card">
+              <span class="section-kicker">Leitura completa</span>
+              <h2 id="analysis-document-title">Visualize a analise semanal completa.</h2>
+              <p id="analysis-document-summary">
+                Quando o PDF da semana estiver publicado, ele aparecera embutido abaixo com todos os graficos,
+                infograficos e elementos visuais do documento original.
+              </p>
+              <div class="hero-actions" id="analysis-document-actions">
+                <a
+                  class="button button-primary"
+                  id="analysis-pdf-open"
+                  href="#"
+                  target="_blank"
+                  rel="noreferrer"
+                  hidden
+                >
+                  Abrir PDF
+                </a>
+                <a
+                  class="button button-secondary"
+                  id="analysis-pdf-download"
+                  href="#"
+                  target="_blank"
+                  rel="noreferrer"
+                  hidden
+                >
+                  Baixar PDF
+                </a>
+              </div>
+              <div class="analysis-document-empty" id="analysis-pdf-empty">
+                O PDF da analise semanal ainda nao foi publicado. Assim que o arquivo for anexado no painel,
+                essa area passa a exibir o documento no proprio site.
+              </div>
+            </article>
+
+            <div class="analysis-document-viewer" id="analysis-document-viewer" hidden>
+              <iframe
+                id="analysis-pdf-frame"
+                title="Analise da semana em PDF"
+                loading="lazy"
+              ></iframe>
+            </div>
+          </div>
+        </section>
       </main>
 
       <footer class="footer">

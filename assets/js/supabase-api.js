@@ -12,6 +12,21 @@
       .trim();
   }
 
+  function sanitizeFileName(fileName) {
+    const parts = String(fileName || "arquivo")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .split(".");
+    const extension = parts.length > 1 ? parts.pop().toLowerCase() : "";
+    const baseName = parts.join(".") || "arquivo";
+    const cleanedBase = baseName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "arquivo";
+
+    return extension ? `${cleanedBase}.${extension}` : cleanedBase;
+  }
+
   function inferPostType(post) {
     if (normalizeText(post?.content_type) === "analysis") {
       return "analysis";
@@ -239,6 +254,56 @@
     }
 
     return payload;
+  }
+
+  async function uploadPublicAsset(bucket, file, options = {}) {
+    const config = getConfig();
+    const session = await getValidSession(true);
+
+    if (!file) {
+      throw new Error("Selecione um arquivo antes de enviar.");
+    }
+
+    const safeBucket = String(bucket || "").trim();
+
+    if (!safeBucket) {
+      throw new Error("Bucket de upload nao informado.");
+    }
+
+    const folder = String(options.folder || "").trim().replace(/^\/+|\/+$/g, "");
+    const fileName = sanitizeFileName(file.name);
+    const pathPrefix = folder ? `${folder}/` : "";
+    const objectPath = `${pathPrefix}${Date.now()}-${fileName}`;
+    const encodedPath = objectPath
+      .split("/")
+      .map((segment) => encodeURIComponent(segment))
+      .join("/");
+
+    const response = await fetch(
+      `${config.url}/storage/v1/object/${encodeURIComponent(safeBucket)}/${encodedPath}`,
+      {
+        method: "POST",
+        headers: {
+          apikey: config.anonKey,
+          Authorization: `Bearer ${session.access_token}`,
+          "x-upsert": options.upsert === false ? "false" : "true",
+          "Content-Type": file.type || "application/octet-stream",
+        },
+        body: file,
+      }
+    );
+
+    const payload = await safeJson(response);
+
+    if (!response.ok) {
+      throw new Error(getErrorMessage(response, payload));
+    }
+
+    return {
+      bucket: safeBucket,
+      path: objectPath,
+      publicUrl: `${config.url}/storage/v1/object/public/${safeBucket}/${encodedPath}`,
+    };
   }
 
   function buildFilterQuery(filters = []) {
@@ -733,5 +798,6 @@
     listNewsletterSubscribers,
     saveContactLead,
     listContactLeads,
+    uploadPublicAsset,
   };
 })();

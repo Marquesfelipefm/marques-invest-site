@@ -10,6 +10,11 @@
   const settingsForm = document.querySelector("#admin-settings-form");
   const socialForm = document.querySelector("#admin-social-form");
   const contentForm = document.querySelector("#admin-content-form");
+  const weeklyAnalysisForm = document.querySelector("#admin-weekly-analysis-form");
+  const weeklyAnalysisPdfUrlInput = weeklyAnalysisForm?.querySelector("[name='analysis.pdfUrl']");
+  const weeklyAnalysisPdfFileNameInput = weeklyAnalysisForm?.querySelector("[name='analysis.pdfFileName']");
+  const weeklyAnalysisPdfFileInput = document.querySelector("#admin-weekly-analysis-pdf-file");
+  const weeklyAnalysisPdfPreview = document.querySelector("#admin-weekly-analysis-pdf-preview");
   const postForm = document.querySelector("#admin-post-form");
   const postResetButton = document.querySelector("#admin-post-reset");
   const postTitleInput = postForm?.querySelector("[name='title']");
@@ -296,6 +301,35 @@
     fillFormFromSnapshot(settingsForm, snapshot);
     fillFormFromSnapshot(socialForm, snapshot);
     fillFormFromSnapshot(contentForm, snapshot);
+    fillWeeklyAnalysisForm();
+  }
+
+  function fillWeeklyAnalysisForm() {
+    if (!weeklyAnalysisForm) {
+      return;
+    }
+
+    setFieldValue(weeklyAnalysisForm, "analysis.eyebrow", snapshot.analysis?.eyebrow || "");
+    setFieldValue(weeklyAnalysisForm, "analysis.title", snapshot.analysis?.title || "");
+    setFieldValue(weeklyAnalysisForm, "analysis.description", snapshot.analysis?.description || "");
+    setFieldValue(weeklyAnalysisForm, "analysis.sideTag", snapshot.analysis?.sideTag || "");
+    setFieldValue(weeklyAnalysisForm, "analysis.sideTitle", snapshot.analysis?.sideTitle || "");
+    setFieldValue(
+      weeklyAnalysisForm,
+      "analysis.bulletsInput",
+      Array.isArray(snapshot.analysis?.bullets) ? snapshot.analysis.bullets.join("\n") : ""
+    );
+    setFieldValue(weeklyAnalysisForm, "analysis.documentTitle", snapshot.analysis?.documentTitle || "");
+    setFieldValue(weeklyAnalysisForm, "analysis.documentSummary", snapshot.analysis?.documentSummary || "");
+    setFieldValue(weeklyAnalysisForm, "analysis.pdfUrl", snapshot.analysis?.pdfUrl || "");
+    setFieldValue(weeklyAnalysisForm, "analysis.pdfFileName", snapshot.analysis?.pdfFileName || "");
+
+    updatePdfPreview(
+      weeklyAnalysisPdfPreview,
+      snapshot.analysis?.pdfUrl || "",
+      snapshot.analysis?.pdfFileName || "",
+      "PDF da analise semanal"
+    );
   }
 
   function readFormIntoSnapshot(form) {
@@ -306,6 +340,39 @@
     form.querySelectorAll("input[name], select[name], textarea[name]").forEach((field) => {
       assignPath(snapshot, field.name, field.value);
     });
+  }
+
+  function readWeeklyAnalysisFormIntoSnapshot() {
+    if (!weeklyAnalysisForm) {
+      return;
+    }
+
+    const bulletsRaw =
+      weeklyAnalysisForm.querySelector("[name='analysis.bulletsInput']")?.value || "";
+
+    snapshot.analysis = snapshot.analysis || {};
+    snapshot.analysis.eyebrow =
+      weeklyAnalysisForm.querySelector("[name='analysis.eyebrow']")?.value.trim() || "";
+    snapshot.analysis.title =
+      weeklyAnalysisForm.querySelector("[name='analysis.title']")?.value.trim() || "";
+    snapshot.analysis.description =
+      weeklyAnalysisForm.querySelector("[name='analysis.description']")?.value.trim() || "";
+    snapshot.analysis.sideTag =
+      weeklyAnalysisForm.querySelector("[name='analysis.sideTag']")?.value.trim() || "";
+    snapshot.analysis.sideTitle =
+      weeklyAnalysisForm.querySelector("[name='analysis.sideTitle']")?.value.trim() || "";
+    snapshot.analysis.documentTitle =
+      weeklyAnalysisForm.querySelector("[name='analysis.documentTitle']")?.value.trim() || "";
+    snapshot.analysis.documentSummary =
+      weeklyAnalysisForm.querySelector("[name='analysis.documentSummary']")?.value.trim() || "";
+    snapshot.analysis.pdfUrl =
+      weeklyAnalysisForm.querySelector("[name='analysis.pdfUrl']")?.value.trim() || "";
+    snapshot.analysis.pdfFileName =
+      weeklyAnalysisForm.querySelector("[name='analysis.pdfFileName']")?.value.trim() || "";
+    snapshot.analysis.bullets = bulletsRaw
+      .split("\n")
+      .map((item) => item.trim())
+      .filter(Boolean);
   }
 
   function updateCoverPreview(previewElement, url, altText, label) {
@@ -323,6 +390,37 @@
     previewElement.innerHTML = `
       <span class="cover-preview-label">${escapeHtml(label)}</span>
       <img src="${escapeHtml(url)}" alt="${escapeHtml(altText || label)}" loading="lazy" />
+    `;
+  }
+
+  function updatePdfPreview(previewElement, url, fileName, label) {
+    if (!previewElement) {
+      return;
+    }
+
+    if (!url) {
+      previewElement.hidden = true;
+      previewElement.innerHTML = "";
+      return;
+    }
+
+    previewElement.hidden = false;
+    previewElement.innerHTML = `
+      <span class="cover-preview-label">${escapeHtml(label)}</span>
+      <div class="pdf-preview-card">
+        <div class="pdf-preview-copy">
+          <strong>${escapeHtml(fileName || "Documento da analise semanal")}</strong>
+          <p>O PDF sera exibido embutido na pagina Analise da semana, incluindo infograficos e elementos visuais.</p>
+        </div>
+        <div class="pdf-preview-actions">
+          <a class="button button-secondary" href="${escapeHtml(url)}" target="_blank" rel="noreferrer">
+            Abrir PDF
+          </a>
+          <a class="button button-secondary" href="${escapeHtml(url)}" target="_blank" rel="noreferrer" download>
+            Baixar PDF
+          </a>
+        </div>
+      </div>
     `;
   }
 
@@ -410,6 +508,57 @@
         }
       });
     }
+
+    syncPreview();
+  }
+
+  function attachPdfField(fileInput, urlInput, fileNameInput, previewElement, options = {}) {
+    if (!fileInput || !urlInput || !fileNameInput || !previewElement) {
+      return;
+    }
+
+    const syncPreview = () => {
+      updatePdfPreview(
+        previewElement,
+        urlInput.value.trim(),
+        fileNameInput.value.trim(),
+        options.label || "PDF enviado"
+      );
+    };
+
+    urlInput.addEventListener("input", syncPreview);
+    fileNameInput.addEventListener("input", syncPreview);
+
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files?.[0];
+
+      if (!file) {
+        syncPreview();
+        return;
+      }
+
+      if (file.type !== "application/pdf") {
+        setPanelStatus("Selecione um arquivo PDF valido para a analise semanal.", "error");
+        fileInput.value = "";
+        return;
+      }
+
+      try {
+        setPanelStatus("Enviando PDF da analise semanal para o storage...");
+        const upload = await window.MarquesSupabase.uploadPublicAsset("analysis-assets", file, {
+          folder: "weekly-analysis",
+        });
+
+        urlInput.value = upload.publicUrl;
+        fileNameInput.value = file.name;
+        syncPreview();
+        setPanelStatus("PDF enviado com sucesso e pronto para aparecer no site.", "success");
+      } catch (error) {
+        setPanelStatus(error.message || "Falha ao enviar o PDF da analise semanal.", "error");
+      } finally {
+        fileInput.value = "";
+      }
+    });
 
     syncPreview();
   }
@@ -842,6 +991,19 @@
     }
   });
 
+  weeklyAnalysisForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    readWeeklyAnalysisFormIntoSnapshot();
+
+    try {
+      await window.MarquesSupabase.saveSiteSnapshot(snapshot);
+      fillWeeklyAnalysisForm();
+      setPanelStatus("Analise da semana salva com sucesso.", "success");
+    } catch (error) {
+      setPanelStatus(error.message || "Falha ao salvar a analise da semana.", "error");
+    }
+  });
+
   postForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -962,6 +1124,16 @@
     analysisCoverAltInput,
     analysisCoverPreview,
     "Capa do artigo"
+  );
+
+  attachPdfField(
+    weeklyAnalysisPdfFileInput,
+    weeklyAnalysisPdfUrlInput,
+    weeklyAnalysisPdfFileNameInput,
+    weeklyAnalysisPdfPreview,
+    {
+      label: "PDF da analise semanal",
+    }
   );
 
   refreshButton.addEventListener("click", async () => {

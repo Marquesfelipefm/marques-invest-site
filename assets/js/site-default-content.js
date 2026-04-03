@@ -73,6 +73,11 @@ window.MARQUES_DEFAULT_CONTENT = {
       "Teses para carteira e implicacoes patrimoniais",
       "Conclusao com proxima decisao de alocacao",
     ],
+    documentTitle: "Visualize a analise semanal completa.",
+    documentSummary:
+      "Quando o PDF da semana estiver publicado, ele aparecera embutido abaixo com todos os graficos, infograficos e elementos visuais do documento original.",
+    pdfUrl: "",
+    pdfFileName: "",
   },
   highlights: {
     kicker: "Destaques",

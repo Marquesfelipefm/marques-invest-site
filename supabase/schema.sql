@@ -215,3 +215,31 @@ values
   ('newsletter', '{}'::jsonb),
   ('contact', '{}'::jsonb)
 on conflict (key) do nothing;
+
+insert into storage.buckets (id, name, public)
+values ('analysis-assets', 'analysis-assets', true)
+on conflict (id) do nothing;
+
+drop policy if exists "Public can read analysis assets" on storage.objects;
+create policy "Public can read analysis assets"
+on storage.objects for select
+using (bucket_id = 'analysis-assets');
+
+drop policy if exists "Authenticated can upload analysis assets" on storage.objects;
+create policy "Authenticated can upload analysis assets"
+on storage.objects for insert
+to authenticated
+with check (bucket_id = 'analysis-assets');
+
+drop policy if exists "Authenticated can update analysis assets" on storage.objects;
+create policy "Authenticated can update analysis assets"
+on storage.objects for update
+to authenticated
+using (bucket_id = 'analysis-assets')
+with check (bucket_id = 'analysis-assets');
+
+drop policy if exists "Authenticated can delete analysis assets" on storage.objects;
+create policy "Authenticated can delete analysis assets"
+on storage.objects for delete
+to authenticated
+using (bucket_id = 'analysis-assets');

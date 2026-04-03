@@ -131,6 +131,7 @@
                   <button class="filter-button is-active" type="button" data-admin-tab="settings">Configuracoes</button>
                   <button class="filter-button" type="button" data-admin-tab="social">Postar nas redes</button>
                   <button class="filter-button" type="button" data-admin-tab="content">Conteudo</button>
+                  <button class="filter-button" type="button" data-admin-tab="weekly-analysis">Analise da semana</button>
                   <button class="filter-button" type="button" data-admin-tab="posts">Noticias diarias</button>
                   <button class="filter-button" type="button" data-admin-tab="analysis">Analise Marques</button>
                   <button class="filter-button" type="button" data-admin-tab="agenda">Agenda</button>
@@ -219,27 +220,6 @@
                         <input type="text" name="home.teaserTitle" />
                       </label>
 
-                      <label class="field field-full">
-                        <span>Eyebrow da analise</span>
-                        <input type="text" name="analysis.eyebrow" />
-                      </label>
-                      <label class="field field-full">
-                        <span>Titulo da analise</span>
-                        <input type="text" name="analysis.title" />
-                      </label>
-                      <label class="field field-full">
-                        <span>Descricao da analise</span>
-                        <textarea name="analysis.description"></textarea>
-                      </label>
-                      <label class="field">
-                        <span>Tag lateral da analise</span>
-                        <input type="text" name="analysis.sideTag" />
-                      </label>
-                      <label class="field">
-                        <span>Titulo lateral da analise</span>
-                        <input type="text" name="analysis.sideTitle" />
-                      </label>
-
                       <label class="field">
                         <span>Kicker dos destaques</span>
                         <input type="text" name="highlights.kicker" />
@@ -290,6 +270,76 @@
 
                     <div class="hero-actions">
                       <button type="submit" class="button button-primary">Salvar conteudo</button>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="admin-tab" data-admin-panel="weekly-analysis" hidden>
+                  <div class="admin-note">
+                    <strong>Analise da semana em PDF</strong>
+                    <p>
+                      Essa area publica a leitura semanal da Marques Invest com PDF embutido na pagina. O PDF pode conter
+                      infograficos, tabelas e diagramas, e eles aparecem no site dentro do visualizador.
+                    </p>
+                  </div>
+
+                  <form id="admin-weekly-analysis-form">
+                    <div class="form-grid">
+                      <label class="field field-full">
+                        <span>Eyebrow</span>
+                        <input type="text" name="analysis.eyebrow" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Titulo principal</span>
+                        <input type="text" name="analysis.title" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Descricao curta</span>
+                        <textarea name="analysis.description"></textarea>
+                      </label>
+                      <label class="field">
+                        <span>Tag lateral</span>
+                        <input type="text" name="analysis.sideTag" />
+                      </label>
+                      <label class="field">
+                        <span>Titulo lateral</span>
+                        <input type="text" name="analysis.sideTitle" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Bullets da estrutura</span>
+                        <textarea
+                          name="analysis.bulletsInput"
+                          placeholder="Uma linha por bullet."
+                        ></textarea>
+                      </label>
+                      <label class="field field-full">
+                        <span>Titulo do bloco do PDF</span>
+                        <input type="text" name="analysis.documentTitle" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Resumo do bloco do PDF</span>
+                        <textarea name="analysis.documentSummary"></textarea>
+                      </label>
+                      <label class="field field-full">
+                        <span>URL do PDF</span>
+                        <input type="url" name="analysis.pdfUrl" placeholder="https://..." />
+                      </label>
+                      <label class="field field-full">
+                        <span>Anexar PDF</span>
+                        <input type="file" id="admin-weekly-analysis-pdf-file" accept="application/pdf" />
+                        <small class="field-help">
+                          Envie o PDF da analise semanal. O arquivo sera publicado no storage do Supabase e exibido no site.
+                        </small>
+                      </label>
+                      <div class="cover-preview field-full" id="admin-weekly-analysis-pdf-preview" hidden></div>
+                      <label class="field field-full">
+                        <span>Nome do arquivo</span>
+                        <input type="text" name="analysis.pdfFileName" placeholder="Ex: carta-marques-semana-14.pdf" />
+                      </label>
+                    </div>
+
+                    <div class="hero-actions">
+                      <button type="submit" class="button button-primary">Salvar analise da semana</button>
                     </div>
                   </form>
                 </div>

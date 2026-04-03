@@ -259,6 +259,41 @@
     setText("#analysis-side-tag", content.analysis.sideTag);
     setText("#analysis-side-title", content.analysis.sideTitle);
     renderList("#analysis-bullets", content.analysis.bullets);
+
+    setText("#analysis-document-title", content.analysis.documentTitle);
+    setText("#analysis-document-summary", content.analysis.documentSummary);
+
+    const pdfUrl = String(content.analysis?.pdfUrl || "").trim();
+    const pdfFileName = String(content.analysis?.pdfFileName || "analise-marques.pdf").trim();
+    const openLink = document.querySelector("#analysis-pdf-open");
+    const downloadLink = document.querySelector("#analysis-pdf-download");
+    const viewer = document.querySelector("#analysis-document-viewer");
+    const iframe = document.querySelector("#analysis-pdf-frame");
+    const emptyState = document.querySelector("#analysis-pdf-empty");
+
+    if (!openLink || !downloadLink || !viewer || !iframe || !emptyState) {
+      return;
+    }
+
+    if (!pdfUrl) {
+      openLink.hidden = true;
+      downloadLink.hidden = true;
+      viewer.hidden = true;
+      iframe.removeAttribute("src");
+      emptyState.hidden = false;
+      return;
+    }
+
+    openLink.hidden = false;
+    openLink.href = pdfUrl;
+
+    downloadLink.hidden = false;
+    downloadLink.href = pdfUrl;
+    downloadLink.setAttribute("download", pdfFileName);
+
+    viewer.hidden = false;
+    iframe.src = `${pdfUrl}#view=FitH&toolbar=0&navpanes=0&scrollbar=1`;
+    emptyState.hidden = true;
   }
 
   function renderHighlights(content) {
