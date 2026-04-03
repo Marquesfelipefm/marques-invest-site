@@ -562,6 +562,11 @@
             "O bucket `analysis-assets` ainda nao existe no Supabase. Crie esse bucket no Storage ou rode novamente o schema SQL antes de anexar o PDF.",
             "error"
           );
+        } else if (normalizedMessage.includes("row-level security policy")) {
+          setPanelStatus(
+            "O bucket `analysis-assets` existe, mas ainda nao tem as policies de upload. Rode novamente o schema SQL no Supabase ou crie as policies do Storage para permitir insert/update/delete a usuarios autenticados.",
+            "error"
+          );
         } else {
           setPanelStatus(rawMessage || "Falha ao enviar o PDF da analise semanal.", "error");
         }
