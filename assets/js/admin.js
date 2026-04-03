@@ -554,7 +554,17 @@
         syncPreview();
         setPanelStatus("PDF enviado com sucesso e pronto para aparecer no site.", "success");
       } catch (error) {
-        setPanelStatus(error.message || "Falha ao enviar o PDF da analise semanal.", "error");
+        const rawMessage = error.message || "";
+        const normalizedMessage = rawMessage.toLowerCase();
+
+        if (normalizedMessage.includes("bucket not found")) {
+          setPanelStatus(
+            "O bucket `analysis-assets` ainda nao existe no Supabase. Crie esse bucket no Storage ou rode novamente o schema SQL antes de anexar o PDF.",
+            "error"
+          );
+        } else {
+          setPanelStatus(rawMessage || "Falha ao enviar o PDF da analise semanal.", "error");
+        }
       } finally {
         fileInput.value = "";
       }
