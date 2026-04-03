@@ -75,9 +75,9 @@ window.MARQUES_DEFAULT_CONTENT = {
     ],
     documentTitle: "Visualize a analise semanal completa.",
     documentSummary:
-      "Quando o PDF da semana estiver publicado, ele aparecera embutido abaixo com todos os graficos, infograficos e elementos visuais do documento original.",
-    pdfUrl: "",
-    pdfFileName: "",
+      "A edicao mais recente da analise semanal esta disponivel abaixo, com graficos, infograficos e todos os elementos visuais do documento original.",
+    pdfUrl: "assets/docs/weekly-analysis/marques-invest-artigo-011.pdf",
+    pdfFileName: "Marques_Invest_Artigo_011.pdf",
   },
   highlights: {
     kicker: "Destaques",

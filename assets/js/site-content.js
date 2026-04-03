@@ -1,5 +1,7 @@
 (function () {
   const STORAGE_KEY = "marques-invest-content";
+  const STATIC_WEEKLY_ANALYSIS_PDF = "assets/docs/weekly-analysis/marques-invest-artigo-011.pdf";
+  const STATIC_WEEKLY_ANALYSIS_PDF_NAME = "Marques_Invest_Artigo_011.pdf";
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
@@ -263,8 +265,16 @@
     setText("#analysis-document-title", content.analysis.documentTitle);
     setText("#analysis-document-summary", content.analysis.documentSummary);
 
-    const pdfUrl = String(content.analysis?.pdfUrl || "").trim();
-    const pdfFileName = String(content.analysis?.pdfFileName || "analise-marques.pdf").trim();
+    const pdfUrl = String(
+      content.analysis?.pdfUrl ||
+        window.MARQUES_DEFAULT_CONTENT?.analysis?.pdfUrl ||
+        STATIC_WEEKLY_ANALYSIS_PDF
+    ).trim();
+    const pdfFileName = String(
+      content.analysis?.pdfFileName ||
+        window.MARQUES_DEFAULT_CONTENT?.analysis?.pdfFileName ||
+        STATIC_WEEKLY_ANALYSIS_PDF_NAME
+    ).trim();
     const openLink = document.querySelector("#analysis-pdf-open");
     const downloadLink = document.querySelector("#analysis-pdf-download");
     const viewer = document.querySelector("#analysis-document-viewer");

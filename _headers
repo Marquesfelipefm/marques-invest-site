@@ -10,5 +10,9 @@
 /assets/css/*
   Cache-Control: public, max-age=0, must-revalidate
 
+/assets/docs/*
+  X-Frame-Options: SAMEORIGIN
+  Cache-Control: public, max-age=0, must-revalidate
+
 /assets/img/*
   Cache-Control: public, max-age=31536000, immutable
