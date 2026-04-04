@@ -213,6 +213,88 @@ h3 {
   color: var(--text-faint);
 }
 
+/* ── Crypto Ticker ── */
+
+.crypto-ticker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 1440px;
+  margin: 0 auto 18px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  overflow: hidden;
+  position: relative;
+}
+
+.crypto-ticker-label {
+  flex: 0 0 auto;
+  color: var(--accent-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.crypto-ticker-track {
+  flex: 1;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+}
+
+.crypto-ticker-items {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: max-content;
+  animation: crypto-scroll 40s linear infinite;
+}
+
+.crypto-ticker-items:hover {
+  animation-play-state: paused;
+}
+
+@keyframes crypto-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.crypto-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.crypto-ticker-symbol {
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.crypto-ticker-price {
+  color: var(--text-soft);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.crypto-ticker-change {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.crypto-ticker-change.positive {
+  color: #4ade80;
+}
+
+.crypto-ticker-change.negative {
+  color: #f87171;
+}
+
 .brand {
   position: relative;
   display: inline-flex;

@@ -262,6 +262,8 @@ function ensureMarketRibbon() {
   return ribbon.querySelector("#market-ribbon-items");
 }
 
+/* ── End Crypto Ticker (loaded via DOMContentLoaded below) ── */
+
 function slugify(value) {
   return value
     .toLowerCase()
@@ -1476,3 +1478,5 @@ if (agendaList) {
 if (homeNewsLead && homeNewsList) {
   loadHomeNewsPreview();
 }
+
+/* ── End Crypto Ticker (see crypto-ticker.js) ── */
