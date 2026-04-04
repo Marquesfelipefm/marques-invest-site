@@ -635,9 +635,9 @@ h3 {
 
 .section-heading h2 {
   margin: 12px 0 0;
-  max-width: 14ch;
-  font-size: clamp(2.1rem, 4vw, 4rem);
-  line-height: 0.96;
+  max-width: none;
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  line-height: 1.05;
 }
 
 .page-hero {
@@ -1762,8 +1762,8 @@ h3 {
 .intelligence-lead h3 {
   margin: 14px 0 10px;
   color: #ffffff;
-  font-size: clamp(1.8rem, 3vw, 2.7rem);
-  line-height: 0.95;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  line-height: 1.1;
 }
 
 .intelligence-lead p {
@@ -2763,8 +2763,8 @@ body[data-page="home"] .hero-copy p {
 .section-heading h2 {
   margin: 12px 0 0;
   color: var(--text);
-  font-size: clamp(2.2rem, 5vw, 3.6rem);
-  line-height: 1;
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  line-height: 1.05;
 }
 
 .section-heading-main {
@@ -2886,8 +2886,8 @@ body[data-page="home"] .hero-copy p {
 .intelligence-lead h3 {
   margin: 14px 0 14px;
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  line-height: 1.1;
 }
 
 .intelligence-points span,
@@ -3000,8 +3000,8 @@ body[data-page="home"] .hero-copy p {
 @media (min-width: 1181px) {
   body[data-page="home"] .section-heading--wide h2 {
     max-width: 20ch;
-    font-size: clamp(3rem, 4.1vw, 4.9rem);
-    line-height: 0.94;
+    font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+    line-height: 1.05;
   }
 
   body[data-page="home"] .process-grid {
