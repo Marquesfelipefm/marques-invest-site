@@ -1,0 +1,5 @@
+{
+  "Description": "Ficheiro de verificação de propriedade do domínio para o Microsoft 365 – colocar na raiz do site",
+  "Domain": "marquesinvest.com",
+  "Id": "7514d270-647e-4d61-b366-50cf44b81c26"
+}
