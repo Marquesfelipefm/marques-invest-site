@@ -1772,6 +1772,318 @@ h3 {
   width: fit-content;
 }
 
+/* ── Admin Toast ── */
+.admin-toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.admin-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 300px;
+  max-width: 480px;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 0.88rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  animation: toast-in 0.3s var(--ease) forwards;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.admin-toast.is-leaving {
+  animation: toast-out 0.3s var(--ease) forwards;
+}
+
+.admin-toast-icon {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+}
+
+.admin-toast.is-success { border-left: 3px solid #4ade80; }
+.admin-toast.is-error { border-left: 3px solid #f87171; }
+.admin-toast.is-loading { border-left: 3px solid var(--accent); }
+
+.admin-toast.is-success .admin-toast-icon { color: #4ade80; }
+.admin-toast.is-error .admin-toast-icon { color: #f87171; }
+.admin-toast.is-loading .admin-toast-icon { color: var(--accent); animation: spin 1s linear infinite; }
+
+.admin-toast-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0 0 0 8px;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toast-out {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(40px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── Admin Loading Button ── */
+.button.is-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.button.is-loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Admin Tab Badge ── */
+.filter-button .tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: rgba(201, 168, 76, 0.15);
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* ── Admin Search ── */
+.admin-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+}
+
+.admin-search input {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.admin-search input::placeholder {
+  color: var(--text-soft);
+}
+
+.admin-search-icon {
+  color: var(--text-soft);
+  font-size: 0.9rem;
+}
+
+.admin-search-count {
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+/* ── Admin Delete Modal ── */
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  animation: fade-in 0.2s ease;
+}
+
+.admin-modal {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  max-width: 440px;
+  width: 90%;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+}
+
+.admin-modal h4 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.admin-modal p {
+  margin: 0 0 20px;
+  color: var(--text-soft);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.admin-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.button-danger {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.button-danger:hover {
+  background: #b91c1c;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Admin Form Validation ── */
+.field input:invalid:not(:placeholder-shown):not(:focus),
+.field textarea:invalid:not(:placeholder-shown):not(:focus),
+.field select:invalid:not(:focus) {
+  border-color: #f87171;
+}
+
+.admin-form-dirty .field input:invalid,
+.admin-form-dirty .field textarea:invalid,
+.admin-form-dirty .field select:invalid {
+  border-color: #f87171;
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.15);
+}
+
+/* ── Admin Unsaved Badge ── */
+.admin-unsaved-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* ── Admin New Button in List ── */
+.admin-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-list-header h3 { margin: 0; }
+
+/* ── Admin Mobile ── */
+@media (max-width: 768px) {
+  .admin-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .admin-sidebar {
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  .admin-metrics {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .admin-toolbar {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 12px;
+  }
+
+  .admin-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .admin-social-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .filters {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .admin-modal {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .admin-toast-container {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+  }
+
+  .admin-toast {
+    min-width: unset;
+    max-width: 100%;
+  }
+}
+
 .hero-strip,
 .home-preview-grid {
   max-width: 1460px;
