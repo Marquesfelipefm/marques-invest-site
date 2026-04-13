@@ -213,6 +213,88 @@ h3 {
   color: var(--text-faint);
 }
 
+/* ── Crypto Ticker ── */
+
+.crypto-ticker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 1440px;
+  margin: 0 auto 18px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  overflow: hidden;
+  position: relative;
+}
+
+.crypto-ticker-label {
+  flex: 0 0 auto;
+  color: var(--accent-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.crypto-ticker-track {
+  flex: 1;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+}
+
+.crypto-ticker-items {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: max-content;
+  animation: crypto-scroll 40s linear infinite;
+}
+
+.crypto-ticker-items:hover {
+  animation-play-state: paused;
+}
+
+@keyframes crypto-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.crypto-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.crypto-ticker-symbol {
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.crypto-ticker-price {
+  color: var(--text-soft);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.crypto-ticker-change {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.crypto-ticker-change.positive {
+  color: #4ade80;
+}
+
+.crypto-ticker-change.negative {
+  color: #f87171;
+}
+
 .brand {
   position: relative;
   display: inline-flex;
@@ -635,9 +717,9 @@ h3 {
 
 .section-heading h2 {
   margin: 12px 0 0;
-  max-width: 14ch;
-  font-size: clamp(2.1rem, 4vw, 4rem);
-  line-height: 0.96;
+  max-width: none;
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  line-height: 1.05;
 }
 
 .page-hero {
@@ -1762,8 +1844,8 @@ h3 {
 .intelligence-lead h3 {
   margin: 14px 0 10px;
   color: #ffffff;
-  font-size: clamp(1.8rem, 3vw, 2.7rem);
-  line-height: 0.95;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  line-height: 1.1;
 }
 
 .intelligence-lead p {
@@ -2763,8 +2845,8 @@ body[data-page="home"] .hero-copy p {
 .section-heading h2 {
   margin: 12px 0 0;
   color: var(--text);
-  font-size: clamp(2.2rem, 5vw, 3.6rem);
-  line-height: 1;
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  line-height: 1.05;
 }
 
 .section-heading-main {
@@ -2886,8 +2968,8 @@ body[data-page="home"] .hero-copy p {
 .intelligence-lead h3 {
   margin: 14px 0 14px;
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  line-height: 1.1;
 }
 
 .intelligence-points span,
@@ -3000,8 +3082,8 @@ body[data-page="home"] .hero-copy p {
 @media (min-width: 1181px) {
   body[data-page="home"] .section-heading--wide h2 {
     max-width: 20ch;
-    font-size: clamp(3rem, 4.1vw, 4.9rem);
-    line-height: 0.94;
+    font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+    line-height: 1.05;
   }
 
   body[data-page="home"] .process-grid {
@@ -3885,6 +3967,129 @@ body[data-page="home"] .hero-copy .eyebrow {
   gap: 10px;
 }
 
+/* Quill editor dark theme overrides */
+.quill-editor {
+  min-height: 220px;
+  border-radius: var(--radius-md);
+}
+
+.quill-editor .ql-editor {
+  min-height: 200px;
+  color: var(--text);
+  font-family: "Inter", sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.quill-editor .ql-editor.ql-blank::before {
+  color: var(--text-faint);
+  font-style: normal;
+}
+
+.quill-editor .ql-editor h2 {
+  color: var(--gold);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.3rem;
+  margin: 1.2em 0 0.4em;
+}
+
+.quill-editor .ql-editor h3 {
+  color: var(--text);
+  font-size: 1.1rem;
+  margin: 1em 0 0.3em;
+}
+
+.quill-editor .ql-editor blockquote {
+  border-left: 3px solid var(--gold);
+  padding-left: 14px;
+  color: var(--text-soft);
+}
+
+.quill-editor .ql-editor a {
+  color: var(--gold);
+}
+
+.ql-toolbar.ql-snow {
+  background: var(--bg-elevated);
+  border: 1px solid rgba(212, 166, 70, 0.18);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.ql-container.ql-snow {
+  background: var(--bg-soft);
+  border: 1px solid rgba(212, 166, 70, 0.18);
+  border-top: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.ql-snow .ql-stroke {
+  stroke: var(--text-soft);
+}
+
+.ql-snow .ql-fill,
+.ql-snow .ql-stroke.ql-fill {
+  fill: var(--text-soft);
+}
+
+.ql-snow .ql-picker {
+  color: var(--text-soft);
+}
+
+.ql-snow .ql-picker-options {
+  background: var(--bg-elevated);
+  border: 1px solid rgba(212, 166, 70, 0.18);
+}
+
+.ql-snow .ql-picker-item:hover,
+.ql-snow .ql-picker-label:hover,
+.ql-snow button:hover {
+  color: var(--gold);
+}
+
+.ql-snow button:hover .ql-stroke,
+.ql-snow .ql-picker-label:hover .ql-stroke {
+  stroke: var(--gold);
+}
+
+.ql-snow button:hover .ql-fill,
+.ql-snow .ql-picker-label:hover .ql-fill {
+  fill: var(--gold);
+}
+
+.ql-snow button.ql-active,
+.ql-snow .ql-picker-label.ql-active {
+  color: var(--gold);
+}
+
+.ql-snow button.ql-active .ql-stroke,
+.ql-snow .ql-picker-label.ql-active .ql-stroke {
+  stroke: var(--gold);
+}
+
+.ql-snow button.ql-active .ql-fill,
+.ql-snow .ql-picker-label.ql-active .ql-fill {
+  fill: var(--gold);
+}
+
+.ql-snow .ql-tooltip {
+  background: var(--bg-elevated);
+  border: 1px solid rgba(212, 166, 70, 0.18);
+  color: var(--text);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.ql-snow .ql-tooltip input[type="text"] {
+  background: var(--bg-soft);
+  border: 1px solid rgba(212, 166, 70, 0.2);
+  color: var(--text);
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.ql-snow .ql-tooltip a {
+  color: var(--gold);
+}
+
 .analysis-document-shell {
   display: grid;
   grid-template-columns: minmax(320px, 0.82fr) minmax(0, 1.18fr);
@@ -4053,6 +4258,14 @@ body[data-page="home"] .hero-copy .eyebrow {
   margin-top: 28px;
   padding-top: 18px;
   border-top: 1px solid rgba(212, 166, 70, 0.12);
+}
+
+.page-share {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 36px;
+  padding: 20px 0;
 }
 
 @media (max-width: 1180px) {

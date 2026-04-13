@@ -11,7 +11,8 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/css/styles.css?v=20260403b" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=20260413" />
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
   </head>
   <body data-page="admin">
     <div class="site-shell">
@@ -423,7 +424,8 @@
                       </label>
                       <label class="field field-full">
                         <span>Conteudo</span>
-                        <textarea name="content"></textarea>
+                        <div id="post-content-editor" class="quill-editor"></div>
+                        <input type="hidden" name="content" />
                       </label>
                     </div>
 
@@ -527,11 +529,8 @@
                       </label>
                       <label class="field field-full">
                         <span>Artigo</span>
-                        <textarea
-                          name="content"
-                          required
-                          placeholder="Use o modelo editorial Marques para padronizar as publicacoes."
-                        ></textarea>
+                        <div id="analysis-content-editor" class="quill-editor"></div>
+                        <input type="hidden" name="content" />
                       </label>
                     </div>
 
@@ -604,6 +603,69 @@
                 </div>
 
                 <div class="admin-tab" data-admin-panel="newsletter" hidden>
+                  <div class="admin-note">
+                    <strong>Carta Marques</strong>
+                    <p>
+                      Publique edicoes da Carta Marques com editor visual. Cada edicao aparece como artigo
+                      no site e pode ser compartilhada nas redes sociais.
+                    </p>
+                  </div>
+
+                  <form id="admin-newsletter-post-form">
+                    <input type="hidden" name="id" />
+                    <input type="hidden" name="content_type" value="newsletter" />
+                    <input type="hidden" name="source" value="Carta Marques" />
+                    <div class="form-grid">
+                      <label class="field field-full">
+                        <span>Titulo da edicao</span>
+                        <input type="text" name="title" required />
+                      </label>
+                      <label class="field">
+                        <span>Slug</span>
+                        <input type="text" name="slug" placeholder="gerado-automaticamente" />
+                      </label>
+                      <label class="field">
+                        <span>Status</span>
+                        <select name="status" required>
+                          <option value="draft">Rascunho</option>
+                          <option value="published">Publicado</option>
+                        </select>
+                      </label>
+                      <label class="field">
+                        <span>Data de publicacao</span>
+                        <input type="datetime-local" name="published_at" />
+                      </label>
+                      <label class="field field-full">
+                        <span>Resumo</span>
+                        <textarea name="excerpt" required placeholder="Resumo curto da edicao da Carta Marques."></textarea>
+                      </label>
+                      <label class="field field-full">
+                        <span>SEO title</span>
+                        <input type="text" name="seo_title" placeholder="Titulo otimizado para navegador e busca" />
+                      </label>
+                      <label class="field field-full">
+                        <span>SEO description</span>
+                        <textarea name="seo_description" placeholder="Descricao curta para a edicao"></textarea>
+                      </label>
+                      <label class="field field-full">
+                        <span>Conteudo da Carta</span>
+                        <div id="newsletter-content-editor" class="quill-editor"></div>
+                        <input type="hidden" name="content" />
+                      </label>
+                    </div>
+
+                    <div class="hero-actions">
+                      <button type="submit" class="button button-primary">Publicar Carta Marques</button>
+                      <button type="button" class="button button-secondary" id="admin-newsletter-post-reset">Limpar formulario</button>
+                    </div>
+                  </form>
+
+                  <div class="admin-list-card">
+                    <h3>Edicoes da Carta Marques</h3>
+                    <p>Historico de edicoes publicadas da Carta Marques.</p>
+                    <div class="admin-list" id="admin-newsletter-post-list"></div>
+                  </div>
+
                   <div class="admin-list-card">
                     <h3>Leads da newsletter</h3>
                     <p>Lista de inscritos recebidos pelo formulario do site.</p>
@@ -629,9 +691,10 @@
       </main>
     </div>
 
-    <script src="assets/js/supabase-config.js?v=20260403b"></script>
-    <script src="assets/js/supabase-api.js?v=20260403b"></script>
-    <script src="assets/js/site-default-content.js?v=20260403b"></script>
-    <script src="assets/js/admin.js?v=20260403b"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script src="assets/js/supabase-config.js?v=20260413"></script>
+    <script src="assets/js/supabase-api.js?v=20260413"></script>
+    <script src="assets/js/site-default-content.js?v=20260413"></script>
+    <script src="assets/js/admin.js?v=20260413"></script>
   </body>
 </html>

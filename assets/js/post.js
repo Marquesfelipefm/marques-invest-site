@@ -60,6 +60,14 @@
   }
 
   function inferPostType(post) {
+    if (normalizeText(post?.content_type) === "newsletter") {
+      return "newsletter";
+    }
+
+    if (normalizeText(post?.source) === "carta marques") {
+      return "newsletter";
+    }
+
     if (normalizeText(post?.content_type) === "analysis") {
       return "analysis";
     }
@@ -187,9 +195,31 @@
       .join("");
   }
 
+  function isHtmlContent(content) {
+    return /<(?:p|h[1-6]|ul|ol|blockquote|div|br|strong|em|a)\b/i.test(content);
+  }
+
+  function sanitizeHtml(html) {
+    var temp = document.createElement("div");
+    temp.innerHTML = html;
+    temp.querySelectorAll("script,iframe,object,embed,form").forEach(function (el) {
+      el.remove();
+    });
+    return temp.innerHTML;
+  }
+
   function renderRichText(content) {
-    const blocks = String(content || "")
-      .trim()
+    var raw = String(content || "").trim();
+
+    if (!raw) {
+      return "<p>Conteudo indisponivel no momento.</p>";
+    }
+
+    if (isHtmlContent(raw)) {
+      return sanitizeHtml(raw);
+    }
+
+    const blocks = raw
       .split(/\n\s*\n/)
       .map((block) => block.trim())
       .filter(Boolean);

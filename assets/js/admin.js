@@ -36,11 +36,17 @@
   const analysisCoverPreview = document.querySelector("#admin-analysis-cover-preview");
   const agendaForm = document.querySelector("#admin-agenda-form");
   const agendaResetButton = document.querySelector("#admin-agenda-reset");
+  const newsletterPostForm = document.querySelector("#admin-newsletter-post-form");
+  const newsletterPostResetButton = document.querySelector("#admin-newsletter-post-reset");
+  const newsletterTitleInput = newsletterPostForm?.querySelector("[name='title']");
+  const newsletterSlugInput = newsletterPostForm?.querySelector("[name='slug']");
+  const newsletterSeoTitleInput = newsletterPostForm?.querySelector("[name='seo_title']");
   const refreshButton = document.querySelector("#admin-refresh");
   const logoutButton = document.querySelector("#admin-logout");
   const postList = document.querySelector("#admin-post-list");
   const analysisList = document.querySelector("#admin-analysis-list");
   const agendaList = document.querySelector("#admin-agenda-list");
+  const newsletterPostList = document.querySelector("#admin-newsletter-post-list");
   const newsletterList = document.querySelector("#admin-newsletter-list");
   const contactList = document.querySelector("#admin-contact-list");
 
@@ -59,6 +65,10 @@
     lastSeoTitle: "",
   };
   let analysisDraftState = {
+    lastSlug: "",
+    lastSeoTitle: "",
+  };
+  let newsletterDraftState = {
     lastSlug: "",
     lastSeoTitle: "",
   };
@@ -82,6 +92,49 @@
     "## Leitura Marques",
     "Feche com a implicacao pratica para patrimonio e o proximo passo do investidor.",
   ].join("\n");
+
+  var quillToolbar = [
+    [{ header: [2, 3, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["blockquote", "link", "image"],
+    ["clean"],
+  ];
+
+  function createQuillEditor(containerId) {
+    var container = document.querySelector(containerId);
+    if (!container || typeof Quill === "undefined") return null;
+    return new Quill(container, {
+      theme: "snow",
+      modules: { toolbar: quillToolbar },
+      placeholder: "Escreva o conteudo aqui...",
+    });
+  }
+
+  function syncQuillToHidden(editor, form, fieldName) {
+    if (!editor || !form) return;
+    var hidden = form.querySelector("[name='" + fieldName + "']");
+    if (!hidden) return;
+    var html = editor.root.innerHTML;
+    hidden.value = html === "<p><br></p>" ? "" : html;
+  }
+
+  function setQuillContent(editor, html) {
+    if (!editor) return;
+    if (!html) {
+      editor.root.innerHTML = "";
+      return;
+    }
+    if (/<[a-z][\s\S]*>/i.test(html)) {
+      editor.root.innerHTML = html;
+    } else {
+      editor.setText(html);
+    }
+  }
+
+  var postQuill = createQuillEditor("#post-content-editor");
+  var analysisQuill = createQuillEditor("#analysis-content-editor");
+  var newsletterQuill = createQuillEditor("#newsletter-content-editor");
 
   if (!loginForm || !window.MarquesSupabase || !window.MARQUES_DEFAULT_CONTENT) {
     return;
@@ -190,6 +243,14 @@
 
   function inferPostType(post) {
     const declaredType = normalizeText(post?.content_type);
+
+    if (declaredType === "newsletter") {
+      return "newsletter";
+    }
+
+    if (normalizeText(post?.source) === "carta marques") {
+      return "newsletter";
+    }
 
     if (declaredType === "analysis") {
       return "analysis";
@@ -578,7 +639,7 @@
     syncPreview();
   }
 
-  function resetEditorialForm(form, state, previewElement) {
+  function resetEditorialForm(form, state, previewElement, quillEditor) {
     if (!form) {
       return;
     }
@@ -593,6 +654,10 @@
 
     if (previewElement) {
       updateCoverPreview(previewElement, "", "", "Capa selecionada");
+    }
+
+    if (quillEditor) {
+      quillEditor.root.innerHTML = "";
     }
   }
 
@@ -693,6 +758,12 @@
       openLabel: "Abrir artigo",
       typeChip: "analise",
     });
+
+    renderPostCollection(newsletterPostList, getPostsByType("newsletter"), {
+      emptyMessage: "Nenhuma edicao da Carta Marques cadastrada ainda.",
+      openLabel: "Abrir edicao",
+      typeChip: "carta",
+    });
   }
 
   function renderAgenda() {
@@ -791,7 +862,7 @@
       .join("");
   }
 
-  function fillEditorialForm(form, item, state, previewElement) {
+  function fillEditorialForm(form, item, state, previewElement, quillEditor) {
     if (!form || !item) {
       return;
     }
@@ -813,6 +884,10 @@
     setFieldValue(form, "content", item.content || "");
     setFieldValue(form, "content_type", inferPostType(item));
 
+    if (quillEditor) {
+      setQuillContent(quillEditor, item.content || "");
+    }
+
     if (state) {
       state.lastSlug = item.slug || slugify(item.title || "post");
       state.lastSeoTitle = item.seo_title || `${item.title || ""} | Marques Invest`;
@@ -833,13 +908,21 @@
       return;
     }
 
-    if (inferPostType(item) === "analysis") {
-      fillEditorialForm(analysisForm, item, analysisDraftState, analysisCoverPreview);
+    var postType = inferPostType(item);
+
+    if (postType === "analysis") {
+      fillEditorialForm(analysisForm, item, analysisDraftState, analysisCoverPreview, analysisQuill);
       switchTab("analysis");
       return;
     }
 
-    fillEditorialForm(postForm, item, postDraftState, postCoverPreview);
+    if (postType === "newsletter") {
+      fillEditorialForm(newsletterPostForm, item, newsletterDraftState, null, newsletterQuill);
+      switchTab("newsletter");
+      return;
+    }
+
+    fillEditorialForm(postForm, item, postDraftState, postCoverPreview, postQuill);
     switchTab("posts");
   }
 
@@ -909,6 +992,9 @@
   }
 
   async function handleEditorialSubmit(form, state, options = {}) {
+    if (options.quillEditor) {
+      syncQuillToHidden(options.quillEditor, form, "content");
+    }
     const formData = new FormData(form);
     const title = String(formData.get("title") || "").trim();
     const slug = String(formData.get("slug") || slugify(title)).trim();
@@ -1026,7 +1112,9 @@
       await handleEditorialSubmit(postForm, postDraftState, {
         contentType: "news",
         previewElement: postCoverPreview,
+        quillEditor: postQuill,
       });
+      if (postQuill) postQuill.root.innerHTML = "";
       setPanelStatus("Noticia salva com sucesso.", "success");
     } catch (error) {
       setPanelStatus(error.message || "Falha ao salvar a noticia.", "error");
@@ -1041,7 +1129,9 @@
         contentType: "analysis",
         source: "Analise Marques",
         previewElement: analysisCoverPreview,
+        quillEditor: analysisQuill,
       });
+      if (analysisQuill) analysisQuill.root.innerHTML = "";
       setPanelStatus("Artigo da Analise Marques salvo com sucesso.", "success");
     } catch (error) {
       setPanelStatus(error.message || "Falha ao salvar o artigo.", "error");
@@ -1071,11 +1161,46 @@
     }
   });
 
+  if (newsletterPostForm) {
+    newsletterPostForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      try {
+        await handleEditorialSubmit(newsletterPostForm, newsletterDraftState, {
+          contentType: "newsletter",
+          source: "Carta Marques",
+          quillEditor: newsletterQuill,
+        });
+        if (newsletterQuill) newsletterQuill.root.innerHTML = "";
+        setPanelStatus("Carta Marques publicada com sucesso.", "success");
+      } catch (error) {
+        setPanelStatus(error.message || "Falha ao salvar a Carta Marques.", "error");
+      }
+    });
+  }
+
+  if (newsletterPostResetButton) {
+    newsletterPostResetButton.addEventListener("click", () => {
+      resetEditorialForm(newsletterPostForm, newsletterDraftState, null, newsletterQuill);
+    });
+  }
+
+  if (newsletterTitleInput) {
+    newsletterTitleInput.addEventListener("input", () => {
+      syncEditorialDerivedFields(
+        newsletterTitleInput,
+        newsletterSlugInput,
+        newsletterSeoTitleInput,
+        newsletterDraftState
+      );
+    });
+  }
+
   postResetButton.addEventListener("click", () => {
-    resetEditorialForm(postForm, postDraftState, postCoverPreview);
+    resetEditorialForm(postForm, postDraftState, postCoverPreview, postQuill);
   });
   analysisResetButton.addEventListener("click", () => {
-    resetEditorialForm(analysisForm, analysisDraftState, analysisCoverPreview);
+    resetEditorialForm(analysisForm, analysisDraftState, analysisCoverPreview, analysisQuill);
   });
   agendaResetButton.addEventListener("click", resetAgendaForm);
 
@@ -1098,23 +1223,44 @@
 
   if (analysisTemplateButton) {
     analysisTemplateButton.addEventListener("click", () => {
-      const contentField = analysisForm.querySelector("[name='content']");
-
-      if (!contentField) {
-        return;
-      }
-
-      if (contentField.value.trim()) {
-        const confirmed = window.confirm(
-          "Esse artigo ja tem conteudo. Deseja substituir pelo modelo padrao Analise Marques?"
-        );
-
-        if (!confirmed) {
-          return;
+      if (analysisQuill) {
+        var currentText = analysisQuill.getText().trim();
+        if (currentText) {
+          var confirmed = window.confirm(
+            "Esse artigo ja tem conteudo. Deseja substituir pelo modelo padrao Analise Marques?"
+          );
+          if (!confirmed) return;
         }
+
+        var templateHtml = ANALYSIS_TEMPLATE
+          .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+          .replace(/^- (.+)$/gm, "<li>$1</li>")
+          .split("\n").filter(Boolean).join("\n");
+        templateHtml = templateHtml.replace(/(<li>.+<\/li>\n?)+/g, function (match) {
+          return "<ul>" + match + "</ul>";
+        });
+        templateHtml = templateHtml.replace(/\n/g, "").replace(/(<\/h2>|<\/ul>)/g, "$1");
+        var lines = ANALYSIS_TEMPLATE.split("\n").filter(Boolean);
+        var html = "";
+        var inList = false;
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i];
+          if (line.startsWith("## ")) {
+            if (inList) { html += "</ul>"; inList = false; }
+            html += "<h2>" + escapeHtml(line.replace(/^## /, "")) + "</h2>";
+          } else if (line.startsWith("- ")) {
+            if (!inList) { html += "<ul>"; inList = true; }
+            html += "<li>" + escapeHtml(line.replace(/^- /, "")) + "</li>";
+          } else {
+            if (inList) { html += "</ul>"; inList = false; }
+            html += "<p>" + escapeHtml(line) + "</p>";
+          }
+        }
+        if (inList) html += "</ul>";
+
+        analysisQuill.root.innerHTML = html;
       }
 
-      contentField.value = ANALYSIS_TEMPLATE;
       if (!analysisForm.querySelector("[name='excerpt']").value.trim()) {
         analysisForm.querySelector("[name='excerpt']").value =
           "Resumo executivo com a tese central, o que mudou e a implicacao patrimonial da leitura.";
@@ -1191,6 +1337,9 @@
 
   postList.addEventListener("click", handlePostListAction);
   analysisList.addEventListener("click", handlePostListAction);
+  if (newsletterPostList) {
+    newsletterPostList.addEventListener("click", handlePostListAction);
+  }
 
   agendaList.addEventListener("click", async (event) => {
     const editId = event.target.closest("[data-agenda-edit]")?.dataset.agendaEdit;
