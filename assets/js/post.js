@@ -105,6 +105,34 @@
     tag.setAttribute("content", content);
   }
 
+  function setOgMeta(property, content) {
+    if (!content) return;
+    let tag = document.querySelector(`meta[property="${property}"]`);
+    if (!tag) {
+      tag = document.createElement("meta");
+      tag.setAttribute("property", property);
+      document.head.appendChild(tag);
+    }
+    tag.setAttribute("content", content);
+  }
+
+  function updateSocialMeta(post) {
+    var title = post.seo_title || (post.title + " | Marques Invest");
+    var desc = post.seo_description || post.excerpt || post.title;
+    var url = window.location.href;
+    var image = post.cover_url || "https://marquesinvest.com/assets/img/marques-invest-logo-social.png";
+
+    setOgMeta("og:title", title);
+    setOgMeta("og:description", desc);
+    setOgMeta("og:url", url);
+    setOgMeta("og:image", image);
+    setOgMeta("og:type", "article");
+
+    setMeta("twitter:title", title);
+    setMeta("twitter:description", desc);
+    setMeta("twitter:image", image);
+  }
+
   function getShareIcon(network) {
     const icons = {
       x: `
@@ -320,6 +348,7 @@
 
     document.title = post.seo_title || `${post.title} | Marques Invest`;
     setMeta("description", post.seo_description || post.excerpt || post.title);
+    updateSocialMeta(post);
   }
 
   function renderMissing() {
