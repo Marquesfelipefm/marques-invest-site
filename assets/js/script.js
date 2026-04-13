@@ -1479,4 +1479,29 @@ if (homeNewsLead && homeNewsList) {
   loadHomeNewsPreview();
 }
 
-/* ── End Crypto Ticker (see crypto-ticker.js) ── */
+/* ── Page share buttons ── */
+(function () {
+  var shareSection = document.querySelector("#page-share");
+  if (!shareSection) return;
+
+  var url = encodeURIComponent(window.location.href);
+  var title = encodeURIComponent(document.title);
+
+  var xLink = document.querySelector("#share-x");
+  var fbLink = document.querySelector("#share-facebook");
+  var liLink = document.querySelector("#share-linkedin");
+  var copyBtn = document.querySelector("#share-copy");
+
+  if (xLink) xLink.href = "https://twitter.com/intent/tweet?text=" + title + "&url=" + url;
+  if (fbLink) fbLink.href = "https://www.facebook.com/sharer/sharer.php?u=" + url;
+  if (liLink) liLink.href = "https://www.linkedin.com/sharing/share-offsite/?url=" + url;
+
+  if (copyBtn) {
+    copyBtn.addEventListener("click", function () {
+      navigator.clipboard.writeText(window.location.href).then(function () {
+        copyBtn.title = "Link copiado!";
+        setTimeout(function () { copyBtn.title = "Copiar link"; }, 2000);
+      });
+    });
+  }
+})();
