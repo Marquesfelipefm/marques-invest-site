@@ -1479,29 +1479,155 @@ if (homeNewsLead && homeNewsList) {
   loadHomeNewsPreview();
 }
 
-/* ── Page share buttons ── */
+/* ── Hero featured Analise Marques ── */
+(function () {
+  var heroBlock = document.querySelector("#hero-analysis-featured");
+  if (!heroBlock) return;
+
+  var titleEl = document.querySelector("#hero-analysis-title");
+  var excerptEl = document.querySelector("#hero-analysis-excerpt");
+  var metaEl = document.querySelector("#hero-analysis-meta");
+  var categoryEl = document.querySelector("#hero-analysis-category");
+  var dateEl = document.querySelector("#hero-analysis-date");
+  var ctaBtn = document.querySelector("#hero-analysis-cta");
+  var shareBlock = document.querySelector("#hero-analysis-share");
+  var shareActionsEl = document.querySelector("#hero-analysis-share-actions");
+
+  if (!window.MarquesSupabase || !window.MarquesSupabase.isConfigured()) return;
+
+  window.MarquesSupabase.listPublicPosts({ contentType: "analysis", limit: 1 })
+    .then(function (posts) {
+      if (!posts || !posts.length) return;
+      var post = posts[0];
+      var postUrl = window.location.origin + "/noticia.html?slug=" + encodeURIComponent(post.slug);
+
+      titleEl.textContent = post.title || "Analise Marques";
+      excerptEl.textContent = post.excerpt || post.seo_description || "";
+      metaEl.hidden = false;
+      categoryEl.textContent = getCategoryLabel(post.category);
+      dateEl.textContent = formatPublishedAt(post.published_at || post.created_at);
+      ctaBtn.textContent = "Ler artigo completo";
+      ctaBtn.href = postUrl;
+
+      if (shareBlock && shareActionsEl) {
+        shareBlock.hidden = false;
+        var encodedUrl = encodeURIComponent(postUrl);
+        var encodedTitle = encodeURIComponent(post.title || "Analise Marques");
+        shareActionsEl.innerHTML = buildShareButtons(encodedUrl, encodedTitle, post.cover_url, post.title, post.excerpt);
+      }
+    })
+    .catch(function () {});
+})();
+
+/* ── Universal share helpers ── */
+function buildShareButtons(encodedUrl, encodedTitle, imageUrl, rawTitle, rawExcerpt) {
+  var caption = (rawTitle || "") + (rawExcerpt ? " — " + rawExcerpt : "");
+  return ''
+    + '<a class="share-button" href="https://twitter.com/intent/tweet?text=' + encodedTitle + '&url=' + encodedUrl + '" target="_blank" rel="noreferrer" aria-label="Compartilhar no X" title="Compartilhar no X">'
+    + '  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.76 3H20.5l-5.98 6.84L21.56 21h-5.52l-4.32-5.65L6.78 21H4.03l6.39-7.3L3.63 3h5.66l3.91 5.17L17.76 3Z"></path></svg>'
+    + '</a>'
+    + '<a class="share-button" href="https://www.facebook.com/sharer/sharer.php?u=' + encodedUrl + '" target="_blank" rel="noreferrer" aria-label="Compartilhar no Facebook" title="Compartilhar no Facebook">'
+    + '  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-7.02h2.36l.35-2.73H13.5V9.5c0-.79.22-1.32 1.35-1.32h1.44V5.73c-.25-.03-1.12-.11-2.13-.11-2.11 0-3.56 1.29-3.56 3.66v1.97H8.2v2.73h2.4V21h2.9Z"></path></svg>'
+    + '</a>'
+    + '<button class="share-button share-button--instagram" type="button" data-share-instagram data-share-image="' + escapeHtml(imageUrl || "") + '" data-share-caption="' + escapeHtml(caption) + '" data-share-url="' + decodeURIComponent(encodedUrl) + '" aria-label="Compartilhar no Instagram" title="Compartilhar no Instagram">'
+    + '  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 3h9A4.5 4.5 0 0 1 21 7.5v9a4.5 4.5 0 0 1-4.5 4.5h-9A4.5 4.5 0 0 1 3 16.5v-9A4.5 4.5 0 0 1 7.5 3Zm0 1.8A2.7 2.7 0 0 0 4.8 7.5v9a2.7 2.7 0 0 0 2.7 2.7h9a2.7 2.7 0 0 0 2.7-2.7v-9a2.7 2.7 0 0 0-2.7-2.7h-9Zm9.45 1.35a1.05 1.05 0 1 1 0 2.1 1.05 1.05 0 0 1 0-2.1ZM12 7.8A4.2 4.2 0 1 1 7.8 12 4.2 4.2 0 0 1 12 7.8Zm0 1.8A2.4 2.4 0 1 0 14.4 12 2.4 2.4 0 0 0 12 9.6Z"></path></svg>'
+    + '</button>'
+    + '<a class="share-button" href="https://www.linkedin.com/sharing/share-offsite/?url=' + encodedUrl + '" target="_blank" rel="noreferrer" aria-label="Compartilhar no LinkedIn" title="Compartilhar no LinkedIn">'
+    + '  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.94 8.5H4V20h2.94V8.5ZM5.47 4A1.72 1.72 0 1 0 5.5 7.44 1.72 1.72 0 0 0 5.47 4ZM20 13.02C20 9.78 18.27 8.27 15.97 8.27a4 4 0 0 0-3.6 1.98V8.5H9.43V20h2.94v-6.4c0-1.69.32-3.33 2.42-3.33 2.07 0 2.1 1.94 2.1 3.44V20H20v-6.98Z"></path></svg>'
+    + '</a>'
+    + '<button class="share-button" type="button" data-share-copy="' + decodeURIComponent(encodedUrl) + '" aria-label="Copiar link" title="Copiar link">'
+    + '  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path></svg>'
+    + '</button>';
+}
+
+/* ── Instagram share via Web Share API ── */
+function shareToInstagram(imageUrl, caption, pageUrl) {
+  var fullCaption = caption + "\n\n" + pageUrl;
+
+  if (navigator.share && navigator.canShare) {
+    if (imageUrl) {
+      fetch(imageUrl, { mode: "cors" })
+        .then(function (r) { return r.blob(); })
+        .then(function (blob) {
+          var ext = blob.type.split("/")[1] || "jpg";
+          var file = new File([blob], "marques-invest." + ext, { type: blob.type });
+          var shareData = { title: caption, text: fullCaption, files: [file] };
+          if (navigator.canShare(shareData)) {
+            return navigator.share(shareData);
+          }
+          return navigator.share({ title: caption, text: fullCaption, url: pageUrl });
+        })
+        .catch(function () {
+          navigator.share({ title: caption, text: fullCaption, url: pageUrl }).catch(function () {});
+        });
+    } else {
+      navigator.share({ title: caption, text: fullCaption, url: pageUrl }).catch(function () {});
+    }
+  } else {
+    navigator.clipboard.writeText(fullCaption).then(function () {
+      var toast = document.createElement("div");
+      toast.className = "insta-toast";
+      toast.textContent = "Legenda e link copiados! Cole no Instagram.";
+      document.body.appendChild(toast);
+      setTimeout(function () {
+        window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
+      }, 400);
+      setTimeout(function () { toast.remove(); }, 4000);
+    }).catch(function () {
+      window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
+    });
+  }
+}
+
+/* ── Global share event delegation ── */
+document.addEventListener("click", function (e) {
+  var igBtn = e.target.closest("[data-share-instagram]");
+  if (igBtn) {
+    e.preventDefault();
+    shareToInstagram(
+      igBtn.dataset.shareImage || "",
+      igBtn.dataset.shareCaption || document.title,
+      igBtn.dataset.shareUrl || window.location.href
+    );
+    return;
+  }
+
+  var copyBtn = e.target.closest("[data-share-copy]");
+  if (copyBtn) {
+    e.preventDefault();
+    var url = copyBtn.dataset.shareCopy || window.location.href;
+    navigator.clipboard.writeText(url).then(function () {
+      copyBtn.title = "Link copiado!";
+      setTimeout(function () { copyBtn.title = "Copiar link"; }, 2000);
+    });
+  }
+});
+
+/* ── Page share buttons (static pages) ── */
 (function () {
   var shareSection = document.querySelector("#page-share");
   if (!shareSection) return;
 
-  var url = encodeURIComponent(window.location.href);
-  var title = encodeURIComponent(document.title);
+  var pageUrl = window.location.href;
+  var encodedUrl = encodeURIComponent(pageUrl);
+  var encodedTitle = encodeURIComponent(document.title);
 
   var xLink = document.querySelector("#share-x");
   var fbLink = document.querySelector("#share-facebook");
   var liLink = document.querySelector("#share-linkedin");
-  var copyBtn = document.querySelector("#share-copy");
 
-  if (xLink) xLink.href = "https://twitter.com/intent/tweet?text=" + title + "&url=" + url;
-  if (fbLink) fbLink.href = "https://www.facebook.com/sharer/sharer.php?u=" + url;
-  if (liLink) liLink.href = "https://www.linkedin.com/sharing/share-offsite/?url=" + url;
+  if (xLink) xLink.href = "https://twitter.com/intent/tweet?text=" + encodedTitle + "&url=" + encodedUrl;
+  if (fbLink) fbLink.href = "https://www.facebook.com/sharer/sharer.php?u=" + encodedUrl;
+  if (liLink) liLink.href = "https://www.linkedin.com/sharing/share-offsite/?url=" + encodedUrl;
 
-  if (copyBtn) {
-    copyBtn.addEventListener("click", function () {
-      navigator.clipboard.writeText(window.location.href).then(function () {
-        copyBtn.title = "Link copiado!";
-        setTimeout(function () { copyBtn.title = "Copiar link"; }, 2000);
-      });
-    });
+  var igBtn = document.querySelector("#share-instagram");
+  if (igBtn) {
+    igBtn.setAttribute("data-share-caption", document.title);
+    igBtn.setAttribute("data-share-url", pageUrl);
+  }
+
+  var copyButton = document.querySelector("#share-copy");
+  if (copyButton) {
+    copyButton.setAttribute("data-share-copy", pageUrl);
   }
 })();

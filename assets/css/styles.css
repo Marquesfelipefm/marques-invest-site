@@ -4268,6 +4268,54 @@ body[data-page="home"] .hero-copy .eyebrow {
   padding: 20px 0;
 }
 
+.hero-analysis-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.hero-analysis-date {
+  color: var(--text-faint);
+  font-size: 0.88rem;
+}
+
+.hero-analysis-share {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(212, 166, 70, 0.12);
+}
+
+.insta-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+  animation: insta-toast-in 0.3s ease;
+}
+
+@keyframes insta-toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.share-button--instagram {
+  background: linear-gradient(135deg, rgba(131, 58, 180, 0.15), rgba(253, 29, 29, 0.15), rgba(252, 176, 69, 0.15));
+}
+
+.share-button--instagram:hover {
+  background: linear-gradient(135deg, rgba(131, 58, 180, 0.25), rgba(253, 29, 29, 0.25), rgba(252, 176, 69, 0.25));
+  border-color: rgba(253, 29, 29, 0.3);
+}
+
 @media (max-width: 1180px) {
   .analysis-marques-grid,
   .analysis-marques-lead {

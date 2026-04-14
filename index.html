@@ -17,7 +17,7 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=2" />
   </head>
   <body data-page="home">
     <div class="site-shell">
@@ -41,17 +41,25 @@
         </nav>
 
         <section class="hero-content">
-          <div class="hero-copy">
-            <span class="eyebrow" id="home-eyebrow">Marques Invest</span>
-            <h1 id="home-title">Patrimonio com direcao.</h1>
-            <p id="home-description">
+          <div class="hero-copy" id="hero-analysis-featured">
+            <span class="eyebrow">Analise Marques</span>
+            <h1 id="hero-analysis-title">Patrimonio com direcao.</h1>
+            <p id="hero-analysis-excerpt">
               Leitura de mercado, carteiras por objetivo, planejamento de
               aposentadoria e estrategia em cripto com gestao de risco para
               quem quer construir patrimonio com metodo, clareza e longo prazo.
             </p>
-            <div class="hero-actions">
-              <a class="button button-primary" href="contato.html">Solicitar diagnostico</a>
+            <div class="hero-analysis-meta" id="hero-analysis-meta" hidden>
+              <span class="news-category-chip" id="hero-analysis-category"></span>
+              <span class="hero-analysis-date" id="hero-analysis-date"></span>
+            </div>
+            <div class="hero-actions" id="hero-analysis-actions">
+              <a class="button button-primary" href="contato.html" id="hero-analysis-cta">Solicitar diagnostico</a>
               <a class="button button-secondary" href="#servicos">Conhecer os servicos</a>
+            </div>
+            <div class="article-share hero-analysis-share" id="hero-analysis-share" hidden>
+              <span class="share-label">Compartilhar</span>
+              <div class="share-actions" id="hero-analysis-share-actions"></div>
             </div>
           </div>
 
@@ -432,5 +440,6 @@
     <script src="assets/js/site-default-content.js"></script>
     <script src="assets/js/site-content.js"></script>
     <script src="assets/js/script.js"></script>
+    <script src="assets/js/crypto-ticker.js"></script>
   </body>
 </html>
