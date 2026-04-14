@@ -233,7 +233,6 @@ const shareNetworks = [
   { key: "facebook", label: "Facebook" },
   { key: "instagram", label: "Instagram" },
   { key: "linkedin", label: "LinkedIn" },
-  { key: "youtube", label: "YouTube" },
 ];
 
 let currentCategory = "latest";
@@ -445,42 +444,13 @@ function getShareLinks(item) {
 }
 
 function renderShareButtons(item) {
-  return shareNetworks
-    .map((network) => {
-      const shareLinks = getShareLinks(item);
-      const href = shareLinks[network.key];
+  var articleUrl = getArticleUrl(item);
+  var encodedUrl = encodeURIComponent(articleUrl);
+  var encodedTitle = encodeURIComponent(item.title || "");
+  var caption = (item.title || "") + (item.description ? " — " + item.description : "");
+  var imageUrl = item.coverUrl || item.cover_url || "";
 
-      if (href) {
-        return `
-          <a
-            class="share-button"
-            href="${href}"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Compartilhar no ${network.label}"
-            title="Compartilhar no ${network.label}"
-          >
-            ${getShareIcon(network.key)}
-          </a>
-        `;
-      }
-
-      return `
-        <button
-          class="share-button"
-          type="button"
-          data-share-copy="true"
-          data-network="${network.label}"
-          data-title="${item.title}"
-          data-url="${getArticleUrl(item)}"
-          aria-label="Copiar link para compartilhar no ${network.label}"
-          title="Copiar link para compartilhar no ${network.label}"
-        >
-          ${getShareIcon(network.key)}
-        </button>
-      `;
-    })
-    .join("");
+  return buildShareButtons(encodedUrl, encodedTitle, imageUrl, item.title, item.description);
 }
 
 function getFallbackNews(category) {
@@ -1423,31 +1393,6 @@ if (contactForm) {
     }
   });
 }
-
-document.addEventListener("click", async (event) => {
-  const shareButton = event.target.closest("[data-share-copy='true']");
-
-  if (!shareButton) {
-    return;
-  }
-
-  const title = shareButton.dataset.title;
-  const url = shareButton.dataset.url;
-  const network = shareButton.dataset.network;
-
-  try {
-    await navigator.clipboard.writeText(`${title} - ${url}`);
-    shareButton.classList.add("is-copied");
-    shareButton.setAttribute("title", `Link copiado para ${network}`);
-
-    setTimeout(() => {
-      shareButton.classList.remove("is-copied");
-      shareButton.setAttribute("title", `Copiar link para compartilhar no ${network}`);
-    }, 1800);
-  } catch (error) {
-    window.prompt(`Copie o link para compartilhar no ${network}:`, `${title} - ${url}`);
-  }
-});
 
 if (marketBoard) {
   renderMarketBoard(fallbackMarkets);
