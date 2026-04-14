@@ -18,20 +18,6 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="assets/css/styles.css?v=2" />
-    <!-- Open Graph / Social -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Marques Invest" />
-    <meta property="og:locale" content="pt_BR" />
-    <meta property="og:title" content="Marques Invest | Patrimonio com direcao" />
-    <meta property="og:description" content="Leitura de mercado, carteiras por objetivo, planejamento de aposentadoria e cripto com gestao de risco." />
-    <meta property="og:url" content="https://marquesinvest.com" />
-    <meta property="og:image" content="https://marquesinvest.com/assets/img/marques-invest-logo-social.png" />
-    <meta property="og:image:width" content="790" />
-    <meta property="og:image:height" content="391" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Marques Invest | Patrimonio com direcao" />
-    <meta name="twitter:description" content="Leitura de mercado, carteiras por objetivo, planejamento de aposentadoria e cripto com gestao de risco." />
-    <meta name="twitter:image" content="https://marquesinvest.com/assets/img/marques-invest-logo-social.png" />
   </head>
   <body data-page="home">
     <div class="site-shell">
@@ -55,17 +41,25 @@
         </nav>
 
         <section class="hero-content">
-          <div class="hero-copy">
-            <span class="eyebrow" id="home-eyebrow">Marques Invest</span>
-            <h1 id="home-title">Patrimonio com direcao.</h1>
-            <p id="home-description">
+          <div class="hero-copy" id="hero-analysis-featured">
+            <span class="eyebrow">Analise Marques</span>
+            <h1 id="hero-analysis-title">Patrimonio com direcao.</h1>
+            <p id="hero-analysis-excerpt">
               Leitura de mercado, carteiras por objetivo, planejamento de
               aposentadoria e estrategia em cripto com gestao de risco para
               quem quer construir patrimonio com metodo, clareza e longo prazo.
             </p>
-            <div class="hero-actions">
-              <a class="button button-primary" href="contato.html">Solicitar diagnostico</a>
+            <div class="hero-analysis-meta" id="hero-analysis-meta" hidden>
+              <span class="news-category-chip" id="hero-analysis-category"></span>
+              <span class="hero-analysis-date" id="hero-analysis-date"></span>
+            </div>
+            <div class="hero-actions" id="hero-analysis-actions">
+              <a class="button button-primary" href="contato.html" id="hero-analysis-cta">Solicitar diagnostico</a>
               <a class="button button-secondary" href="#servicos">Conhecer os servicos</a>
+            </div>
+            <div class="article-share hero-analysis-share" id="hero-analysis-share" hidden>
+              <span class="share-label">Compartilhar</span>
+              <div class="share-actions" id="hero-analysis-share-actions"></div>
             </div>
           </div>
 

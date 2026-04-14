@@ -113,34 +113,6 @@
     tag.setAttribute("content", content);
   }
 
-  function setOgMeta(property, content) {
-    if (!content) return;
-    let tag = document.querySelector(`meta[property="${property}"]`);
-    if (!tag) {
-      tag = document.createElement("meta");
-      tag.setAttribute("property", property);
-      document.head.appendChild(tag);
-    }
-    tag.setAttribute("content", content);
-  }
-
-  function updateSocialMeta(post) {
-    var title = post.seo_title || (post.title + " | Marques Invest");
-    var desc = post.seo_description || post.excerpt || post.title;
-    var url = window.location.href;
-    var image = post.cover_url || "https://marquesinvest.com/assets/img/marques-invest-logo-social.png";
-
-    setOgMeta("og:title", title);
-    setOgMeta("og:description", desc);
-    setOgMeta("og:url", url);
-    setOgMeta("og:image", image);
-    setOgMeta("og:type", "article");
-
-    setMeta("twitter:title", title);
-    setMeta("twitter:description", desc);
-    setMeta("twitter:image", image);
-  }
-
   function getShareIcon(network) {
     const icons = {
       x: `
@@ -173,54 +145,22 @@
     return icons[network] || "";
   }
 
-  function getShareLinks(post) {
-    const articleUrl = encodeURIComponent(window.location.href);
-    const articleTitle = encodeURIComponent(post.title || "Leitura Marques Invest");
-
-    return {
-      x: `https://twitter.com/intent/tweet?text=${articleTitle}&url=${articleUrl}`,
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${articleUrl}`,
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${articleUrl}`,
-    };
-  }
-
   function renderShareButtons(post) {
-    const shareLinks = getShareLinks(post);
+    var articleUrl = window.location.href;
+    var encodedUrl = encodeURIComponent(articleUrl);
+    var encodedTitle = encodeURIComponent(post.title || "Leitura Marques Invest");
+    var caption = (post.title || "") + (post.excerpt ? " — " + post.excerpt : "");
 
-    return shareNetworks
-      .map((network) => {
-        const href = shareLinks[network.key];
+    if (typeof buildShareButtons === "function") {
+      return buildShareButtons(encodedUrl, encodedTitle, post.cover_url, post.title, post.excerpt);
+    }
 
-        if (href) {
-          return `
-            <a
-              class="share-button"
-              href="${href}"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Compartilhar no ${network.label}"
-              title="Compartilhar no ${network.label}"
-            >
-              ${getShareIcon(network.key)}
-            </a>
-          `;
-        }
-
-        return `
-          <button
-            class="share-button"
-            type="button"
-            data-article-copy="true"
-            data-network="${network.label}"
-            data-url="${window.location.href}"
-            aria-label="Copiar link para compartilhar no ${network.label}"
-            title="Copiar link para compartilhar no ${network.label}"
-          >
-            ${getShareIcon(network.key)}
-          </button>
-        `;
-      })
-      .join("");
+    return ''
+      + '<a class="share-button" href="https://twitter.com/intent/tweet?text=' + encodedTitle + '&url=' + encodedUrl + '" target="_blank" rel="noreferrer" aria-label="Compartilhar no X" title="Compartilhar no X">' + getShareIcon("x") + '</a>'
+      + '<a class="share-button" href="https://www.facebook.com/sharer/sharer.php?u=' + encodedUrl + '" target="_blank" rel="noreferrer" aria-label="Compartilhar no Facebook" title="Compartilhar no Facebook">' + getShareIcon("facebook") + '</a>'
+      + '<button class="share-button share-button--instagram" type="button" data-share-instagram data-share-image="' + escapeHtml(post.cover_url || "") + '" data-share-caption="' + escapeHtml(caption) + '" data-share-url="' + articleUrl + '" aria-label="Compartilhar no Instagram" title="Compartilhar no Instagram">' + getShareIcon("instagram") + '</button>'
+      + '<a class="share-button" href="https://www.linkedin.com/sharing/share-offsite/?url=' + encodedUrl + '" target="_blank" rel="noreferrer" aria-label="Compartilhar no LinkedIn" title="Compartilhar no LinkedIn">' + getShareIcon("linkedin") + '</a>'
+      + '<button class="share-button" type="button" data-share-copy="' + articleUrl + '" aria-label="Copiar link" title="Copiar link"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path></svg></button>';
   }
 
   function isHtmlContent(content) {
@@ -378,7 +318,6 @@
 
     document.title = post.seo_title || `${post.title} | Marques Invest`;
     setMeta("description", post.seo_description || post.excerpt || post.title);
-    updateSocialMeta(post);
   }
 
   function renderMissing() {
@@ -438,21 +377,6 @@
       renderMissing();
     }
   }
-
-  articleShell.addEventListener("click", async (event) => {
-    const copyButton = event.target.closest("[data-article-copy='true']");
-
-    if (!copyButton) {
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(copyButton.dataset.url || window.location.href);
-      copyButton.title = `Link copiado para ${copyButton.dataset.network}`;
-    } catch (error) {
-      copyButton.title = "Nao foi possivel copiar o link";
-    }
-  });
 
   init();
 })();
