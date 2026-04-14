@@ -4628,6 +4628,98 @@ body[data-page="home"] .hero-copy .eyebrow {
   border-color: rgba(253, 29, 29, 0.3);
 }
 
+.insta-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  animation: insta-toast-in 0.25s ease;
+}
+
+.insta-modal {
+  width: 92%;
+  max-width: 420px;
+  padding: 28px 24px;
+  border-radius: 16px;
+  background: linear-gradient(160deg, #1a1a1a, #141414);
+  border: 1px solid rgba(212, 166, 70, 0.18);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+}
+
+.insta-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.insta-modal-icon {
+  width: 32px;
+  height: 32px;
+  fill: url(#ig-grad);
+  background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+  -webkit-background-clip: text;
+  border-radius: 8px;
+  padding: 4px;
+  fill: #fff;
+}
+
+.insta-modal-header h3 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.3rem;
+  color: var(--text);
+  margin: 0;
+}
+
+.insta-modal-steps {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.insta-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.92rem;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
+.insta-step-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #833ab4, #fd1d1d);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.insta-modal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.insta-modal-open {
+  flex: 1;
+  background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045) !important;
+  border: none !important;
+  color: #fff !important;
+}
+
+.insta-modal-close {
+  flex-shrink: 0;
+}
+
 @media (max-width: 1180px) {
   .analysis-marques-grid,
   .analysis-marques-lead {
