@@ -1540,42 +1540,138 @@ function buildShareButtons(encodedUrl, encodedTitle, imageUrl, rawTitle, rawExce
     + '</button>';
 }
 
-/* ── Instagram share via Web Share API ── */
-function shareToInstagram(imageUrl, caption, pageUrl) {
-  var fullCaption = caption + "\n\n" + pageUrl;
+/* ── Instagram share (full flow with image download + caption copy) ── */
+function imageToBlob(imageUrl) {
+  return new Promise(function (resolve, reject) {
+    var img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = function () {
+      var canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob(function (blob) {
+        if (blob) resolve(blob);
+        else reject(new Error("canvas blob failed"));
+      }, "image/jpeg", 0.92);
+    };
+    img.onerror = function () { reject(new Error("image load failed")); };
+    img.src = imageUrl;
+  });
+}
 
+function downloadBlob(blob, filename) {
+  var a = document.createElement("a");
+  var url = URL.createObjectURL(blob);
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+}
+
+function showInstaModal(hasImage) {
+  var existing = document.querySelector(".insta-modal-overlay");
+  if (existing) existing.remove();
+
+  var overlay = document.createElement("div");
+  overlay.className = "insta-modal-overlay";
+  overlay.innerHTML = ''
+    + '<div class="insta-modal">'
+    + '  <div class="insta-modal-header">'
+    + '    <svg viewBox="0 0 24 24" class="insta-modal-icon"><path d="M7.5 3h9A4.5 4.5 0 0 1 21 7.5v9a4.5 4.5 0 0 1-4.5 4.5h-9A4.5 4.5 0 0 1 3 16.5v-9A4.5 4.5 0 0 1 7.5 3Zm0 1.8A2.7 2.7 0 0 0 4.8 7.5v9a2.7 2.7 0 0 0 2.7 2.7h9a2.7 2.7 0 0 0 2.7-2.7v-9a2.7 2.7 0 0 0-2.7-2.7h-9Zm9.45 1.35a1.05 1.05 0 1 1 0 2.1 1.05 1.05 0 0 1 0-2.1ZM12 7.8A4.2 4.2 0 1 1 7.8 12 4.2 4.2 0 0 1 12 7.8Zm0 1.8A2.4 2.4 0 1 0 14.4 12 2.4 2.4 0 0 0 12 9.6Z"></path></svg>'
+    + '    <h3>Publicar no Instagram</h3>'
+    + '  </div>'
+    + '  <div class="insta-modal-steps">'
+    + (hasImage
+      ? '    <div class="insta-step"><span class="insta-step-check">1</span><span>Imagem salva no seu dispositivo</span></div>'
+      : '')
+    + '    <div class="insta-step"><span class="insta-step-check">' + (hasImage ? '2' : '1') + '</span><span>Legenda copiada para a area de transferencia</span></div>'
+    + '    <div class="insta-step"><span class="insta-step-check">' + (hasImage ? '3' : '2') + '</span><span>Abra o Instagram, crie um novo post, selecione a imagem e cole a legenda</span></div>'
+    + '  </div>'
+    + '  <div class="insta-modal-actions">'
+    + '    <a class="button button-primary insta-modal-open" href="https://www.instagram.com/" target="_blank" rel="noreferrer">Abrir Instagram</a>'
+    + '    <button class="button button-secondary insta-modal-close" type="button">Fechar</button>'
+    + '  </div>'
+    + '</div>';
+
+  document.body.appendChild(overlay);
+
+  overlay.querySelector(".insta-modal-close").addEventListener("click", function () {
+    overlay.remove();
+  });
+  overlay.addEventListener("click", function (e) {
+    if (e.target === overlay) overlay.remove();
+  });
+}
+
+function shareToInstagram(imageUrl, caption, pageUrl) {
+  var fullCaption = caption + "\n\n" + pageUrl + "\n\n#MarquesInvest #Investimentos #MercadoFinanceiro";
+
+  /* Mobile: try native share with image file */
   if (navigator.share && navigator.canShare) {
+    var tryNativeShare = function (blob) {
+      var file = new File([blob], "marques-invest.jpg", { type: "image/jpeg" });
+      var data = { title: caption, text: fullCaption, files: [file] };
+      if (navigator.canShare(data)) {
+        navigator.share(data).catch(function () {});
+        return true;
+      }
+      return false;
+    };
+
     if (imageUrl) {
-      fetch(imageUrl, { mode: "cors" })
-        .then(function (r) { return r.blob(); })
+      imageToBlob(imageUrl)
         .then(function (blob) {
-          var ext = blob.type.split("/")[1] || "jpg";
-          var file = new File([blob], "marques-invest." + ext, { type: blob.type });
-          var shareData = { title: caption, text: fullCaption, files: [file] };
-          if (navigator.canShare(shareData)) {
-            return navigator.share(shareData);
+          if (!tryNativeShare(blob)) {
+            desktopInstaFlow(imageUrl, fullCaption, true);
           }
-          return navigator.share({ title: caption, text: fullCaption, url: pageUrl });
         })
         .catch(function () {
-          navigator.share({ title: caption, text: fullCaption, url: pageUrl }).catch(function () {});
+          desktopInstaFlow(imageUrl, fullCaption, false);
         });
     } else {
-      navigator.share({ title: caption, text: fullCaption, url: pageUrl }).catch(function () {});
+      navigator.share({ title: caption, text: fullCaption, url: pageUrl }).catch(function () {
+        desktopInstaFlow("", fullCaption, false);
+      });
     }
+    return;
+  }
+
+  /* Desktop: download image + copy caption + show modal */
+  desktopInstaFlow(imageUrl, fullCaption, false);
+}
+
+function desktopInstaFlow(imageUrl, fullCaption, blobReady) {
+  var imageDownloaded = false;
+
+  if (imageUrl && !blobReady) {
+    imageToBlob(imageUrl)
+      .then(function (blob) {
+        downloadBlob(blob, "marques-invest-post.jpg");
+        imageDownloaded = true;
+        navigator.clipboard.writeText(fullCaption).catch(function () {});
+        showInstaModal(true);
+      })
+      .catch(function () {
+        /* CORS blocked — try direct download link */
+        var a = document.createElement("a");
+        a.href = imageUrl;
+        a.download = "marques-invest-post.jpg";
+        a.target = "_blank";
+        a.rel = "noreferrer";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        imageDownloaded = true;
+        navigator.clipboard.writeText(fullCaption).catch(function () {});
+        showInstaModal(true);
+      });
   } else {
-    navigator.clipboard.writeText(fullCaption).then(function () {
-      var toast = document.createElement("div");
-      toast.className = "insta-toast";
-      toast.textContent = "Legenda e link copiados! Cole no Instagram.";
-      document.body.appendChild(toast);
-      setTimeout(function () {
-        window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
-      }, 400);
-      setTimeout(function () { toast.remove(); }, 4000);
-    }).catch(function () {
-      window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
-    });
+    navigator.clipboard.writeText(fullCaption).catch(function () {});
+    showInstaModal(false);
   }
 }
 
