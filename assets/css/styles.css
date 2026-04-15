@@ -4704,6 +4704,60 @@ body[data-page="home"] .hero-copy .eyebrow {
   flex-shrink: 0;
 }
 
+.insta-modal-preview {
+  margin-bottom: 16px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(212, 166, 70, 0.12);
+}
+
+.insta-modal-preview img {
+  display: block;
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.insta-modal-caption-block {
+  margin-bottom: 18px;
+}
+
+.insta-modal-caption-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 8px;
+}
+
+.insta-modal-caption {
+  width: 100%;
+  min-height: 110px;
+  padding: 12px 14px;
+  border: 1px solid rgba(212, 166, 70, 0.18);
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  color: var(--text);
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.insta-modal-caption:focus {
+  outline: none;
+  border-color: rgba(212, 166, 70, 0.4);
+}
+
+.insta-modal-copy-btn {
+  margin-top: 10px;
+  width: 100%;
+  transition: all 0.25s ease;
+}
+
 .insta-modal-actions {
   display: flex;
   gap: 10px;
