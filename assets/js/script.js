@@ -1517,7 +1517,7 @@ function downloadBlob(blob, filename) {
   setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
 }
 
-function showInstaModal(hasImage) {
+function showInstaModal(hasImage, fullCaption, imageUrl) {
   var existing = document.querySelector(".insta-modal-overlay");
   if (existing) existing.remove();
 
@@ -1529,11 +1529,21 @@ function showInstaModal(hasImage) {
     + '    <svg viewBox="0 0 24 24" class="insta-modal-icon"><path d="M7.5 3h9A4.5 4.5 0 0 1 21 7.5v9a4.5 4.5 0 0 1-4.5 4.5h-9A4.5 4.5 0 0 1 3 16.5v-9A4.5 4.5 0 0 1 7.5 3Zm0 1.8A2.7 2.7 0 0 0 4.8 7.5v9a2.7 2.7 0 0 0 2.7 2.7h9a2.7 2.7 0 0 0 2.7-2.7v-9a2.7 2.7 0 0 0-2.7-2.7h-9Zm9.45 1.35a1.05 1.05 0 1 1 0 2.1 1.05 1.05 0 0 1 0-2.1ZM12 7.8A4.2 4.2 0 1 1 7.8 12 4.2 4.2 0 0 1 12 7.8Zm0 1.8A2.4 2.4 0 1 0 14.4 12 2.4 2.4 0 0 0 12 9.6Z"></path></svg>'
     + '    <h3>Publicar no Instagram</h3>'
     + '  </div>'
+    + (hasImage && imageUrl
+      ? '  <div class="insta-modal-preview"><img src="' + escapeHtml(imageUrl) + '" alt="Preview" /></div>'
+      : '')
+    + '  <div class="insta-modal-caption-block">'
+    + '    <label class="insta-modal-caption-label">Legenda para o Instagram:</label>'
+    + '    <textarea class="insta-modal-caption" id="insta-caption-text" rows="6">' + escapeHtml(fullCaption || "") + '</textarea>'
+    + '    <button class="button button-secondary insta-modal-copy-btn" type="button" id="insta-copy-caption">'
+    + '      Copiar legenda'
+    + '    </button>'
+    + '  </div>'
     + '  <div class="insta-modal-steps">'
     + (hasImage
-      ? '    <div class="insta-step"><span class="insta-step-check">1</span><span>Imagem salva no seu dispositivo</span></div>'
+      ? '    <div class="insta-step"><span class="insta-step-check">1</span><span>Imagem salva no dispositivo</span></div>'
       : '')
-    + '    <div class="insta-step"><span class="insta-step-check">' + (hasImage ? '2' : '1') + '</span><span>Legenda copiada para a area de transferencia</span></div>'
+    + '    <div class="insta-step"><span class="insta-step-check">' + (hasImage ? '2' : '1') + '</span><span>Edite a legenda acima se quiser e clique em "Copiar legenda"</span></div>'
     + '    <div class="insta-step"><span class="insta-step-check">' + (hasImage ? '3' : '2') + '</span><span>Abra o Instagram, crie um novo post, selecione a imagem e cole a legenda</span></div>'
     + '  </div>'
     + '  <div class="insta-modal-actions">'
@@ -1543,6 +1553,29 @@ function showInstaModal(hasImage) {
     + '</div>';
 
   document.body.appendChild(overlay);
+
+  var captionTextarea = overlay.querySelector("#insta-caption-text");
+  var copyBtn = overlay.querySelector("#insta-copy-caption");
+
+  copyBtn.addEventListener("click", function () {
+    var text = captionTextarea.value;
+    navigator.clipboard.writeText(text).then(function () {
+      copyBtn.textContent = "Legenda copiada!";
+      copyBtn.style.background = "rgba(35, 178, 109, 0.2)";
+      copyBtn.style.borderColor = "rgba(35, 178, 109, 0.4)";
+      copyBtn.style.color = "#23b26d";
+      setTimeout(function () {
+        copyBtn.textContent = "Copiar legenda";
+        copyBtn.style.background = "";
+        copyBtn.style.borderColor = "";
+        copyBtn.style.color = "";
+      }, 3000);
+    }).catch(function () {
+      captionTextarea.select();
+      document.execCommand("copy");
+      copyBtn.textContent = "Legenda copiada!";
+    });
+  });
 
   overlay.querySelector(".insta-modal-close").addEventListener("click", function () {
     overlay.remove();
@@ -1571,15 +1604,15 @@ function shareToInstagram(imageUrl, caption, pageUrl) {
       imageToBlob(imageUrl)
         .then(function (blob) {
           if (!tryNativeShare(blob)) {
-            desktopInstaFlow(imageUrl, fullCaption, true);
+            desktopInstaFlow(imageUrl, fullCaption);
           }
         })
         .catch(function () {
-          desktopInstaFlow(imageUrl, fullCaption, false);
+          desktopInstaFlow(imageUrl, fullCaption);
         });
     } else {
       navigator.share({ title: caption, text: fullCaption, url: pageUrl }).catch(function () {
-        desktopInstaFlow("", fullCaption, false);
+        desktopInstaFlow("", fullCaption);
       });
     }
     return;
@@ -1589,19 +1622,14 @@ function shareToInstagram(imageUrl, caption, pageUrl) {
   desktopInstaFlow(imageUrl, fullCaption, false);
 }
 
-function desktopInstaFlow(imageUrl, fullCaption, blobReady) {
-  var imageDownloaded = false;
-
-  if (imageUrl && !blobReady) {
+function desktopInstaFlow(imageUrl, fullCaption) {
+  if (imageUrl) {
     imageToBlob(imageUrl)
       .then(function (blob) {
         downloadBlob(blob, "marques-invest-post.jpg");
-        imageDownloaded = true;
-        navigator.clipboard.writeText(fullCaption).catch(function () {});
-        showInstaModal(true);
+        showInstaModal(true, fullCaption, imageUrl);
       })
       .catch(function () {
-        /* CORS blocked — try direct download link */
         var a = document.createElement("a");
         a.href = imageUrl;
         a.download = "marques-invest-post.jpg";
@@ -1610,13 +1638,10 @@ function desktopInstaFlow(imageUrl, fullCaption, blobReady) {
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        imageDownloaded = true;
-        navigator.clipboard.writeText(fullCaption).catch(function () {});
-        showInstaModal(true);
+        showInstaModal(true, fullCaption, imageUrl);
       });
   } else {
-    navigator.clipboard.writeText(fullCaption).catch(function () {});
-    showInstaModal(false);
+    showInstaModal(false, fullCaption, "");
   }
 }
 
