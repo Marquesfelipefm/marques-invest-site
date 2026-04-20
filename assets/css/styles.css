@@ -1362,6 +1362,90 @@ h3 {
   color: rgba(227, 236, 255, 0.62);
 }
 
+/* ── Newsletter author block ── */
+.newsletter-author-block {
+  margin-top: 64px;
+  padding: 0 0 0;
+}
+
+.newsletter-author-inner {
+  position: relative;
+  max-width: 1460px;
+  margin: 0 auto;
+  padding: 56px 56px;
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  background: var(--bg-soft);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+
+.newsletter-author-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 80% at 90% 50%, rgba(201, 168, 76, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.newsletter-author-text {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+}
+
+.newsletter-author-text .section-kicker {
+  margin-bottom: 12px;
+}
+
+.newsletter-author-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.4rem, 4.5vw, 4rem);
+  font-weight: 500;
+  line-height: 1.05;
+  color: var(--text);
+  margin: 0 0 18px;
+}
+
+.newsletter-author-name em {
+  font-style: italic;
+  color: var(--accent-deep);
+}
+
+.newsletter-author-bio {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text-faint);
+  margin: 0 0 28px;
+}
+
+.newsletter-author-deco {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(100px, 14vw, 200px);
+  font-weight: 600;
+  color: rgba(201, 168, 76, 0.05);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -4px;
+}
+
+@media (max-width: 640px) {
+  .newsletter-author-inner {
+    padding: 32px 24px;
+  }
+  .newsletter-author-deco {
+    display: none;
+  }
+}
+
+/* ─────────────────── */
+
 .contact-card {
   grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
   gap: 24px;
