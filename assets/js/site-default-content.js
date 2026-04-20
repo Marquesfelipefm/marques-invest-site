@@ -13,49 +13,49 @@ window.MARQUES_DEFAULT_CONTENT = {
     eyebrow: "Marques Invest",
     title: "Patrimonio com direcao.",
     description:
-      "Leitura de mercado, carteiras por objetivo, planejamento de aposentadoria e estrategia em cripto com gestao de risco para quem quer construir patrimonio com metodo, clareza e longo prazo.",
+      "Gestao patrimonial com leitura macro, derivativos, estrategias Long & Short e exposicao criteriosa em cripto — para quem constroi capital com metodo, clareza e horizonte de longo prazo.",
     teaserTitle: "Conteudo que sustenta a direcao patrimonial",
     teasers: [
       {
         tag: "Visao",
         title: "Analise da semana",
         description:
-          "Leitura executiva do periodo, conectando cenario macro, valuation, risco e implicacoes praticas para carteira.",
+          "Leitura executiva do periodo, conectando cenario macro, juros, bolsa, cambio e cripto com implicacoes praticas para carteira e posicionamento patrimonial.",
         link: "analise-semana.html",
       },
       {
         tag: "Leitura",
         title: "Destaques",
         description:
-          "Seleciona os temas que merecem atencao imediata e organiza a hierarquia da leitura para quem precisa decidir melhor.",
+          "Curadoria dos temas que merecem atencao imediata — com hierarquia editorial clara e foco no que impacta alocacao e risco.",
         link: "destaques.html",
       },
       {
         tag: "Fluxo",
         title: "Noticias",
         description:
-          "O noticiario deixa de ser fim em si mesmo e passa a funcionar como contexto para alocacao e leitura de risco.",
+          "O noticiario deixa de ser ruido e passa a funcionar como contexto para alocacao, leitura de risco e decisao patrimonial.",
         link: "noticias.html",
       },
       {
         tag: "Macro",
         title: "Agenda",
         description:
-          "Calendario com eventos que podem alterar juros, cambio, bolsa e comportamento tatico da carteira ao longo do dia.",
+          "Calendario com eventos que podem alterar juros, cambio, bolsa e cripto — com leitura objetiva do impacto tatico esperado.",
         link: "agenda.html",
       },
       {
         tag: "Autoridade",
         title: "Carta Marques",
         description:
-          "Leitura objetiva de mercado e impacto pratico na alocacao, pensada como produto de relacionamento e autoridade.",
+          "A newsletter semanal de Felipe Marques: leitura objetiva de mercado, reflexo em carteira e direcao patrimonial para o longo prazo.",
         link: "newsletter.html",
       },
       {
         tag: "Conversao",
         title: "Diagnostico patrimonial",
         description:
-          "Uma triagem comercial mais clara para entender objetivo, horizonte, aporte e perfil antes do primeiro contato.",
+          "Primeiro passo para entender onde voce esta e onde quer chegar — estrutura atual, objetivo, horizonte e o nivel de risco que realmente faz sentido assumir.",
         link: "contato.html",
       },
     ],
@@ -66,12 +66,12 @@ window.MARQUES_DEFAULT_CONTENT = {
     description:
       "Uma sintese para conectar juros, bolsa, cambio, cripto e risco global com implicacoes praticas para carteira e patrimonio.",
     sideTag: "Estrutura",
-    sideTitle: "Como essa leitura deve funcionar",
+    sideTitle: "Como essa leitura funciona",
     bullets: [
-      "Resumo executivo da semana",
-      "Leitura de juros, bolsa, cambio e cripto",
-      "Teses para carteira e implicacoes patrimoniais",
-      "Conclusao com proxima decisao de alocacao",
+      "Cenario macro da semana com hierarquia de risco",
+      "Leitura de juros, bolsa, cambio e cripto sem excesso de ruido",
+      "Implicacoes para alocacao e posicionamento tatico",
+      "Conclusao com a proxima decisao patrimonial relevante",
     ],
     documentTitle: "Visualize a analise semanal completa.",
     documentSummary:
@@ -85,19 +85,21 @@ window.MARQUES_DEFAULT_CONTENT = {
     cards: [
       {
         tag: "Capa",
-        title: "Materia principal com foco em movimentos de mercado e impacto nos investimentos",
+        title: "O tema central da semana com contexto macro e impacto em carteira",
         description:
-          "Espaco ideal para abrir o dia com a noticia mais relevante, contexto macro e possiveis reflexos para acoes, juros e cambio.",
+          "A materia principal com leitura objetiva, contexto de mercado e possiveis reflexos para acoes, juros, cambio e cripto.",
       },
       {
-        tag: "Analise",
-        title: "Cards para leitura rapida",
-        description: "Resumo objetivo, categoria, horario e CTA para aprofundamento.",
+        tag: "Radar",
+        title: "Movimentos que merecem atencao antes de qualquer decisao de alocacao",
+        description:
+          "Temas selecionados por relevancia patrimonial — sem ruido, com hierarquia clara e foco no que impacta posicionamento.",
       },
       {
-        tag: "Editorial",
-        title: "Visual premium para nicho financeiro",
-        description: "Paleta sobria, contraste forte e hierarquia clara de informacao.",
+        tag: "Perspectiva",
+        title: "Leitura macro aplicada: do cenario global a implicacao pratica na carteira",
+        description:
+          "Conexao entre geopolitica, politica monetaria, fluxo de capitais e o que isso significa para derivativos, Long & Short e alocacao.",
       },
     ],
   },
@@ -105,7 +107,7 @@ window.MARQUES_DEFAULT_CONTENT = {
     kicker: "Carta Marques",
     title: "Receba uma leitura objetiva do mercado.",
     description:
-      "Cenario da semana, impacto pratico na alocacao e direcao patrimonial para quem construi capital com horizonte de longo prazo.",
+      "Toda semana, Felipe Marques entrega uma sintese direta: cenario macro, impacto pratico na alocacao e direcao patrimonial para quem constroi capital com horizonte de longo prazo.",
     buttonLabel: "Quero receber",
   },
   contact: {
@@ -114,11 +116,11 @@ window.MARQUES_DEFAULT_CONTENT = {
     tag: "Diagnostico inicial",
     heading: "Clareza antes da proposta.",
     description:
-      "Preencha seus dados para uma analise inicial da sua estrutura, do seu objetivo e do seu horizonte de investimento. Isso torna o primeiro contato mais consultivo e menos generico.",
+      "Antes de qualquer recomendacao, Felipe Marques analisa estrutura atual, objetivo, prazo, liquidez e o risco que realmente faz sentido assumir. O primeiro contato e consultivo — nao generico.",
     benefits: [
-      "Entendimento mais claro do objetivo patrimonial",
-      "Triagem alinhada aos 3 pilares da Marques Invest",
-      "Contato consultivo com mais contexto, prazo e coerencia",
+      "Leitura direta da sua estrutura patrimonial atual",
+      "Alinhamento com as estrategias de gestao da Marques Invest",
+      "Contato com Felipe Marques com contexto, prazo e coerencia",
     ],
   },
 };
