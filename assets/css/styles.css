@@ -4968,7 +4968,7 @@ body[data-page="home"] .hero-copy .eyebrow {
 
 .sim-header {
   max-width: 620px;
-  margin-bottom: 56px;
+  margin-bottom: 48px;
 }
 
 .sim-title {
@@ -5095,6 +5095,7 @@ body[data-page="home"] .hero-copy .eyebrow {
 
 /* ── Result panel ── */
 .sim-result {
+  align-self: start;
   display: flex;
   flex-direction: column;
   gap: 28px;
