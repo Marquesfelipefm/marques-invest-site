@@ -504,6 +504,106 @@
         </section>
       </main>
 
+        <!-- ══ SIMULADOR DE PATRIMÔNIO ══ -->
+        <section class="section sim-section" id="simulador">
+          <div class="sim-inner">
+
+            <div class="sim-header">
+              <span class="section-kicker">Simulador</span>
+              <h2 class="sim-title">Faça seu dinheiro<br><em>trabalhar para você.</em></h2>
+              <p class="sim-subtitle">Ajuste os controles e veja quanto seu patrimônio pode crescer com disciplina e consistência.</p>
+            </div>
+
+            <div class="sim-body">
+
+              <!-- CONTROLES -->
+              <div class="sim-controls">
+
+                <div class="sim-field">
+                  <div class="sim-field-labels">
+                    <span class="sim-field-name">Aporte mensal</span>
+                    <span class="sim-field-value" id="sim-label-aporte">R$ 1.000</span>
+                  </div>
+                  <div class="sim-slider-wrap">
+                    <input class="sim-slider" id="sim-aporte" type="range" min="10" max="10000" step="10" value="1000" aria-label="Aporte mensal" />
+                  </div>
+                  <div class="sim-slider-limits">
+                    <span>R$ 10</span><span>R$ 10.000</span>
+                  </div>
+                </div>
+
+                <div class="sim-field">
+                  <div class="sim-field-labels">
+                    <span class="sim-field-name">Período de investimento</span>
+                    <span class="sim-field-value" id="sim-label-prazo">3 anos</span>
+                  </div>
+                  <div class="sim-slider-wrap">
+                    <input class="sim-slider" id="sim-prazo" type="range" min="6" max="60" step="1" value="36" aria-label="Prazo em meses" />
+                  </div>
+                  <div class="sim-slider-limits">
+                    <span>6 meses</span><span>5 anos</span>
+                  </div>
+                </div>
+
+                <div class="sim-field">
+                  <div class="sim-field-labels">
+                    <span class="sim-field-name">Taxa Selic (a.a.)</span>
+                    <span class="sim-field-value" id="sim-label-selic">14,75%</span>
+                  </div>
+                  <div class="sim-slider-wrap">
+                    <input class="sim-slider" id="sim-selic" type="range" min="6" max="20" step="0.25" value="14.75" aria-label="Taxa Selic ao ano" />
+                  </div>
+                  <div class="sim-slider-limits">
+                    <span>6%</span><span>20%</span>
+                  </div>
+                </div>
+
+              </div><!-- /controls -->
+
+              <!-- RESULTADO -->
+              <div class="sim-result">
+
+                <div class="sim-result-main">
+                  <span class="sim-result-label">Total acumulado</span>
+                  <span class="sim-result-total" id="sim-total">R$ 0</span>
+                </div>
+
+                <div class="sim-bar-wrap">
+                  <div class="sim-bar" id="sim-bar">
+                    <div class="sim-bar-invested" id="sim-bar-invested"></div>
+                    <div class="sim-bar-return" id="sim-bar-return"></div>
+                  </div>
+                  <div class="sim-bar-legend">
+                    <span><i class="sim-dot sim-dot--invested"></i>Você investiu</span>
+                    <span><i class="sim-dot sim-dot--return"></i>Juros (Selic)</span>
+                  </div>
+                </div>
+
+                <div class="sim-breakdown">
+                  <div class="sim-breakdown-row">
+                    <span>Você investiu</span>
+                    <strong id="sim-invested">R$ 0</strong>
+                  </div>
+                  <div class="sim-breakdown-row sim-breakdown-row--highlight">
+                    <span>Seus juros renderam</span>
+                    <strong id="sim-return">R$ 0</strong>
+                  </div>
+                  <div class="sim-breakdown-row sim-breakdown-row--pct">
+                    <span>Rendimento sobre aporte</span>
+                    <strong id="sim-pct">0%</strong>
+                  </div>
+                </div>
+
+                <a class="button button-primary sim-cta" href="contato.html">
+                  Solicitar diagnóstico patrimonial
+                </a>
+
+              </div><!-- /result -->
+
+            </div><!-- /body -->
+          </div>
+        </section>
+
       <footer class="footer">
         <p>
           Marques Invest - inteligencia patrimonial, leitura de mercado e direcao para longo prazo.
@@ -527,6 +627,92 @@
     <script src="assets/js/script.js"></script>
     <script src="assets/js/crypto-ticker.js"></script>
     <script>
+      /* ── Simulador de patrimônio ── */
+      (function () {
+        var sliderAporte = document.getElementById("sim-aporte");
+        var sliderPrazo  = document.getElementById("sim-prazo");
+        var sliderSelic  = document.getElementById("sim-selic");
+        if (!sliderAporte) return;
+
+        var labelAporte  = document.getElementById("sim-label-aporte");
+        var labelPrazo   = document.getElementById("sim-label-prazo");
+        var labelSelic   = document.getElementById("sim-label-selic");
+        var elTotal      = document.getElementById("sim-total");
+        var elInvested   = document.getElementById("sim-invested");
+        var elReturn     = document.getElementById("sim-return");
+        var elPct        = document.getElementById("sim-pct");
+        var barInvested  = document.getElementById("sim-bar-invested");
+        var barReturn    = document.getElementById("sim-bar-return");
+
+        function fmtBRL(val) {
+          return "R$ " + val.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function prazoLabel(months) {
+          if (months < 12) return months + " meses";
+          var anos = Math.floor(months / 12);
+          var meses = months % 12;
+          if (meses === 0) return anos === 1 ? "1 ano" : anos + " anos";
+          return anos + (anos === 1 ? " ano" : " anos") + " e " + meses + (meses === 1 ? " mês" : " meses");
+        }
+
+        function updateProgress(slider) {
+          var min = parseFloat(slider.min);
+          var max = parseFloat(slider.max);
+          var val = parseFloat(slider.value);
+          var pct = ((val - min) / (max - min)) * 100;
+          slider.style.setProperty("--pct", pct + "%");
+        }
+
+        function calcular() {
+          var PMT    = parseFloat(sliderAporte.value);
+          var n      = parseInt(sliderPrazo.value);
+          var annual = parseFloat(sliderSelic.value) / 100;
+
+          /* Taxa mensal equivalente */
+          var r = Math.pow(1 + annual, 1 / 12) - 1;
+
+          /* Valor futuro de aportes mensais */
+          var FV = PMT * ((Math.pow(1 + r, n) - 1) / r);
+          var invested = PMT * n;
+          var ret = FV - invested;
+          var pct = invested > 0 ? (ret / invested) * 100 : 0;
+
+          /* Labels dos sliders */
+          labelAporte.textContent = "R$ " + PMT.toLocaleString("pt-BR");
+          labelPrazo.textContent  = prazoLabel(n);
+          labelSelic.textContent  = parseFloat(sliderSelic.value).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%";
+
+          /* Resultados */
+          elTotal.textContent    = fmtBRL(FV);
+          elInvested.textContent = fmtBRL(invested);
+          elReturn.textContent   = fmtBRL(ret);
+          elPct.textContent      = "+" + pct.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%";
+
+          /* Barra proporcional */
+          var investedPct = FV > 0 ? (invested / FV) * 100 : 50;
+          var returnPct   = 100 - investedPct;
+          barInvested.style.width = investedPct + "%";
+          barReturn.style.width   = returnPct + "%";
+
+          /* Atualiza gradiente dos sliders */
+          updateProgress(sliderAporte);
+          updateProgress(sliderPrazo);
+          updateProgress(sliderSelic);
+        }
+
+        sliderAporte.addEventListener("input", calcular);
+        sliderPrazo.addEventListener("input", calcular);
+        sliderSelic.addEventListener("input", calcular);
+
+        /* Inicializa */
+        updateProgress(sliderAporte);
+        updateProgress(sliderPrazo);
+        updateProgress(sliderSelic);
+        calcular();
+      })();
+
+      /* ── Share button ── */
       (function () {
         var btn = document.getElementById("home-af-share-btn");
         if (!btn) return;
