@@ -40,6 +40,106 @@
           </div>
         </nav>
 
+        <!-- ══ SIMULADOR DE PATRIMÔNIO ══ -->
+        <div class="sim-section" id="simulador">
+          <div class="sim-inner">
+
+            <div class="sim-header">
+              <span class="section-kicker">Simulador</span>
+              <h2 class="sim-title">Faça seu dinheiro<br><em>trabalhar para você.</em></h2>
+              <p class="sim-subtitle">Ajuste os controles e veja quanto seu patrimônio pode crescer com disciplina e consistência.</p>
+            </div>
+
+            <div class="sim-body">
+
+              <!-- CONTROLES -->
+              <div class="sim-controls">
+
+                <div class="sim-field">
+                  <div class="sim-field-labels">
+                    <span class="sim-field-name">Aporte mensal</span>
+                    <span class="sim-field-value" id="sim-label-aporte">R$ 1.000</span>
+                  </div>
+                  <div class="sim-slider-wrap">
+                    <input class="sim-slider" id="sim-aporte" type="range" min="10" max="10000" step="10" value="1000" aria-label="Aporte mensal" />
+                  </div>
+                  <div class="sim-slider-limits">
+                    <span>R$ 10</span><span>R$ 10.000</span>
+                  </div>
+                </div>
+
+                <div class="sim-field">
+                  <div class="sim-field-labels">
+                    <span class="sim-field-name">Período de investimento</span>
+                    <span class="sim-field-value" id="sim-label-prazo">3 anos</span>
+                  </div>
+                  <div class="sim-slider-wrap">
+                    <input class="sim-slider" id="sim-prazo" type="range" min="6" max="60" step="1" value="36" aria-label="Prazo em meses" />
+                  </div>
+                  <div class="sim-slider-limits">
+                    <span>6 meses</span><span>5 anos</span>
+                  </div>
+                </div>
+
+                <div class="sim-field">
+                  <div class="sim-field-labels">
+                    <span class="sim-field-name">Taxa Selic (a.a.)</span>
+                    <span class="sim-field-value" id="sim-label-selic">14,75%</span>
+                  </div>
+                  <div class="sim-slider-wrap">
+                    <input class="sim-slider" id="sim-selic" type="range" min="6" max="20" step="0.25" value="14.75" aria-label="Taxa Selic ao ano" />
+                  </div>
+                  <div class="sim-slider-limits">
+                    <span>6%</span><span>20%</span>
+                  </div>
+                </div>
+
+              </div><!-- /controls -->
+
+              <!-- RESULTADO -->
+              <div class="sim-result">
+
+                <div class="sim-result-main">
+                  <span class="sim-result-label">Total acumulado</span>
+                  <span class="sim-result-total" id="sim-total">R$ 0</span>
+                </div>
+
+                <div class="sim-bar-wrap">
+                  <div class="sim-bar" id="sim-bar">
+                    <div class="sim-bar-invested" id="sim-bar-invested"></div>
+                    <div class="sim-bar-return" id="sim-bar-return"></div>
+                  </div>
+                  <div class="sim-bar-legend">
+                    <span><i class="sim-dot sim-dot--invested"></i>Você investiu</span>
+                    <span><i class="sim-dot sim-dot--return"></i>Juros (Selic)</span>
+                  </div>
+                </div>
+
+                <div class="sim-breakdown">
+                  <div class="sim-breakdown-row">
+                    <span>Você investiu</span>
+                    <strong id="sim-invested">R$ 0</strong>
+                  </div>
+                  <div class="sim-breakdown-row sim-breakdown-row--highlight">
+                    <span>Seus juros renderam</span>
+                    <strong id="sim-return">R$ 0</strong>
+                  </div>
+                  <div class="sim-breakdown-row sim-breakdown-row--pct">
+                    <span>Rendimento sobre aporte</span>
+                    <strong id="sim-pct">0%</strong>
+                  </div>
+                </div>
+
+                <a class="button button-primary sim-cta" href="contato.html">
+                  Solicitar diagnóstico patrimonial
+                </a>
+
+              </div><!-- /result -->
+
+            </div><!-- /body -->
+          </div>
+        </div>
+
         <section class="hero-content">
           <!-- ── ANÁLISES MARQUES FEED ── -->
           <div class="home-af">
@@ -503,106 +603,6 @@
           </div>
         </section>
       </main>
-
-        <!-- ══ SIMULADOR DE PATRIMÔNIO ══ -->
-        <section class="section sim-section" id="simulador">
-          <div class="sim-inner">
-
-            <div class="sim-header">
-              <span class="section-kicker">Simulador</span>
-              <h2 class="sim-title">Faça seu dinheiro<br><em>trabalhar para você.</em></h2>
-              <p class="sim-subtitle">Ajuste os controles e veja quanto seu patrimônio pode crescer com disciplina e consistência.</p>
-            </div>
-
-            <div class="sim-body">
-
-              <!-- CONTROLES -->
-              <div class="sim-controls">
-
-                <div class="sim-field">
-                  <div class="sim-field-labels">
-                    <span class="sim-field-name">Aporte mensal</span>
-                    <span class="sim-field-value" id="sim-label-aporte">R$ 1.000</span>
-                  </div>
-                  <div class="sim-slider-wrap">
-                    <input class="sim-slider" id="sim-aporte" type="range" min="10" max="10000" step="10" value="1000" aria-label="Aporte mensal" />
-                  </div>
-                  <div class="sim-slider-limits">
-                    <span>R$ 10</span><span>R$ 10.000</span>
-                  </div>
-                </div>
-
-                <div class="sim-field">
-                  <div class="sim-field-labels">
-                    <span class="sim-field-name">Período de investimento</span>
-                    <span class="sim-field-value" id="sim-label-prazo">3 anos</span>
-                  </div>
-                  <div class="sim-slider-wrap">
-                    <input class="sim-slider" id="sim-prazo" type="range" min="6" max="60" step="1" value="36" aria-label="Prazo em meses" />
-                  </div>
-                  <div class="sim-slider-limits">
-                    <span>6 meses</span><span>5 anos</span>
-                  </div>
-                </div>
-
-                <div class="sim-field">
-                  <div class="sim-field-labels">
-                    <span class="sim-field-name">Taxa Selic (a.a.)</span>
-                    <span class="sim-field-value" id="sim-label-selic">14,75%</span>
-                  </div>
-                  <div class="sim-slider-wrap">
-                    <input class="sim-slider" id="sim-selic" type="range" min="6" max="20" step="0.25" value="14.75" aria-label="Taxa Selic ao ano" />
-                  </div>
-                  <div class="sim-slider-limits">
-                    <span>6%</span><span>20%</span>
-                  </div>
-                </div>
-
-              </div><!-- /controls -->
-
-              <!-- RESULTADO -->
-              <div class="sim-result">
-
-                <div class="sim-result-main">
-                  <span class="sim-result-label">Total acumulado</span>
-                  <span class="sim-result-total" id="sim-total">R$ 0</span>
-                </div>
-
-                <div class="sim-bar-wrap">
-                  <div class="sim-bar" id="sim-bar">
-                    <div class="sim-bar-invested" id="sim-bar-invested"></div>
-                    <div class="sim-bar-return" id="sim-bar-return"></div>
-                  </div>
-                  <div class="sim-bar-legend">
-                    <span><i class="sim-dot sim-dot--invested"></i>Você investiu</span>
-                    <span><i class="sim-dot sim-dot--return"></i>Juros (Selic)</span>
-                  </div>
-                </div>
-
-                <div class="sim-breakdown">
-                  <div class="sim-breakdown-row">
-                    <span>Você investiu</span>
-                    <strong id="sim-invested">R$ 0</strong>
-                  </div>
-                  <div class="sim-breakdown-row sim-breakdown-row--highlight">
-                    <span>Seus juros renderam</span>
-                    <strong id="sim-return">R$ 0</strong>
-                  </div>
-                  <div class="sim-breakdown-row sim-breakdown-row--pct">
-                    <span>Rendimento sobre aporte</span>
-                    <strong id="sim-pct">0%</strong>
-                  </div>
-                </div>
-
-                <a class="button button-primary sim-cta" href="contato.html">
-                  Solicitar diagnóstico patrimonial
-                </a>
-
-              </div><!-- /result -->
-
-            </div><!-- /body -->
-          </div>
-        </section>
 
       <footer class="footer">
         <p>
