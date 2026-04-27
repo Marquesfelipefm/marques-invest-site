@@ -4571,6 +4571,77 @@ body[data-page="home"] .hero-copy .eyebrow {
 
 /* ══ end home-af ══ */
 
+/* ══════════════════════════════════════════════
+   ANÁLISE DA SEMANA — grid de posts
+   ══════════════════════════════════════════════ */
+
+.analysis-posts-section .section-heading--split {
+  align-items: flex-end;
+  margin-bottom: 36px;
+}
+
+.analysis-posts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  background: var(--line);
+}
+
+.analysis-post-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 32px 28px;
+  background: var(--bg-soft);
+  transition: background 0.2s ease;
+}
+
+.analysis-post-card:hover {
+  background: var(--bg-elevated);
+}
+
+.analysis-post-headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(22px, 2.4vw, 28px);
+  font-weight: 600;
+  line-height: 1.18;
+  color: var(--text);
+  margin: 0;
+}
+
+.analysis-post-headline em {
+  font-style: italic;
+  color: var(--accent-deep);
+}
+
+.analysis-post-body {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-soft);
+  margin: 0;
+}
+
+.analysis-post-insight {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--accent-muted);
+  text-transform: uppercase;
+  margin: 0;
+  padding-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .analysis-posts-grid {
+    grid-template-columns: 1fr;
+  }
+  .analysis-post-card {
+    padding: 24px 20px;
+  }
+}
+
+/* ═══════════════════════════════════════════ */
+
 .insta-toast {
   position: fixed;
   bottom: 28px;
