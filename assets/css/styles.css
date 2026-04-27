@@ -4391,7 +4391,7 @@ body[data-page="home"] .hero-copy .eyebrow {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 16px 20px 14px;
+  padding: 18px 22px 16px;
   border-bottom: 1px solid var(--line);
   background: var(--bg-elevated);
 }
@@ -4434,11 +4434,11 @@ body[data-page="home"] .hero-copy .eyebrow {
 
 /* ── Individual card ── */
 .home-af-card {
-  padding: 16px 20px;
+  padding: 18px 22px;
   border-bottom: 1px solid var(--line);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   transition: background 0.2s ease;
 }
 
@@ -4459,11 +4459,11 @@ body[data-page="home"] .hero-copy .eyebrow {
 /* Category pills */
 .home-af-pill {
   display: inline-block;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 3px 9px;
+  padding: 4px 11px;
   border-radius: 2px;
 }
 
@@ -4477,9 +4477,9 @@ body[data-page="home"] .hero-copy .eyebrow {
 /* Headline */
 .home-af-headline {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
-  line-height: 1.22;
+  line-height: 1.2;
   color: var(--text);
   margin: 0;
 }
@@ -4491,9 +4491,9 @@ body[data-page="home"] .hero-copy .eyebrow {
 
 /* Body */
 .home-af-body {
-  font-size: 12px;
-  line-height: 1.65;
-  color: var(--text-faint);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-soft);
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -4511,9 +4511,9 @@ body[data-page="home"] .hero-copy .eyebrow {
 }
 
 .home-af-chip {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
-  padding: 2px 8px;
+  padding: 3px 9px;
   border-radius: 3px;
   background: var(--bg-elevated);
   color: var(--text-soft);
