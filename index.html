@@ -48,7 +48,10 @@
                 <span class="eyebrow">Análises Marques</span>
                 <span class="home-af-date">27 de abril de 2026</span>
               </div>
-              <a class="button button-secondary home-af-btn" href="analise-semana.html">Ver análise</a>
+              <button class="home-af-share-btn" type="button" id="home-af-share-btn" aria-label="Compartilhar análises">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                <span>Compartilhar</span>
+              </button>
             </div>
 
             <div class="home-af-scroll">
@@ -523,5 +526,55 @@
     <script src="assets/js/site-content.js"></script>
     <script src="assets/js/script.js"></script>
     <script src="assets/js/crypto-ticker.js"></script>
+    <script>
+      (function () {
+        var btn = document.getElementById("home-af-share-btn");
+        if (!btn) return;
+
+        btn.addEventListener("click", function () {
+          var shareUrl  = window.location.origin + window.location.pathname.replace(/[^/]*$/, "") + "analise-semana.html";
+          var shareData = {
+            title: "Análises Marques Invest — 27 de abril de 2026",
+            text:  "Leitura semanal de mercado: Focus/Selic, Ibovespa, Câmbio, Petróleo, Bitcoin e Ouro — por Felipe Marques.",
+            url:   shareUrl
+          };
+
+          if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+            navigator.share(shareData).catch(function () {});
+            return;
+          }
+
+          /* Desktop fallback: copia o link e mostra feedback no botão */
+          navigator.clipboard.writeText(shareUrl).then(function () {
+            var span = btn.querySelector("span");
+            var prev = span.textContent;
+            span.textContent = "Link copiado!";
+            btn.classList.add("home-af-share-btn--ok");
+            setTimeout(function () {
+              span.textContent = prev;
+              btn.classList.remove("home-af-share-btn--ok");
+            }, 2200);
+          }).catch(function () {
+            /* último fallback: execCommand */
+            var ta = document.createElement("textarea");
+            ta.value = shareUrl;
+            ta.style.position = "fixed";
+            ta.style.opacity  = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+            var span = btn.querySelector("span");
+            var prev = span.textContent;
+            span.textContent = "Link copiado!";
+            btn.classList.add("home-af-share-btn--ok");
+            setTimeout(function () {
+              span.textContent = prev;
+              btn.classList.remove("home-af-share-btn--ok");
+            }, 2200);
+          });
+        });
+      })();
+    </script>
   </body>
 </html>
