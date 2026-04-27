@@ -4370,6 +4370,178 @@ body[data-page="home"] .hero-copy .eyebrow {
   border-top: 1px solid rgba(212, 166, 70, 0.12);
 }
 
+/* ══════════════════════════════════════════════
+   HOME ANÁLISES MARQUES — feed hero
+   ══════════════════════════════════════════════ */
+
+.home-af {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.home-af-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-elevated);
+}
+
+.home-af-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.home-af-date {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+}
+
+.home-af-btn {
+  font-size: 11px;
+  padding: 6px 14px;
+  min-height: auto;
+  flex-shrink: 0;
+}
+
+.home-af-scroll {
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 168, 76, 0.15) transparent;
+}
+
+.home-af-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+
+.home-af-scroll::-webkit-scrollbar-thumb {
+  background: rgba(201, 168, 76, 0.2);
+  border-radius: 2px;
+}
+
+/* ── Individual card ── */
+.home-af-card {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: background 0.2s ease;
+}
+
+.home-af-card:last-child {
+  border-bottom: none;
+}
+
+.home-af-card:hover {
+  background: rgba(201, 168, 76, 0.025);
+}
+
+.home-af-card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Category pills */
+.home-af-pill {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 2px;
+}
+
+.home-af-pill--selic  { background: rgba(106, 154, 219, 0.12); color: #7fb0e8; border: 0.5px solid rgba(106, 154, 219, 0.25); }
+.home-af-pill--ibov   { background: rgba(201, 168, 76, 0.10);  color: var(--accent-deep);  border: 0.5px solid rgba(201, 168, 76, 0.22); }
+.home-af-pill--cambio { background: rgba(106, 191, 122, 0.10); color: #7fd490; border: 0.5px solid rgba(106, 191, 122, 0.22); }
+.home-af-pill--petro  { background: rgba(224, 122, 64, 0.10);  color: #e89060; border: 0.5px solid rgba(224, 122, 64, 0.22); }
+.home-af-pill--btc    { background: rgba(212, 160, 48, 0.10);  color: #d4b060; border: 0.5px solid rgba(212, 160, 48, 0.22); }
+.home-af-pill--ouro   { background: rgba(232, 200, 64, 0.10);  color: #e8d060; border: 0.5px solid rgba(232, 200, 64, 0.22); }
+
+/* Headline */
+.home-af-headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.22;
+  color: var(--text);
+  margin: 0;
+}
+
+.home-af-headline em {
+  font-style: italic;
+  color: var(--accent-deep);
+}
+
+/* Body */
+.home-af-body {
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--text-faint);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Data chips */
+.home-af-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+}
+
+.home-af-chip {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: var(--bg-elevated);
+  color: var(--text-soft);
+}
+
+.home-af-chip b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ── Feed fills the hero-content grid row naturally ── */
+.home-af {
+  align-self: stretch;
+  height: 100%;
+  min-height: 420px;
+}
+
+/* On small screens stack vertically and cap height */
+@media (max-width: 899px) {
+  .home-af {
+    height: auto;
+    min-height: 0;
+    max-height: 460px;
+  }
+}
+
+/* ══ end home-af ══ */
+
 .insta-toast {
   position: fixed;
   bottom: 28px;
