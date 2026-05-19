@@ -48,7 +48,7 @@ window.MARQUES_DEFAULT_CONTENT = {
         tag: "Autoridade",
         title: "Carta Marques",
         description:
-          "A newsletter semanal de Felipe Marques: leitura objetiva de mercado, reflexo em carteira e direcao patrimonial para o longo prazo.",
+          "A newsletter semanal da Marques Invest: leitura objetiva de mercado, reflexo em carteira e direcao patrimonial para o longo prazo.",
         link: "newsletter.html",
       },
       {
@@ -107,7 +107,7 @@ window.MARQUES_DEFAULT_CONTENT = {
     kicker: "Carta Marques",
     title: "Receba uma leitura objetiva do mercado.",
     description:
-      "Toda semana, Felipe Marques entrega uma sintese direta: cenario macro, impacto pratico na alocacao e direcao patrimonial para quem constroi capital com horizonte de longo prazo.",
+      "Toda semana, a Marques Invest entrega uma sintese direta: cenario macro, impacto pratico na alocacao e direcao patrimonial para quem constroi capital com horizonte de longo prazo.",
     buttonLabel: "Quero receber",
   },
   contact: {
@@ -116,11 +116,11 @@ window.MARQUES_DEFAULT_CONTENT = {
     tag: "Diagnostico inicial",
     heading: "Clareza antes da proposta.",
     description:
-      "Antes de qualquer recomendacao, Felipe Marques analisa estrutura atual, objetivo, prazo, liquidez e o risco que realmente faz sentido assumir. O primeiro contato e consultivo — nao generico.",
+      "Antes de qualquer recomendacao, a Marques Invest analisa estrutura atual, objetivo, prazo, liquidez e o risco que realmente faz sentido assumir. O primeiro contato e consultivo — nao generico.",
     benefits: [
       "Leitura direta da sua estrutura patrimonial atual",
       "Alinhamento com as estrategias de gestao da Marques Invest",
-      "Contato com Felipe Marques com contexto, prazo e coerencia",
+      "Contato com a Marques Invest com contexto, prazo e coerencia",
     ],
   },
 };

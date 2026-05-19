@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh pr:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(node --check assets/js/script.js)",
+      "Bash(for f:*)",
+      "Bash(do grep:*)",
+      "Bash(sed -i 's|<script src=\"\"assets/js/script.js\"\"></script>|<script src=\"\"assets/js/script.js\"\"></script>\\\\n    <script src=\"\"assets/js/crypto-ticker.js\"\"></script>|' \"$f\")",
+      "Bash(done)",
+      "Bash(cp assets/js/script.js assets/js/crypto-ticker.js index.html 404.html admin.html agenda.html analise-semana.html contato.html destaques.html newsletter.html noticia.html noticias.html \".claude/worktrees/beautiful-dhawan/\")",
+      "Bash(cp assets/js/crypto-ticker.js assets/js/script.js \".claude/worktrees/beautiful-dhawan/assets/js/\")",
+      "Bash(python -c \":*)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git checkout *)",
+      "Bash(git merge *)"
+    ]
+  }
+}
