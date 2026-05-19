@@ -6,7 +6,7 @@
     <title>Marques Invest | Análise de Mercado, Cripto e Opções</title>
     <meta
       name="description"
-      content="Blog de analise de mercado pela Marques Invest — leitura macro, trades em derivativos, Long & Short e cripto. Sao Paulo."
+      content="Blog de análise de mercado pela Marques Invest — cripto, trade de opções, Long & Short e macro. Sao Paulo."
     />
     <meta name="theme-color" content="#141414" />
     <link rel="icon" type="image/svg+xml" href="assets/img/logo-mark.svg" />
@@ -21,6 +21,7 @@
   </head>
   <body data-page="home">
     <div class="site-shell">
+
       <header class="hero hero--compact">
         <nav class="topbar">
           <a class="brand" href="index.html" aria-label="Marques Invest">
@@ -31,590 +32,192 @@
             />
           </a>
           <div class="nav-links">
-            <a href="analise-semana.html">Analise da semana</a>
-            <a href="destaques.html">Destaques</a>
-            <a href="noticias.html">Noticias</a>
+            <a href="analise-semana.html">Análises</a>
+            <a href="destaques.html">Cripto & Opções</a>
+            <a href="noticias.html">Notícias</a>
             <a href="agenda.html">Agenda</a>
             <a href="newsletter.html">Carta Marques</a>
             <a href="contato.html">Falar comigo</a>
           </div>
         </nav>
-
-        <!-- ══ SIMULADOR DE PATRIMÔNIO ══ -->
-        <div class="sim-section" id="simulador">
-          <div class="sim-inner">
-
-            <div class="sim-body">
-
-              <!-- CONTROLES -->
-              <div class="sim-controls">
-
-                <div class="sim-header">
-                  <span class="section-kicker">Simulador</span>
-                  <h2 class="sim-title">Faça seu dinheiro<br><em>trabalhar para você.</em></h2>
-                  <p class="sim-subtitle">Ajuste os controles e veja quanto seu patrimônio pode crescer com disciplina e consistência.</p>
-                </div>
-
-                <div class="sim-field">
-                  <div class="sim-field-labels">
-                    <span class="sim-field-name">Aporte mensal</span>
-                    <span class="sim-field-value" id="sim-label-aporte">R$ 1.000</span>
-                  </div>
-                  <div class="sim-slider-wrap">
-                    <input class="sim-slider" id="sim-aporte" type="range" min="10" max="10000" step="10" value="1000" aria-label="Aporte mensal" />
-                  </div>
-                  <div class="sim-slider-limits">
-                    <span>R$ 10</span><span>R$ 10.000</span>
-                  </div>
-                </div>
-
-                <div class="sim-field">
-                  <div class="sim-field-labels">
-                    <span class="sim-field-name">Período de investimento</span>
-                    <span class="sim-field-value" id="sim-label-prazo">3 anos</span>
-                  </div>
-                  <div class="sim-slider-wrap">
-                    <input class="sim-slider" id="sim-prazo" type="range" min="6" max="60" step="1" value="36" aria-label="Prazo em meses" />
-                  </div>
-                  <div class="sim-slider-limits">
-                    <span>6 meses</span><span>5 anos</span>
-                  </div>
-                </div>
-
-                <div class="sim-field">
-                  <div class="sim-field-labels">
-                    <span class="sim-field-name">Taxa Selic (a.a.)</span>
-                    <span class="sim-field-value" id="sim-label-selic">14,75%</span>
-                  </div>
-                  <div class="sim-slider-wrap">
-                    <input class="sim-slider" id="sim-selic" type="range" min="6" max="20" step="0.25" value="14.75" aria-label="Taxa Selic ao ano" />
-                  </div>
-                  <div class="sim-slider-limits">
-                    <span>6%</span><span>20%</span>
-                  </div>
-                </div>
-
-              </div><!-- /controls -->
-
-              <!-- RESULTADO -->
-              <div class="sim-result">
-
-                <div class="sim-result-main">
-                  <span class="sim-result-label">Total acumulado</span>
-                  <span class="sim-result-total" id="sim-total">R$ 0</span>
-                </div>
-
-                <div class="sim-bar-wrap">
-                  <div class="sim-bar" id="sim-bar">
-                    <div class="sim-bar-invested" id="sim-bar-invested"></div>
-                    <div class="sim-bar-return" id="sim-bar-return"></div>
-                  </div>
-                  <div class="sim-bar-legend">
-                    <span><i class="sim-dot sim-dot--invested"></i>Você investiu</span>
-                    <span><i class="sim-dot sim-dot--return"></i>Juros (Selic)</span>
-                  </div>
-                </div>
-
-                <div class="sim-breakdown">
-                  <div class="sim-breakdown-row">
-                    <span>Você investiu</span>
-                    <strong id="sim-invested">R$ 0</strong>
-                  </div>
-                  <div class="sim-breakdown-row sim-breakdown-row--highlight">
-                    <span>Seus juros renderam</span>
-                    <strong id="sim-return">R$ 0</strong>
-                  </div>
-                  <div class="sim-breakdown-row sim-breakdown-row--pct">
-                    <span>Rendimento sobre aporte</span>
-                    <strong id="sim-pct">0%</strong>
-                  </div>
-                </div>
-
-                <a class="button button-primary sim-cta" href="contato.html">
-                  Falar com a Marques Invest
-                </a>
-
-              </div><!-- /result -->
-
-            </div><!-- /body -->
-          </div>
-        </div>
-
-        <section class="hero-content">
-          <!-- ── ANÁLISES MARQUES FEED ── -->
-          <div class="home-af">
-            <div class="home-af-header">
-              <div class="home-af-header-left">
-                <span class="eyebrow">O que estou vendo</span>
-                <span class="home-af-date">27 de abril de 2026 · Marques Invest</span>
-              </div>
-              <button class="home-af-share-btn" type="button" id="home-af-share-btn" aria-label="Compartilhar análises">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-                <span>Compartilhar</span>
-              </button>
-            </div>
-
-            <div class="home-af-scroll">
-
-              <!-- 1 — Focus / Selic -->
-              <article class="home-af-card">
-                <div class="home-af-card-top">
-                  <span class="home-af-pill home-af-pill--selic">Focus / Selic</span>
-                </div>
-                <h3 class="home-af-headline">Focus revisa Selic para <em>13%</em> e IPCA para <em>4,80%</em> em 2026</h3>
-                <p class="home-af-body">O mercado perdeu confiança no ciclo de cortes. A mediana para a Selic ao fim de 2026 subiu de 12,50% para 13,00% após três semanas estável — com petróleo perto de US$95, Ormuz instável e pressão cambial. Quem apostou em Selic caindo rápido precisa rever o modelo.</p>
-                <div class="home-af-chips">
-                  <span class="home-af-chip"><b>Selic</b> 14,75%</span>
-                  <span class="home-af-chip"><b>Proj. 2026</b> 13%</span>
-                  <span class="home-af-chip"><b>IPCA 2026</b> 4,80%</span>
-                  <span class="home-af-chip"><b>Meta</b> 3% ±1,5</span>
-                </div>
-              </article>
-
-              <!-- 2 — Ibovespa -->
-              <article class="home-af-card">
-                <div class="home-af-card-top">
-                  <span class="home-af-pill home-af-pill--ibov">Ibovespa</span>
-                </div>
-                <h3 class="home-af-headline">Ibovespa acima de <em>198 mil pontos</em> — rumo aos 200k?</h3>
-                <p class="home-af-body">A bolsa brasileira é o destaque positivo do mundo emergente em 2026, com alta acumulada de +18% no ano. Só em abril foram R$11,5 bi líquidos de fluxo estrangeiro na B3. O IFR-14 já está em sobrecompra, mas tendência não se briga — se opera a favor.</p>
-                <div class="home-af-chips">
-                  <span class="home-af-chip"><b>Ibovespa</b> ~198.173 pts</span>
-                  <span class="home-af-chip"><b>No ano</b> +18,25%</span>
-                  <span class="home-af-chip"><b>Fluxo abr.</b> R$11,5 bi</span>
-                </div>
-              </article>
-
-              <!-- 3 — Câmbio -->
-              <article class="home-af-card">
-                <div class="home-af-card-top">
-                  <span class="home-af-pill home-af-pill--cambio">Câmbio</span>
-                </div>
-                <h3 class="home-af-headline">Dólar cai a <em>R$4,97</em> — menor nível em 2 anos</h3>
-                <p class="home-af-body">Real valorizando é bom para conter inflação — mas para quem está dolarizado, o movimento corrói retorno. Não é hora de abandonar proteção cambial: o cenário geopolítico ainda justifica ter exposição ao dólar na carteira.</p>
-                <div class="home-af-chips">
-                  <span class="home-af-chip"><b>USD/BRL</b> R$4,97</span>
-                  <span class="home-af-chip"><b>Var.</b> -0,18%</span>
-                  <span class="home-af-chip"><b>Focus 2026</b> R$5,30</span>
-                </div>
-              </article>
-
-              <!-- 4 — Petróleo -->
-              <article class="home-af-card">
-                <div class="home-af-card-top">
-                  <span class="home-af-pill home-af-pill--petro">Petróleo</span>
-                </div>
-                <h3 class="home-af-headline">Petróleo perto de <em>US$95</em> — o risco que o mercado subestima</h3>
-                <p class="home-af-body">Petróleo alto significa inflação importada, pressão sobre o IPCA e menos espaço para o Bacen cortar juros. Para o Brasil, a Petrobras (PETR4) se beneficia — mas o país inteiro paga a conta nos preços. Esse risco está sendo precificado nas NTN-Bs e no Focus.</p>
-                <div class="home-af-chips">
-                  <span class="home-af-chip"><b>Brent</b> ~US$95/barril</span>
-                  <span class="home-af-chip"><b>Motivo</b> Guerra Irã</span>
-                  <span class="home-af-chip"><b>Impacto</b> IPCA ↑</span>
-                </div>
-              </article>
-
-              <!-- 5 — Bitcoin -->
-              <article class="home-af-card">
-                <div class="home-af-card-top">
-                  <span class="home-af-pill home-af-pill--btc">Bitcoin</span>
-                </div>
-                <h3 class="home-af-headline">Bitcoin cai <em>-27%</em> no trimestre — o que está acontecendo</h3>
-                <p class="home-af-body">O Bitcoin fechou o 1T26 como o ativo de maior queda — de US$125k (ATH em out/25) para abaixo de US$75k. Em momentos de aversão ao risco geopolítico, fluxo migra para fundamentos tangíveis. Bitcoin é ativo de alta convicção: ou você entende o que tem, ou o suporte que rompe vira pânico.</p>
-                <div class="home-af-chips">
-                  <span class="home-af-chip"><b>BTC</b> ~US$74–78k</span>
-                  <span class="home-af-chip"><b>1T26</b> -27%</span>
-                  <span class="home-af-chip"><b>ATH</b> US$125k out/25</span>
-                </div>
-              </article>
-
-              <!-- 6 — Ouro -->
-              <article class="home-af-card">
-                <div class="home-af-card-top">
-                  <span class="home-af-pill home-af-pill--ouro">Ouro</span>
-                </div>
-                <h3 class="home-af-headline">Ouro lidera todos os ativos com <em>+49%</em> em 12 meses</h3>
-                <p class="home-af-body">O ouro não é um ativo "chato" — é o termômetro honesto do medo global. Guerra no Oriente Médio, dólar fraco, bancos centrais comprando (China e Índia) e desconfiança nas Treasuries. Quem não tem nenhuma exposição está perdendo proteção — e retorno.</p>
-                <div class="home-af-chips">
-                  <span class="home-af-chip"><b>Ouro 12m</b> +49,23%</span>
-                  <span class="home-af-chip"><b>vs CDI</b> +14,73%</span>
-                  <span class="home-af-chip"><b>vs BTC 12m</b> -25,98%</span>
-                </div>
-              </article>
-
-            </div><!-- /scroll -->
-          </div>
-
-          <aside class="market-panel">
-            <div class="panel-card">
-              <span class="panel-label">Panorama do dia</span>
-              <strong>10 principais bolsas globais com variacao intradiaria</strong>
-              <p>
-                Um painel para acompanhar risco global, contexto de abertura e
-                o humor que influencia a alocacao ao longo do dia.
-              </p>
-            </div>
-            <p class="market-status" id="market-status">
-              Carregando panorama global das bolsas.
-            </p>
-            <div class="market-board" id="market-board" aria-label="Indicadores do mercado"></div>
-          </aside>
-        </section>
-
-        <div class="hero-strip">
-          <article class="hero-strip-card">
-            <span class="tag">Análise</span>
-            <strong>Leitura semanal do mercado — o que está acontecendo e o que fazer com isso.</strong>
-            <p>Macro, juros, câmbio e bolsa com foco em implicação prática para quem está posicionado.</p>
-          </article>
-          <article class="hero-strip-card">
-            <span class="tag">Derivativos</span>
-            <strong>Long & Short, opções e futuros — o que estou operando e por quê.</strong>
-            <p>Estratégias com disciplina de risco, sem hype. Assimetria é oportunidade quando você sabe o que está fazendo.</p>
-          </article>
-          <article class="hero-strip-card">
-            <span class="tag">Bitcoin</span>
-            <strong>BTC como ativo estratégico — tese de longo prazo com gestão ativa de exposição.</strong>
-            <p>Não é especulação. É convicção com tamanho de posição coerente e critério de saída definido.</p>
-          </article>
-          <article class="hero-strip-card">
-            <span class="tag">Carta Marques</span>
-            <strong>Newsletter semanal com minha leitura de mercado e posicionamento.</strong>
-            <p>Toda semana: o que mudou, o que estou monitorando e o que isso significa para carteira.</p>
-          </article>
-        </div>
       </header>
 
       <main>
-        <section class="section market-intelligence market-intelligence--telegraph" id="servicos">
-          <div class="section-heading">
-            <span class="section-kicker">O que faço</span>
-            <h2>Análise, estratégia e acompanhamento — sem enrolação.</h2>
-          </div>
 
-          <div class="telegraph-services-grid">
-            <div class="intelligence-flow">
-              <article class="intelligence-lead">
-                <span class="tag">Análise</span>
-                <h3>O mercado não espera. Eu leio antes que a maioria perceba.</h3>
-                <p>
-                  Sigo o macro de perto — juros, câmbio, commodities e fluxo.
-                  Opero derivativos com critério e acompanho Bitcoin com tese estrutural.
-                  Sem indicação genérica, sem relatório de banco — só o que eu realmente estou fazendo.
-                </p>
-                <div class="intelligence-points">
-                  <span>Análise macro semanal</span>
-                  <span>Trades em derivativos</span>
-                  <span>Long & Short</span>
-                  <span>Bitcoin e cripto</span>
-                </div>
-              </article>
+        <!-- ══ BLOG HERO: Market Panel + Featured Post ══ -->
+        <section class="section blog-hero-section">
+          <div class="blog-hero-inner">
 
-              <figure class="intelligence-visual">
-                <img
-                  src="assets/img/editorial/marques-informacao-direcao.png"
-                  alt="Manifesto visual da Marques Invest sobre direcao patrimonial."
-                />
-              </figure>
-            </div>
-
-            <div class="intelligence-service-list">
-              <article class="intelligence-card">
-                <span class="tag">Pilar 01</span>
-                <strong>Carteiras por objetivo.</strong>
-                <p>
-                  Alocacoes estruturadas com base no objetivo real, prazo e
-                  coerencia entre risco assumido e patrimonio total — sem
-                  formula generica.
-                </p>
-              </article>
-
-              <article class="intelligence-card">
-                <span class="tag">Pilar 02</span>
-                <strong>Derivativos e Long & Short.</strong>
-                <p>
-                  Estrategias em opcoes, futuros e posicionamentos Long & Short
-                  para capturar assimetrias e reduzir exposicao direcional
-                  a volatilidade.
-                </p>
-              </article>
-
-              <article class="intelligence-card intelligence-card--accent">
-                <span class="tag">Pilar 03</span>
-                <strong>Cripto com gestao de risco.</strong>
-                <p>
-                  Bitcoin como reserva de valor digital — com tese estrutural
-                  clara e gestao ativa de exposicao dentro da arquitetura
-                  patrimonial.
-                </p>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="section process-section process-section--telegraph section--split-rail">
-          <div class="section-rail">
-            <div class="section-heading section-heading--wide section-heading--editorial">
-              <div class="section-heading-main">
-                <span class="section-kicker">Como trabalho</span>
-                <h2>Processo simples. Análise séria.</h2>
+            <!-- LEFT: Market Panel -->
+            <aside class="market-panel blog-hero-market">
+              <div class="panel-card">
+                <span class="panel-label">Panorama do dia</span>
+                <strong>10 principais bolsas globais</strong>
+                <p>Acompanhe risco global, abertura e o humor que influencia alocação ao longo do dia.</p>
               </div>
-              <p class="section-heading-support">
-                Começo entendendo o que você tem e o que quer. Depois vem a estratégia,
-                a execução e o acompanhamento — sem pular etapas e sem vender o que não faz sentido pra você.
+              <p class="market-status" id="market-status">
+                Carregando panorama global das bolsas.
               </p>
-            </div>
-          </div>
+              <div class="market-board" id="market-board" aria-label="Indicadores do mercado"></div>
+            </aside>
 
-          <div class="section-content">
-            <div class="process-grid">
-              <article class="process-card">
-                <span class="process-index">01</span>
-                <h3>Diagnóstico</h3>
-                <p>Entendo onde você está: patrimônio atual, objetivo real, prazo e quanto de risco faz sentido para o seu momento.</p>
-              </article>
-
-              <article class="process-card">
-                <span class="process-index">02</span>
-                <h3>Estratégia</h3>
-                <p>Monto a alocação com base no que vi — classes, derivativos, exposição e horizonte. Nada genérico.</p>
-              </article>
-
-              <article class="process-card">
-                <span class="process-index">03</span>
-                <h3>Execução</h3>
-                <p>Coloco a estratégia em prática com disciplina. Cada operação tem critério, tamanho e saída definidos antes de entrar.</p>
-              </article>
-
-              <article class="process-card">
-                <span class="process-index">04</span>
-                <h3>Acompanhamento</h3>
-                <p>Mercado muda, vida muda. Reviso a estrutura sempre que o cenário pede — sem especular, com dados.</p>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="section authority-section authority-section--telegraph section--split-rail">
-          <div class="section-rail">
-            <div class="section-heading section-heading--wide section-heading--editorial">
-              <div class="section-heading-main">
-                <span class="section-kicker">Conteúdo</span>
-                <h2 id="home-teaser-title">O que publico toda semana</h2>
+            <!-- RIGHT: Featured Post -->
+            <article class="blog-featured">
+              <div class="blog-featured-top">
+                <span class="home-af-pill home-af-pill--ouro">Ouro · Destaque</span>
+                <span class="blog-featured-date">27 abr 2026</span>
               </div>
-              <p class="section-heading-support">
-                Análise de mercado, leitura macro, watchlist semanal e a Carta Marques —
-                tudo que escrevo está aqui, organizado para você acompanhar sem perder nada relevante.
-              </p>
-            </div>
-          </div>
-
-          <div class="section-content">
-            <div class="authority-flow" id="home-teasers">
-              <article class="teaser-card teaser-card--rich teaser-card--feature">
-                <div class="teaser-card-top">
-                  <span class="tag">Visao</span>
-                  <span class="teaser-meta">Publicado toda semana</span>
-                </div>
-                <h3>Analise da semana</h3>
-                <p>
-                  Leitura executiva do periodo, conectando cenario macro,
-                  valuation, risco e implicacoes praticas para carteira.
-                </p>
-                <ul class="teaser-points">
-                  <li>Resumo executivo da semana</li>
-                  <li>Cenarios para juros, bolsa e cambio</li>
-                  <li>Teses para carteira e posicionamento</li>
-                </ul>
-                <a class="teaser-card-link" href="analise-semana.html">Abrir pagina</a>
-              </article>
-
-              <div class="authority-column">
-                <article class="teaser-card teaser-card--rich teaser-card--side">
-                  <div class="teaser-card-top">
-                    <span class="tag">Leitura</span>
-                    <span class="teaser-meta">Curadoria diária</span>
-                  </div>
-                  <h3>Destaques</h3>
-                  <p>
-                    Seleciona os temas que merecem atencao imediata e organiza a
-                    hierarquia da leitura para quem precisa decidir melhor.
-                  </p>
-                  <ul class="teaser-points">
-                    <li>Materia principal com contexto</li>
-                    <li>Cards de leitura rapida</li>
-                    <li>Curadoria visual para leitura eficiente</li>
-                  </ul>
-                  <a class="teaser-card-link" href="destaques.html">Abrir pagina</a>
-                </article>
-
-                <article class="teaser-card teaser-card--rich teaser-card--side">
-                  <div class="teaser-card-top">
-                    <span class="tag">Fluxo</span>
-                    <span class="teaser-meta">Feed ao vivo</span>
-                  </div>
-                  <h3>Noticias</h3>
-                  <p>
-                    O noticiario deixa de ser fim em si mesmo e passa a funcionar
-                    como contexto para alocacao e leitura de risco.
-                  </p>
-                  <ul class="teaser-points">
-                    <li>Mais recentes, mercado, empresas e cripto</li>
-                    <li>Fontes conectadas para rotina diaria</li>
-                    <li>Leitura orientada para tomada de decisao</li>
-                  </ul>
-                  <a class="teaser-card-link" href="noticias.html">Abrir pagina</a>
-                </article>
+              <h2 class="blog-featured-title">Ouro lidera todos os ativos com <em>+49%</em> em 12 meses — e o mercado ainda subestima</h2>
+              <p class="blog-featured-body">O ouro não é um ativo "chato". É o termômetro honesto do medo global. Guerra no Oriente Médio, dólar enfraquecendo, bancos centrais comprando (China e Índia) e desconfiança nas Treasuries americanas. Esse é o combo que empurra o ouro para cima. Quem não tem nenhuma exposição está perdendo proteção — e retorno.</p>
+              <div class="home-af-chips">
+                <span class="home-af-chip"><b>Ouro 12m</b> +49,23%</span>
+                <span class="home-af-chip"><b>vs CDI</b> +14,73%</span>
+                <span class="home-af-chip"><b>vs BTC 12m</b> -25,98%</span>
+                <span class="home-af-chip"><b>vs Ibov 12m</b> +43,91%</span>
               </div>
-            </div>
-
-            <div class="authority-list">
-              <article class="teaser-card teaser-card--rich">
-                <div class="teaser-card-top">
-                  <span class="tag">Macro</span>
-                  <span class="teaser-meta">Atualizado diariamente</span>
-                </div>
-                <h3>Agenda</h3>
-                <p>
-                  Calendario com eventos que podem alterar juros, cambio, bolsa e
-                  comportamento tatico da carteira ao longo do dia.
-                </p>
-                <ul class="teaser-points">
-                  <li>Eventos por horario</li>
-                  <li>Leitura objetiva do impacto</li>
-                  <li>Radar rapido para o investidor</li>
-                </ul>
-                <a class="teaser-card-link" href="agenda.html">Abrir pagina</a>
-              </article>
-
-              <article class="teaser-card teaser-card--rich">
-                <div class="teaser-card-top">
-                  <span class="tag">Autoridade</span>
-                  <span class="teaser-meta">Newsletter semanal</span>
-                </div>
-                <h3>Carta Marques</h3>
-                <p>
-                  Uma newsletter com leitura objetiva de mercado e impacto
-                  pratico na alocacao, pensada como produto de relacionamento.
-                </p>
-                <ul class="teaser-points">
-                  <li>Cenario da semana</li>
-                  <li>Leitura macro com reflexo em carteira</li>
-                  <li>Visao sobre risco e oportunidade</li>
-                </ul>
-                <a class="teaser-card-link" href="newsletter.html">Abrir pagina</a>
-              </article>
-
-              <article class="teaser-card teaser-card--rich teaser-card--conversion">
-                <div class="teaser-card-top">
-                  <span class="tag">Conversao</span>
-                  <span class="teaser-meta">Conversa inicial</span>
-                </div>
-                <h3>Falar comigo</h3>
-                <p>
-                  Tem dúvida, quer acompanhar minha análise de perto ou quer entender como trabalho? É por aqui.
-                </p>
-                <ul class="teaser-points">
-                  <li>Diagnostico patrimonial inicial</li>
-                  <li>Qualificacao por objetivo e horizonte</li>
-                  <li>Contato comercial com mais contexto</li>
-                </ul>
-                <a class="teaser-card-link" href="contato.html">Abrir pagina</a>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="section home-news-preview-section home-news-preview-section--telegraph">
-          <div class="section-heading section-heading--split">
-            <div>
-              <span class="section-kicker">Noticias em destaque</span>
-              <h2>Uma previa do fluxo diario de noticias, com imagem e contexto.</h2>
-            </div>
-            <a class="button button-secondary" href="noticias.html">Ver todas as noticias</a>
-          </div>
-
-          <p class="news-status home-news-status" id="home-news-status">
-            Carregando a previa das noticias publicadas e conectadas.
-          </p>
-
-          <div class="home-preview-grid">
-            <article class="home-preview-main home-preview-main--news" id="home-news-lead">
-              <span class="tag">Leitura diaria</span>
-              <h3>Carregando o destaque principal da aba noticias.</h3>
-              <p>
-                Assim que o feed responder, a home mostra aqui a materia principal com imagem,
-                resumo e caminho para leitura completa.
-              </p>
+              <a class="button button-secondary blog-featured-cta" href="analise-semana.html">
+                Ver análise completa →
+              </a>
             </article>
 
-            <aside class="home-preview-side home-preview-side--news">
-              <figure class="home-preview-side-visual">
-                <img
-                  src="assets/img/editorial/marques-radar-semana.png"
-                  alt="Radar de mercado da semana com juros, bolsa, dolar e cripto."
-                />
-              </figure>
-
-              <div class="home-preview-side-copy">
-                <span class="tag">Fluxo de leitura</span>
-                <h3>Mais noticias para acompanhar</h3>
-                <p>
-                  Um recorte rapido do que entrou no radar da aba noticias, sem precisar sair da
-                  home.
-                </p>
-              </div>
-
-              <div class="home-mini-news" id="home-news-list">
-                <article class="home-mini-item">
-                  <strong>Carregando noticias</strong>
-                  <p>As proximas materias aparecerao aqui com imagem, resumo e link.</p>
-                </article>
-              </div>
-
-              <a class="button button-secondary button-full" href="noticias.html">
-                Ver todas as noticias
-              </a>
-            </aside>
-          </div>
-
-          <div class="manifesto-grid">
-            <figure class="manifesto-card manifesto-card--visual">
-              <img
-                src="assets/img/editorial/marques-manifesto-direcao.png"
-                alt="Manifesto visual da marca Marques Invest."
-              />
-            </figure>
-
-            <aside class="diagnostic-card">
-              <span class="tag">Diagnostico patrimonial</span>
-              <h3>Comece pela estrutura, nao pelo ruido.</h3>
-              <p>
-                Antes de qualquer recomendacao, a Marques Invest analisa objetivo,
-                patrimonio, horizonte, aporte e o nivel de risco coerente com
-                a sua realidade — o diagnostico e o primeiro passo.
-              </p>
-              <div class="hero-actions hero-actions--compact">
-                <a class="button button-primary" href="contato.html">Solicitar diagnostico</a>
-                <a class="button button-secondary" href="newsletter.html">Receber a Carta Marques</a>
-              </div>
-            </aside>
           </div>
         </section>
+
+        <!-- ══ BLOG GRID: Últimas análises ══ -->
+        <section class="section blog-feed-section">
+          <div class="blog-feed-header">
+            <div>
+              <span class="section-kicker">Últimas análises</span>
+              <h2>O que a Marques Invest está vendo</h2>
+            </div>
+            <div class="blog-categories">
+              <a href="analise-semana.html" class="blog-cat blog-cat--active">Todas</a>
+              <a href="analise-semana.html" class="blog-cat">Cripto</a>
+              <a href="destaques.html" class="blog-cat">Opções</a>
+              <a href="analise-semana.html" class="blog-cat">Macro</a>
+            </div>
+          </div>
+
+          <div class="blog-grid">
+
+            <!-- 1 — Focus / Selic -->
+            <article class="blog-card">
+              <div class="blog-card-top">
+                <span class="home-af-pill home-af-pill--selic">Macro</span>
+                <span class="blog-card-date">27 abr 2026</span>
+              </div>
+              <h3 class="blog-card-title">Focus revisa Selic para <em>13%</em> e IPCA para <em>4,80%</em> em 2026</h3>
+              <p class="blog-card-body">O mercado perdeu confiança no ciclo de cortes. A mediana para a Selic ao fim de 2026 subiu de 12,50% para 13,00% — com petróleo perto de US$95 e pressão cambial. Quem apostou em Selic caindo rápido precisa rever o modelo.</p>
+              <div class="home-af-chips">
+                <span class="home-af-chip"><b>Selic</b> 14,75%</span>
+                <span class="home-af-chip"><b>Proj. 2026</b> 13%</span>
+                <span class="home-af-chip"><b>IPCA 2026</b> 4,80%</span>
+              </div>
+            </article>
+
+            <!-- 2 — Ibovespa -->
+            <article class="blog-card">
+              <div class="blog-card-top">
+                <span class="home-af-pill home-af-pill--ibov">Bolsa</span>
+                <span class="blog-card-date">27 abr 2026</span>
+              </div>
+              <h3 class="blog-card-title">Ibovespa acima de <em>198 mil pontos</em> — rumo aos 200k?</h3>
+              <p class="blog-card-body">Destaque positivo do mundo emergente em 2026, com +18% no ano. Só em abril foram R$11,5 bi líquidos de fluxo estrangeiro. IFR-14 em sobrecompra, mas tendência não se briga — se opera a favor.</p>
+              <div class="home-af-chips">
+                <span class="home-af-chip"><b>Ibovespa</b> 198.173 pts</span>
+                <span class="home-af-chip"><b>No ano</b> +18,25%</span>
+              </div>
+            </article>
+
+            <!-- 3 — Câmbio -->
+            <article class="blog-card">
+              <div class="blog-card-top">
+                <span class="home-af-pill home-af-pill--cambio">Câmbio</span>
+                <span class="blog-card-date">27 abr 2026</span>
+              </div>
+              <h3 class="blog-card-title">Dólar cai a <em>R$4,97</em> — menor nível em 2 anos</h3>
+              <p class="blog-card-body">Real valorizando contém inflação — mas para quem está dolarizado, o movimento corrói retorno. Não é hora de abandonar proteção cambial: o cenário geopolítico ainda justifica exposição ao dólar.</p>
+              <div class="home-af-chips">
+                <span class="home-af-chip"><b>USD/BRL</b> R$4,97</span>
+                <span class="home-af-chip"><b>Focus 2026</b> R$5,30</span>
+              </div>
+            </article>
+
+            <!-- 4 — Petróleo -->
+            <article class="blog-card">
+              <div class="blog-card-top">
+                <span class="home-af-pill home-af-pill--petro">Commodities</span>
+                <span class="blog-card-date">27 abr 2026</span>
+              </div>
+              <h3 class="blog-card-title">Petróleo perto de <em>US$95</em> — o risco que o mercado subestima</h3>
+              <p class="blog-card-body">Petróleo alto significa inflação importada, pressão sobre o IPCA e menos espaço para o Bacen cortar juros. PETR4 se beneficia — mas o país inteiro paga a conta nos preços.</p>
+              <div class="home-af-chips">
+                <span class="home-af-chip"><b>Brent</b> US$95/barril</span>
+                <span class="home-af-chip"><b>Impacto</b> IPCA ↑</span>
+              </div>
+            </article>
+
+            <!-- 5 — Bitcoin -->
+            <article class="blog-card">
+              <div class="blog-card-top">
+                <span class="home-af-pill home-af-pill--btc">Cripto</span>
+                <span class="blog-card-date">27 abr 2026</span>
+              </div>
+              <h3 class="blog-card-title">Bitcoin cai <em>-27%</em> no trimestre — o que está acontecendo</h3>
+              <p class="blog-card-body">De US$125k (ATH em out/25) para abaixo de US$75k. Em aversão ao risco geopolítico, fluxo migra para fundamentos tangíveis. Bitcoin é ativo de alta convicção: ou você entende o que tem, ou o suporte que rompe vira pânico.</p>
+              <div class="home-af-chips">
+                <span class="home-af-chip"><b>BTC</b> US$74–78k</span>
+                <span class="home-af-chip"><b>1T26</b> -27%</span>
+              </div>
+            </article>
+
+            <!-- 6 — Opções / Setup -->
+            <article class="blog-card blog-card--highlight">
+              <div class="blog-card-top">
+                <span class="home-af-pill home-af-pill--selic">Opções</span>
+                <span class="blog-card-date">Análise da semana</span>
+              </div>
+              <h3 class="blog-card-title">Setup de opções para a semana — <em>o que estamos monitorando</em></h3>
+              <p class="blog-card-body">Com Ibovespa em sobrecompra e Selic pressionada, a assimetria favorece estruturas de proteção. Collar em PETR4 e straddle no índice estão no radar. Veja a análise completa.</p>
+              <a class="blog-card-link" href="analise-semana.html">Ler análise →</a>
+            </article>
+
+          </div>
+
+          <div class="blog-feed-cta">
+            <a href="analise-semana.html" class="button button-secondary">Ver todas as análises</a>
+          </div>
+        </section>
+
+        <!-- ══ NEWSLETTER STRIP ══ -->
+        <section class="section newsletter-strip-section">
+          <div class="newsletter-strip-inner">
+            <div class="newsletter-strip-copy">
+              <span class="section-kicker">Carta Marques</span>
+              <h2>Análise semanal direto no seu e-mail</h2>
+              <p>Toda semana: cripto, opções e macro — o que estamos vendo e o que fazer a respeito.</p>
+            </div>
+            <form class="newsletter-strip-form newsletter-form" id="newsletter-form-home">
+              <label class="sr-only" for="email-home">Seu e-mail</label>
+              <input id="email-home" type="email" placeholder="seuemail@dominio.com" required />
+              <button type="submit" class="button button-primary">Quero receber</button>
+            </form>
+          </div>
+        </section>
+
       </main>
 
       <footer class="footer">
         <p>
           Marques Invest — análise de mercado, derivativos, Long & Short e cripto.
-          <span class="footer-address">Escritorio: Avenida Jandira, 631, conj. 72 - Moema, Sao Paulo - SP, CEP 04080-005. CNPJ: 37.209.290/0001-98.</span>
+          <span class="footer-address">Escritório: Avenida Jandira, 631, conj. 72 - Moema, São Paulo - SP, CEP 04080-005. CNPJ: 37.209.290/0001-98.</span>
         </p>
       </footer>
     </div>
 
     <a class="whatsapp-float" href="#" aria-label="Falar no WhatsApp" title="Falar no WhatsApp">
       <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path
-          d="M19.05 4.94A9.9 9.9 0 0 0 12.03 2C6.53 2 2.05 6.48 2.05 12c0 1.77.46 3.5 1.34 5.03L2 22l5.12-1.34A9.9 9.9 0 0 0 12.03 22h.01c5.5 0 9.98-4.48 9.98-10 0-2.67-1.04-5.18-2.97-7.06ZM12.04 20.3h-.01a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.04.8.82-2.96-.2-.31a8.23 8.23 0 0 1-1.27-4.4c0-4.56 3.7-8.27 8.26-8.27 2.2 0 4.26.85 5.82 2.42a8.17 8.17 0 0 1 2.42 5.83c0 4.56-3.71 8.27-8.3 8.27Zm4.53-6.2c-.25-.12-1.5-.74-1.73-.82-.23-.08-.4-.12-.57.12-.16.25-.65.81-.79.98-.15.16-.29.19-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.45-1.37-1.69-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.57-1.38-.78-1.89-.21-.5-.43-.43-.57-.44h-.48c-.16 0-.43.06-.65.31-.23.25-.87.85-.87 2.08 0 1.22.89 2.41 1.02 2.58.12.16 1.75 2.67 4.23 3.74.59.26 1.06.41 1.42.52.6.19 1.15.16 1.59.1.48-.07 1.5-.61 1.71-1.2.21-.59.21-1.1.15-1.2-.06-.1-.23-.16-.48-.29Z"
-        ></path>
+        <path d="M19.05 4.94A9.9 9.9 0 0 0 12.03 2C6.53 2 2.05 6.48 2.05 12c0 1.77.46 3.5 1.34 5.03L2 22l5.12-1.34A9.9 9.9 0 0 0 12.03 22h.01c5.5 0 9.98-4.48 9.98-10 0-2.67-1.04-5.18-2.97-7.06ZM12.04 20.3h-.01a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.04.8.82-2.96-.2-.31a8.23 8.23 0 0 1-1.27-4.4c0-4.56 3.7-8.27 8.26-8.27 2.2 0 4.26.85 5.82 2.42a8.17 8.17 0 0 1 2.42 5.83c0 4.56-3.71 8.27-8.3 8.27Zm4.53-6.2c-.25-.12-1.5-.74-1.73-.82-.23-.08-.4-.12-.57.12-.16.25-.65.81-.79.98-.15.16-.29.19-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.45-1.37-1.69-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.57-1.38-.78-1.89-.21-.5-.43-.43-.57-.44h-.48c-.16 0-.43.06-.65.31-.23.25-.87.85-.87 2.08 0 1.22.89 2.41 1.02 2.58.12.16 1.75 2.67 4.23 3.74.59.26 1.06.41 1.42.52.6.19 1.15.16 1.59.1.48-.07 1.5-.61 1.71-1.2.21-.59.21-1.1.15-1.2-.06-.1-.23-.16-.48-.29Z"></path>
       </svg>
     </a>
 
@@ -624,141 +227,5 @@
     <script src="assets/js/site-content.js"></script>
     <script src="assets/js/script.js"></script>
     <script src="assets/js/crypto-ticker.js"></script>
-    <script>
-      /* ── Simulador de patrimônio ── */
-      (function () {
-        var sliderAporte = document.getElementById("sim-aporte");
-        var sliderPrazo  = document.getElementById("sim-prazo");
-        var sliderSelic  = document.getElementById("sim-selic");
-        if (!sliderAporte) return;
-
-        var labelAporte  = document.getElementById("sim-label-aporte");
-        var labelPrazo   = document.getElementById("sim-label-prazo");
-        var labelSelic   = document.getElementById("sim-label-selic");
-        var elTotal      = document.getElementById("sim-total");
-        var elInvested   = document.getElementById("sim-invested");
-        var elReturn     = document.getElementById("sim-return");
-        var elPct        = document.getElementById("sim-pct");
-        var barInvested  = document.getElementById("sim-bar-invested");
-        var barReturn    = document.getElementById("sim-bar-return");
-
-        function fmtBRL(val) {
-          return "R$ " + val.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-
-        function prazoLabel(months) {
-          if (months < 12) return months + " meses";
-          var anos = Math.floor(months / 12);
-          var meses = months % 12;
-          if (meses === 0) return anos === 1 ? "1 ano" : anos + " anos";
-          return anos + (anos === 1 ? " ano" : " anos") + " e " + meses + (meses === 1 ? " mês" : " meses");
-        }
-
-        function updateProgress(slider) {
-          var min = parseFloat(slider.min);
-          var max = parseFloat(slider.max);
-          var val = parseFloat(slider.value);
-          var pct = ((val - min) / (max - min)) * 100;
-          slider.style.setProperty("--pct", pct + "%");
-        }
-
-        function calcular() {
-          var PMT    = parseFloat(sliderAporte.value);
-          var n      = parseInt(sliderPrazo.value);
-          var annual = parseFloat(sliderSelic.value) / 100;
-
-          /* Taxa mensal equivalente */
-          var r = Math.pow(1 + annual, 1 / 12) - 1;
-
-          /* Valor futuro de aportes mensais */
-          var FV = PMT * ((Math.pow(1 + r, n) - 1) / r);
-          var invested = PMT * n;
-          var ret = FV - invested;
-          var pct = invested > 0 ? (ret / invested) * 100 : 0;
-
-          /* Labels dos sliders */
-          labelAporte.textContent = "R$ " + PMT.toLocaleString("pt-BR");
-          labelPrazo.textContent  = prazoLabel(n);
-          labelSelic.textContent  = parseFloat(sliderSelic.value).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%";
-
-          /* Resultados */
-          elTotal.textContent    = fmtBRL(FV);
-          elInvested.textContent = fmtBRL(invested);
-          elReturn.textContent   = fmtBRL(ret);
-          elPct.textContent      = "+" + pct.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%";
-
-          /* Barra proporcional */
-          var investedPct = FV > 0 ? (invested / FV) * 100 : 50;
-          var returnPct   = 100 - investedPct;
-          barInvested.style.width = investedPct + "%";
-          barReturn.style.width   = returnPct + "%";
-
-          /* Atualiza gradiente dos sliders */
-          updateProgress(sliderAporte);
-          updateProgress(sliderPrazo);
-          updateProgress(sliderSelic);
-        }
-
-        sliderAporte.addEventListener("input", calcular);
-        sliderPrazo.addEventListener("input", calcular);
-        sliderSelic.addEventListener("input", calcular);
-
-        /* Inicializa */
-        updateProgress(sliderAporte);
-        updateProgress(sliderPrazo);
-        updateProgress(sliderSelic);
-        calcular();
-      })();
-
-      /* ── Share button ── */
-      (function () {
-        var btn = document.getElementById("home-af-share-btn");
-        if (!btn) return;
-
-        btn.addEventListener("click", function () {
-          var shareUrl  = window.location.origin + window.location.pathname.replace(/[^/]*$/, "") + "analise-semana.html";
-          var shareData = {
-            title: "Análises Marques Invest — 27 de abril de 2026",
-            text:  "Leitura semanal de mercado: Focus/Selic, Ibovespa, Câmbio, Petróleo, Bitcoin e Ouro — pela Marques Invest.",
-            url:   shareUrl
-          };
-
-          if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-            navigator.share(shareData).catch(function () {});
-            return;
-          }
-
-          /* Desktop fallback: copia o link e mostra feedback no botão */
-          navigator.clipboard.writeText(shareUrl).then(function () {
-            var span = btn.querySelector("span");
-            var prev = span.textContent;
-            span.textContent = "Link copiado!";
-            btn.classList.add("home-af-share-btn--ok");
-            setTimeout(function () {
-              span.textContent = prev;
-              btn.classList.remove("home-af-share-btn--ok");
-            }, 2200);
-          }).catch(function () {
-            /* último fallback: execCommand */
-            var ta = document.createElement("textarea");
-            ta.value = shareUrl;
-            ta.style.position = "fixed";
-            ta.style.opacity  = "0";
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand("copy");
-            document.body.removeChild(ta);
-            var span = btn.querySelector("span");
-            var prev = span.textContent;
-            span.textContent = "Link copiado!";
-            btn.classList.add("home-af-share-btn--ok");
-            setTimeout(function () {
-              span.textContent = prev;
-              btn.classList.remove("home-af-share-btn--ok");
-            }, 2200);
-          });
-        });
-      })();
-    </script>
   </body>
 </html>
