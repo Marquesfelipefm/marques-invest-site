@@ -3,18 +3,202 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Marques Invest | Destaques</title>
-    <meta name="description" content="Destaques da semana selecionados pela Marques Invest — os temas que merecem atencao imediata com contexto macro e impacto em carteira." />
+    <title>Cripto &amp; Opções | Marques Invest</title>
+    <meta name="description" content="Preços de criptoativos em tempo real e cadeia de opções ao vivo para PETR4, VALE3, BOVA11 e mais. Marques Invest." />
     <meta name="theme-color" content="#141414" />
     <link rel="icon" type="image/svg+xml" href="assets/img/logo-mark.svg" />
     <link rel="manifest" href="site.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="assets/css/styles.css?v=2" />
+    <style>
+      /* ── Cripto & Opções page styles ── */
+
+      .co-section { padding: clamp(40px,6vw,80px) clamp(20px,5vw,72px); max-width: 1280px; margin: 0 auto; }
+      .co-section + .co-section { padding-top: 0; }
+
+      .co-header { margin-bottom: 32px; }
+      .co-header .section-kicker { display: block; margin-bottom: 8px; }
+      .co-header h2 { font-family: var(--font-serif); font-size: clamp(24px,3vw,34px); font-weight: 700; color: var(--text); margin: 0 0 8px; }
+      .co-header p { color: var(--text-soft); font-size: 15px; }
+
+      /* refresh bar */
+      .co-refresh-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; font-size: 13px; color: var(--text-faint); }
+      .co-refresh-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse-dot 2s ease-in-out infinite; }
+      @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.3} }
+      .co-refresh-bar.loading .co-refresh-dot { background: var(--text-faint); animation: none; }
+
+      /* ── CRYPTO GRID ── */
+      .crypto-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+      @media (max-width: 1024px) { .crypto-grid { grid-template-columns: repeat(3, 1fr); } }
+      @media (max-width: 720px)  { .crypto-grid { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 440px)  { .crypto-grid { grid-template-columns: 1fr; } }
+
+      .crypto-card {
+        background: var(--bg-soft);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        transition: border-color .22s, background .22s;
+      }
+      .crypto-card:hover { border-color: var(--accent); background: var(--bg-elevated); }
+
+      .crypto-card-top { display: flex; align-items: center; gap: 10px; }
+      .crypto-card-top img { width: 32px; height: 32px; border-radius: 50%; }
+      .crypto-card-name { font-weight: 600; font-size: 14px; color: var(--text); line-height: 1.2; }
+      .crypto-card-symbol { font-size: 12px; color: var(--text-faint); font-family: var(--font-mono, 'JetBrains Mono', monospace); text-transform: uppercase; }
+
+      .crypto-card-price {
+        font-family: var(--font-mono, 'JetBrains Mono', monospace);
+        font-size: clamp(18px, 2.5vw, 22px);
+        font-weight: 500;
+        color: var(--text);
+        letter-spacing: -.01em;
+      }
+
+      .crypto-card-change {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-family: var(--font-mono, 'JetBrains Mono', monospace);
+        font-size: 13px;
+        font-weight: 500;
+        padding: 3px 8px;
+        border-radius: 6px;
+      }
+      .crypto-card-change.up   { color: #4ade80; background: rgba(74,222,128,.12); }
+      .crypto-card-change.down { color: #f87171; background: rgba(248,113,113,.12); }
+
+      .crypto-card-meta { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-faint); font-family: var(--font-mono, 'JetBrains Mono', monospace); }
+      .crypto-card-meta span { display: flex; justify-content: space-between; }
+      .crypto-card-meta b { color: var(--text-soft); font-weight: 500; }
+
+      /* skeleton */
+      .skel { background: var(--line); border-radius: 6px; animation: skel-pulse 1.4s ease-in-out infinite; }
+      @keyframes skel-pulse { 0%,100%{opacity:.5} 50%{opacity:1} }
+      .skel-line { height: 14px; width: 70%; }
+      .skel-price { height: 22px; width: 55%; margin-top: 4px; }
+      .skel-badge { height: 22px; width: 60px; border-radius: 6px; }
+
+      /* ── OPTIONS SECTION ── */
+      .options-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 24px; }
+      .options-stock-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+      .opt-stock-btn {
+        padding: 6px 16px;
+        border-radius: 100px;
+        font-size: 13px;
+        font-weight: 500;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--text-soft);
+        cursor: pointer;
+        font-family: var(--font-mono, 'JetBrains Mono', monospace);
+        transition: border-color .18s, background .18s, color .18s;
+      }
+      .opt-stock-btn:hover  { border-color: var(--accent); color: var(--accent); }
+      .opt-stock-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+      .opt-expiry-wrap { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+      .opt-expiry-wrap label { font-size: 13px; color: var(--text-faint); }
+      .opt-expiry-select {
+        padding: 6px 12px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--bg-soft);
+        color: var(--text);
+        font-size: 13px;
+        font-family: var(--font-mono, 'JetBrains Mono', monospace);
+        cursor: pointer;
+        outline: none;
+      }
+      .opt-expiry-select:focus { border-color: var(--accent); }
+
+      .opt-spot-bar { font-size: 13px; color: var(--text-soft); margin-bottom: 16px; }
+      .opt-spot-bar b { font-family: var(--font-mono, 'JetBrains Mono', monospace); color: var(--text); }
+
+      .options-chain { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+      @media (max-width: 860px) { .options-chain { grid-template-columns: 1fr; } }
+
+      .opt-table-wrap { overflow-x: auto; }
+      .opt-table-label {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        margin-bottom: 8px;
+      }
+      .opt-table-label.call { color: #4ade80; }
+      .opt-table-label.put  { color: #f87171; }
+
+      .opt-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      }
+      .opt-table th {
+        text-align: right;
+        padding: 6px 8px;
+        color: var(--text-faint);
+        font-weight: 500;
+        border-bottom: 1px solid var(--line);
+        white-space: nowrap;
+      }
+      .opt-table th:first-child { text-align: left; }
+      .opt-table td {
+        text-align: right;
+        padding: 7px 8px;
+        color: var(--text-soft);
+        border-bottom: 1px solid rgba(255,255,255,.04);
+        white-space: nowrap;
+      }
+      .opt-table td:first-child { text-align: left; color: var(--text); font-weight: 500; }
+      .opt-table tr:hover td { background: var(--bg-elevated); }
+
+      .opt-table tr.itm td { background: rgba(79,142,247,.06); }
+      .opt-table tr.itm td:first-child { color: var(--accent); }
+      .itm-badge {
+        display: inline-block;
+        font-size: 10px;
+        padding: 1px 5px;
+        border-radius: 4px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        margin-left: 4px;
+        vertical-align: middle;
+      }
+
+      .change-up   { color: #4ade80; }
+      .change-down { color: #f87171; }
+
+      .opt-placeholder {
+        padding: 48px 20px;
+        text-align: center;
+        color: var(--text-faint);
+        font-size: 14px;
+        border: 1px dashed var(--line);
+        border-radius: var(--radius-lg);
+      }
+      .opt-error {
+        padding: 24px;
+        text-align: center;
+        color: #f87171;
+        font-size: 13px;
+        background: rgba(248,113,113,.06);
+        border: 1px solid rgba(248,113,113,.2);
+        border-radius: var(--radius-lg);
+      }
+
+      .opt-loading-row td { color: var(--text-faint); text-align: center; padding: 32px; }
+    </style>
   </head>
   <body data-page="highlights">
     <div class="site-shell">
@@ -39,57 +223,70 @@
       </header>
 
       <main>
-        <section class="section highlights">
-          <div class="page-hero">
-            <article class="page-summary">
-              <span class="eyebrow" id="highlights-kicker">Destaques</span>
-              <h1 id="highlights-title">Curadoria do que merece atencao imediata.</h1>
-              <p>
-                Uma selecao visual para ajudar o leitor a identificar os temas
-                mais relevantes do dia com menos excesso de navegacao.
-              </p>
-            </article>
 
-            <aside class="page-sidecard">
-              <span class="tag">Leitura rapida</span>
-              <h2>Hierarquia editorial com mais clareza.</h2>
-              <ul class="page-bullets">
-                <li>Materia principal com contexto e prioridade</li>
-                <li>Cards para leitura objetiva e aprofundamento</li>
-                <li>Visual premium com mais respiro e organizacao</li>
-              </ul>
-            </aside>
+        <!-- ══ CRYPTO ══ -->
+        <section class="co-section">
+          <div class="co-header">
+            <span class="section-kicker">Criptoativos</span>
+            <h2>Preços em tempo real</h2>
+            <p>8 principais ativos por capitalização de mercado. Atualização automática a cada 60 segundos.</p>
           </div>
 
-          <div class="highlight-grid" id="highlights-grid">
-            <article class="feature feature-main">
-              <span class="tag">Capa</span>
-              <h3>Materia principal com foco em movimentos de mercado e impacto nos investimentos</h3>
-              <p>
-                Espaco ideal para abrir o dia com a noticia mais relevante,
-                contexto macro e possiveis reflexos para acoes, juros e cambio.
-              </p>
-              <a class="feature-link" href="analise-semana.html">Ir para analise da semana</a>
-            </article>
+          <div class="co-refresh-bar loading" id="crypto-refresh-bar">
+            <span class="co-refresh-dot"></span>
+            <span id="crypto-refresh-text">Carregando...</span>
+          </div>
 
-            <article class="feature">
-              <span class="tag">Analise</span>
-              <h3>Cards para leitura rapida</h3>
-              <p>Resumo objetivo, categoria, horario e CTA para aprofundamento.</p>
-            </article>
-
-            <article class="feature">
-              <span class="tag">Editorial</span>
-              <h3>Visual premium para nicho financeiro</h3>
-              <p>Paleta sobria, contraste forte e hierarquia clara de informacao.</p>
-            </article>
+          <div class="crypto-grid" id="crypto-grid">
+            <!-- skeleton cards -->
+            <div class="crypto-card"><div class="skel skel-line"></div><div class="skel skel-price"></div><div class="skel skel-badge"></div></div>
+            <div class="crypto-card"><div class="skel skel-line"></div><div class="skel skel-price"></div><div class="skel skel-badge"></div></div>
+            <div class="crypto-card"><div class="skel skel-line"></div><div class="skel skel-price"></div><div class="skel skel-badge"></div></div>
+            <div class="crypto-card"><div class="skel skel-line"></div><div class="skel skel-price"></div><div class="skel skel-badge"></div></div>
+            <div class="crypto-card"><div class="skel skel-line"></div><div class="skel skel-price"></div><div class="skel skel-badge"></div></div>
+            <div class="crypto-card"><div class="skel skel-line"></div><div class="skel skel-price"></div><div class="skel skel-badge"></div></div>
+            <div class="crypto-card"><div class="skel skel-line"></div><div class="skel skel-price"></div><div class="skel skel-badge"></div></div>
+            <div class="crypto-card"><div class="skel skel-line"></div><div class="skel skel-price"></div><div class="skel skel-badge"></div></div>
           </div>
         </section>
+
+        <!-- ══ OPTIONS CHAIN ══ -->
+        <section class="co-section">
+          <div class="co-header">
+            <span class="section-kicker">Cadeia de Opções</span>
+            <h2>Contratos disponíveis para negociação</h2>
+            <p>Dados via brapi.dev. Selecione o ativo e o vencimento para ver calls e puts.</p>
+          </div>
+
+          <div class="options-controls">
+            <div class="options-stock-btns" id="opt-stock-btns">
+              <button class="opt-stock-btn active" data-ticker="PETR4">PETR4</button>
+              <button class="opt-stock-btn" data-ticker="VALE3">VALE3</button>
+              <button class="opt-stock-btn" data-ticker="BOVA11">BOVA11</button>
+              <button class="opt-stock-btn" data-ticker="ITUB4">ITUB4</button>
+              <button class="opt-stock-btn" data-ticker="BBDC4">BBDC4</button>
+              <button class="opt-stock-btn" data-ticker="MGLU3">MGLU3</button>
+            </div>
+            <div class="opt-expiry-wrap">
+              <label for="opt-expiry">Vencimento:</label>
+              <select class="opt-expiry-select" id="opt-expiry">
+                <option value="">Carregando...</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="opt-spot-bar" id="opt-spot-bar"></div>
+
+          <div id="opt-chain-area">
+            <div class="opt-placeholder">Selecione um ativo acima para carregar a cadeia de opções.</div>
+          </div>
+        </section>
+
       </main>
 
       <footer class="footer">
         <p>
-          Marques Invest — análise de mercado, derivativos, Long & Short e cripto.
+          Marques Invest — análise de mercado, derivativos, Long &amp; Short e cripto.
           <span class="footer-address">Escritorio: Avenida Jandira, 631, conj. 72 - Moema, Sao Paulo - SP, CEP 04080-005. CNPJ: 37.209.290/0001-98.</span>
         </p>
       </footer>
@@ -97,9 +294,7 @@
 
     <a class="whatsapp-float" href="#" aria-label="Falar no WhatsApp" title="Falar no WhatsApp">
       <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path
-          d="M19.05 4.94A9.9 9.9 0 0 0 12.03 2C6.53 2 2.05 6.48 2.05 12c0 1.77.46 3.5 1.34 5.03L2 22l5.12-1.34A9.9 9.9 0 0 0 12.03 22h.01c5.5 0 9.98-4.48 9.98-10 0-2.67-1.04-5.18-2.97-7.06ZM12.04 20.3h-.01a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.04.8.82-2.96-.2-.31a8.23 8.23 0 0 1-1.27-4.4c0-4.56 3.7-8.27 8.26-8.27 2.2 0 4.26.85 5.82 2.42a8.17 8.17 0 0 1 2.42 5.83c0 4.56-3.71 8.27-8.3 8.27Zm4.53-6.2c-.25-.12-1.5-.74-1.73-.82-.23-.08-.4-.12-.57.12-.16.25-.65.81-.79.98-.15.16-.29.19-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.45-1.37-1.69-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.57-1.38-.78-1.89-.21-.5-.43-.43-.57-.44h-.48c-.16 0-.43.06-.65.31-.23.25-.87.85-.87 2.08 0 1.22.89 2.41 1.02 2.58.12.16 1.75 2.67 4.23 3.74.59.26 1.06.41 1.42.52.6.19 1.15.16 1.59.1.48-.07 1.5-.61 1.71-1.2.21-.59.21-1.1.15-1.2-.06-.1-.23-.16-.48-.29Z"
-        ></path>
+        <path d="M19.05 4.94A9.9 9.9 0 0 0 12.03 2C6.53 2 2.05 6.48 2.05 12c0 1.77.46 3.5 1.34 5.03L2 22l5.12-1.34A9.9 9.9 0 0 0 12.03 22h.01c5.5 0 9.98-4.48 9.98-10 0-2.67-1.04-5.18-2.97-7.06ZM12.04 20.3h-.01a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.04.8.82-2.96-.2-.31a8.23 8.23 0 0 1-1.27-4.4c0-4.56 3.7-8.27 8.26-8.27 2.2 0 4.26.85 5.82 2.42a8.17 8.17 0 0 1 2.42 5.83c0 4.56-3.71 8.27-8.3 8.27Zm4.53-6.2c-.25-.12-1.5-.74-1.73-.82-.23-.08-.4-.12-.57.12-.16.25-.65.81-.79.98-.15.16-.29.19-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.45-1.37-1.69-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.57-1.38-.78-1.89-.21-.5-.43-.43-.57-.44h-.48c-.16 0-.43.06-.65.31-.23.25-.87.85-.87 2.08 0 1.22.89 2.41 1.02 2.58.12.16 1.75 2.67 4.23 3.74.59.26 1.06.41 1.42.52.6.19 1.15.16 1.59.1.48-.07 1.5-.61 1.71-1.2.21-.59.21-1.1.15-1.2-.06-.1-.23-.16-.48-.29Z"></path>
       </svg>
     </a>
 
@@ -109,5 +304,350 @@
     <script src="assets/js/site-content.js"></script>
     <script src="assets/js/script.js"></script>
     <script src="assets/js/crypto-ticker.js"></script>
+
+    <script>
+    (function () {
+      // ─────────────────────────────────────────────
+      //  CONFIG
+      // ─────────────────────────────────────────────
+      var BRAPI_TOKEN = ''; // coloque seu token gratuito de brapi.dev aqui
+
+      var CRYPTO_IDS = [
+        'bitcoin', 'ethereum', 'binancecoin', 'solana',
+        'ripple', 'avalanche-2', 'cardano', 'dogecoin'
+      ];
+
+      // ─────────────────────────────────────────────
+      //  UTILITIES
+      // ─────────────────────────────────────────────
+      function fmt(n, decimals) {
+        if (n == null || isNaN(n)) return '—';
+        decimals = decimals == null ? 2 : decimals;
+        return n.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+      }
+      function fmtPrice(n) {
+        if (n == null || isNaN(n)) return '—';
+        if (n >= 1000) return '$' + fmt(n, 0);
+        if (n >= 1)    return '$' + fmt(n, 2);
+        return '$' + n.toFixed(6);
+      }
+      function fmtBRL(n) {
+        if (n == null || isNaN(n)) return '—';
+        return 'R$ ' + fmt(n, 2);
+      }
+      function fmtBig(n) {
+        if (n == null || isNaN(n)) return '—';
+        if (n >= 1e9) return '$' + fmt(n / 1e9, 1) + 'B';
+        if (n >= 1e6) return '$' + fmt(n / 1e6, 1) + 'M';
+        return '$' + fmt(n, 0);
+      }
+      function changeClass(v) {
+        return v >= 0 ? 'up' : 'down';
+      }
+      function changeArrow(v) {
+        return v >= 0 ? '▲' : '▼';
+      }
+      function timeStr() {
+        return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      }
+
+      // ─────────────────────────────────────────────
+      //  CRYPTO
+      // ─────────────────────────────────────────────
+      var cryptoRefreshInterval = null;
+
+      function buildCryptoCard(coin) {
+        var ch = coin.price_change_percentage_24h || 0;
+        var cls = changeClass(ch);
+        return [
+          '<div class="crypto-card">',
+            '<div class="crypto-card-top">',
+              '<img src="', coin.image, '" alt="', coin.name, '" loading="lazy" />',
+              '<div>',
+                '<div class="crypto-card-name">', coin.name, '</div>',
+                '<div class="crypto-card-symbol">', coin.symbol.toUpperCase(), '</div>',
+              '</div>',
+            '</div>',
+            '<div class="crypto-card-price">', fmtPrice(coin.current_price), '</div>',
+            '<span class="crypto-card-change ', cls, '">',
+              changeArrow(ch), ' ', fmt(Math.abs(ch), 2), '%',
+            '</span>',
+            '<div class="crypto-card-meta">',
+              '<span><b>Max 24h</b>', fmtPrice(coin.high_24h), '</span>',
+              '<span><b>Min 24h</b>', fmtPrice(coin.low_24h), '</span>',
+              '<span><b>Mkt Cap</b>', fmtBig(coin.market_cap), '</span>',
+            '</div>',
+          '</div>'
+        ].join('');
+      }
+
+      function fetchCrypto() {
+        var bar = document.getElementById('crypto-refresh-bar');
+        var txt = document.getElementById('crypto-refresh-text');
+        var grid = document.getElementById('crypto-grid');
+
+        if (bar) { bar.classList.add('loading'); }
+        if (txt)  { txt.textContent = 'Atualizando...'; }
+
+        var url = 'https://api.coingecko.com/api/v3/coins/markets'
+          + '?vs_currency=usd'
+          + '&ids=' + CRYPTO_IDS.join(',')
+          + '&order=market_cap_desc'
+          + '&per_page=8'
+          + '&sparkline=false'
+          + '&price_change_percentage=24h';
+
+        fetch(url)
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (!Array.isArray(data) || data.length === 0) throw new Error('sem dados');
+            var html = '';
+            data.forEach(function (coin) {
+              html += buildCryptoCard(coin);
+            });
+            if (grid) { grid.innerHTML = html; }
+            if (bar)  { bar.classList.remove('loading'); }
+            if (txt)  { txt.textContent = 'Atualizado às ' + timeStr() + ' · próxima atualização em 60s'; }
+          })
+          .catch(function (err) {
+            console.warn('CoinGecko error', err);
+            if (bar) { bar.classList.add('loading'); }
+            if (txt) { txt.textContent = 'Erro ao carregar. Tentando novamente...'; }
+          });
+      }
+
+      function startCrypto() {
+        fetchCrypto();
+        if (cryptoRefreshInterval) clearInterval(cryptoRefreshInterval);
+        cryptoRefreshInterval = setInterval(fetchCrypto, 60000);
+      }
+
+      // ─────────────────────────────────────────────
+      //  OPTIONS CHAIN
+      // ─────────────────────────────────────────────
+      var optState = {
+        ticker: 'PETR4',
+        expiry: null,
+        allOptions: [],
+        expiryDates: [],
+        spotPrice: null
+      };
+
+      function getExpirySelect() { return document.getElementById('opt-expiry'); }
+      function getSpotBar()      { return document.getElementById('opt-spot-bar'); }
+      function getChainArea()    { return document.getElementById('opt-chain-area'); }
+
+      function populateExpiry(dates) {
+        var sel = getExpirySelect();
+        if (!sel) return;
+        sel.innerHTML = '';
+        if (!dates || dates.length === 0) {
+          sel.innerHTML = '<option value="">Nenhum vencimento</option>';
+          return;
+        }
+        dates.forEach(function (d) {
+          var opt = document.createElement('option');
+          opt.value = d;
+          opt.textContent = d;
+          sel.appendChild(opt);
+        });
+        if (optState.expiry && dates.indexOf(optState.expiry) !== -1) {
+          sel.value = optState.expiry;
+        } else {
+          optState.expiry = dates[0];
+          sel.value = dates[0];
+        }
+      }
+
+      function renderChain() {
+        var area = getChainArea();
+        var spotBar = getSpotBar();
+        if (!area) return;
+
+        if (!optState.allOptions || optState.allOptions.length === 0) {
+          area.innerHTML = '<div class="opt-placeholder">Nenhum dado de opções disponível para este ativo.</div>';
+          return;
+        }
+
+        // filter by expiry
+        var expiry = optState.expiry;
+        var filtered = optState.allOptions.filter(function (o) {
+          return !expiry || o.expirationDate === expiry || o.dueDate === expiry;
+        });
+
+        if (filtered.length === 0) {
+          area.innerHTML = '<div class="opt-placeholder">Nenhum contrato para o vencimento selecionado.</div>';
+          return;
+        }
+
+        var calls = filtered.filter(function (o) { return o.type === 'call' || o.optionType === 'call' || (o.symbol && o.symbol.charAt(4) >= 'A' && o.symbol.charAt(4) <= 'L'); });
+        var puts  = filtered.filter(function (o) { return o.type === 'put'  || o.optionType === 'put'  || (o.symbol && o.symbol.charAt(4) >= 'M' && o.symbol.charAt(4) <= 'X'); });
+
+        // if type field missing, try to split by strike position
+        if (calls.length === 0 && puts.length === 0) {
+          var mid = Math.floor(filtered.length / 2);
+          calls = filtered.slice(0, mid);
+          puts  = filtered.slice(mid);
+        }
+
+        var spot = optState.spotPrice;
+
+        if (spotBar) {
+          spotBar.innerHTML = spot
+            ? 'Preço atual de <b>' + optState.ticker + '</b>: <b>' + fmtBRL(spot) + '</b>'
+            : '';
+        }
+
+        function buildRow(o) {
+          var strike = o.strike || o.strikePrice || 0;
+          var last   = o.lastPrice || o.regularMarketPrice || o.bid || 0;
+          var bid    = o.bid || 0;
+          var ask    = o.ask || 0;
+          var chg    = o.percentChange || o.regularMarketChangePercent || 0;
+          var vol    = o.volume || o.regularMarketVolume || 0;
+          var oi     = o.openInterest || 0;
+          var sym    = o.symbol || o.contractSymbol || '';
+          var isITM  = spot ? (
+            (calls.indexOf(o) !== -1 ? strike <= spot : strike >= spot)
+          ) : false;
+
+          return [
+            '<tr class="', isITM ? 'itm' : '', '">',
+              '<td>', sym, isITM ? '<span class="itm-badge">ITM</span>' : '', '</td>',
+              '<td>', fmtBRL(strike), '</td>',
+              '<td>', fmtBRL(last), '</td>',
+              '<td>', fmtBRL(bid), '</td>',
+              '<td>', fmtBRL(ask), '</td>',
+              '<td class="', changeClass(chg), '">', changeArrow(chg), ' ', fmt(Math.abs(chg), 2), '%</td>',
+              '<td>', fmt(vol, 0), '</td>',
+              '<td>', fmt(oi, 0), '</td>',
+            '</tr>'
+          ].join('');
+        }
+
+        function buildTable(rows, type) {
+          var labelClass = type === 'call' ? 'call' : 'put';
+          var labelText  = type === 'call' ? 'CALLS' : 'PUTS';
+          var tbody = rows.length === 0
+            ? '<tr class="opt-loading-row"><td colspan="8">Sem contratos</td></tr>'
+            : rows.map(buildRow).join('');
+          return [
+            '<div class="opt-table-wrap">',
+              '<div class="opt-table-label ', labelClass, '">', labelText, '</div>',
+              '<table class="opt-table">',
+                '<thead><tr>',
+                  '<th>Código</th><th>Strike</th><th>Último</th>',
+                  '<th>Bid</th><th>Ask</th><th>Var%</th><th>Vol</th><th>OI</th>',
+                '</tr></thead>',
+                '<tbody>', tbody, '</tbody>',
+              '</table>',
+            '</div>'
+          ].join('');
+        }
+
+        area.innerHTML = [
+          '<div class="options-chain">',
+            buildTable(calls, 'call'),
+            buildTable(puts, 'put'),
+          '</div>'
+        ].join('');
+      }
+
+      function fetchOptions(ticker) {
+        var area = getChainArea();
+        var spotBar = getSpotBar();
+        if (area) {
+          area.innerHTML = [
+            '<table class="opt-table"><tbody>',
+              '<tr class="opt-loading-row"><td colspan="8">Carregando cadeia de opções para ' + ticker + '...</td></tr>',
+            '</tbody></table>'
+          ].join('');
+        }
+        if (spotBar) { spotBar.innerHTML = ''; }
+
+        var url = 'https://brapi.dev/api/quote/' + ticker + '/options';
+        if (BRAPI_TOKEN) { url += '?token=' + BRAPI_TOKEN; }
+
+        fetch(url)
+          .then(function (r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+          })
+          .then(function (data) {
+            // brapi response shape: { results: [{ options: [...], regularMarketPrice, ... }] }
+            var result = data && data.results && data.results[0];
+            if (!result) throw new Error('formato inesperado');
+
+            optState.spotPrice = result.regularMarketPrice || null;
+
+            var options = result.options || [];
+            optState.allOptions = options;
+
+            // collect expiry dates
+            var expirySet = {};
+            options.forEach(function (o) {
+              var d = o.expirationDate || o.dueDate;
+              if (d) { expirySet[d] = true; }
+            });
+            var dates = Object.keys(expirySet).sort();
+            optState.expiryDates = dates;
+
+            populateExpiry(dates);
+            renderChain();
+          })
+          .catch(function (err) {
+            console.warn('brapi error', err);
+            if (area) {
+              area.innerHTML = [
+                '<div class="opt-error">',
+                  'Erro ao carregar opções de ' + ticker + '. ',
+                  err.status === 401 || String(err).indexOf('401') !== -1
+                    ? 'Configure um token gratuito em <b>brapi.dev</b> e adicione na variável <code>BRAPI_TOKEN</code> no HTML.'
+                    : 'Verifique sua conexão ou tente novamente.',
+                '</div>'
+              ].join('');
+            }
+          });
+      }
+
+      function selectTicker(ticker) {
+        optState.ticker = ticker;
+        optState.expiry = null;
+        optState.allOptions = [];
+        optState.expiryDates = [];
+
+        // update buttons
+        document.querySelectorAll('.opt-stock-btn').forEach(function (btn) {
+          btn.classList.toggle('active', btn.dataset.ticker === ticker);
+        });
+
+        fetchOptions(ticker);
+      }
+
+      // ─────────────────────────────────────────────
+      //  EVENT LISTENERS
+      // ─────────────────────────────────────────────
+      document.querySelectorAll('.opt-stock-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          selectTicker(btn.dataset.ticker);
+        });
+      });
+
+      var expiryEl = document.getElementById('opt-expiry');
+      if (expiryEl) {
+        expiryEl.addEventListener('change', function () {
+          optState.expiry = expiryEl.value;
+          renderChain();
+        });
+      }
+
+      // ─────────────────────────────────────────────
+      //  INIT
+      // ─────────────────────────────────────────────
+      startCrypto();
+      selectTicker('PETR4');
+
+    }());
+    </script>
   </body>
 </html>
