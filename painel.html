@@ -150,7 +150,13 @@ const ST = {
       tech_note:"Um dos setups mais limpos do S&P 500. Pullbacks para S1 são compráveis. RSI(14) ao vivo indica estado atual. Momentum preservado acima da EMA 50.",
       swing_note:"Compra em pullback para S1 (ao vivo). Stop S2. Alvo R1, depois R2. Ideal manter metade além de R1 se momentum continuar. Swing favorito do setor.",
     },
-    googl:{structural:4,bubble:45,signal:"AGUARDAR",signalStrength:"Consolidando",
+    aapl:{structural:4,bubble:38,signal:"AGUARDAR",signalStrength:"Defensivo",
+      structural_note:"Apple tem o maior moat de ecossistema do mundo: 1.4B iPhones ativos, App Store, Apple Intelligence. Receita de serviços crescendo 14%+ YoY. iPhone com AI nativo. Risco: China representa 17% da receita.",
+      macro_note:"Apple correlaciona com consumo premium. China e múltiplo esticado (~28x PE forward) para crescimento single-digit são headwinds. Proteção de capital no portfólio.",
+      tech_note:"Ação mais defensiva do grupo — menor beta, menos swing. Suporte/resistência ao vivo (S1/S2/R1/R2) calculados das últimas 21 sessões. RSI(14) ao vivo.",
+      swing_note:"Compra em S1 (ao vivo). Stop S2. Alvo R1. Posição conservadora — ideal para equilibrar risco do portfólio com NVDA/META. Catalisador: Apple Intelligence eventos.",
+    },
+        googl:{structural:4,bubble:45,signal:"AGUARDAR",signalStrength:"Consolidando",
       structural_note:"Alphabet domina busca global (~92%), YouTube e Google Cloud crescendo. Gemini AI integrado em Search/Workspace. Receita de publicidade resiliente. Buybacks agressivos. Risco antitrust DOJ.",
       macro_note:"Google Cloud (GCP) crescendo 28%+ YoY. YouTube Shorts monetizando. Valuação mais razoável vs peers. Risco regulatório DOJ sobre monopólio de busca pode pesar.",
       tech_note:"Suporte/resistência calculados ao vivo. RSI(14) neutro favorece entrada. Observe breakout acima de R1 para confirmar momentum de alta.",
@@ -172,10 +178,11 @@ const CRYPTO_CFG = [
 ];
 const STOCK_CFG = [
   {id:"nvda", name:"Nvidia",    sym:"NVDA", lbl:"Semicondutores · AI",   color:"#76b900"},
+  {id:"aapl", name:"Apple",     sym:"AAPL", lbl:"Consumer Tech · iPhone", color:"#aaaaaa"},
+  {id:"googl",name:"Alphabet",  sym:"GOOGL",lbl:"Big Tech · Gemini AI",  color:"#4285F4"},
   {id:"msft", name:"Microsoft", sym:"MSFT", lbl:"Cloud · Copilot AI",    color:"#00a4ef"},
   {id:"orcl", name:"Oracle",    sym:"ORCL", lbl:"Cloud · Database AI",   color:"#f80000"},
   {id:"meta", name:"Meta",      sym:"META", lbl:"Social · AI Ads",       color:"#0082fb"},
-  {id:"googl",name:"Alphabet",  sym:"GOOGL",lbl:"Big Tech · Gemini AI",  color:"#4285F4"},
 ];
 
 // ════════════════════════════════════════════════
@@ -562,14 +569,14 @@ async function fetchAll() {
 </div>
 <div class="tabs">
   <button class="tab on" id="tab-c" onclick="switchTab('crypto')">🔷 Cripto (6) · Bybit</button>
-  <button class="tab" id="tab-s" onclick="switchTab('stocks')">📈 Ações Tech (5) · NYSE</button>
+  <button class="tab" id="tab-s" onclick="switchTab('stocks')">📈 Ações Tech (6) · NYSE</button>
 </div>
 <div class="grid" id="gc">${cryptoHtml}</div>
 <div class="grid" id="gs" style="display:none">${stockHtml}</div>
 <div class="ft">
   <div style="display:flex;align-items:center;gap:6px">
     <div class="sdot" id="sdot"></div>
-    <span style="font-size:8px;color:var(--txt2)">11 ativos · CoinGecko + Yahoo Finance · auto-refresh 5 min</span>
+    <span style="font-size:8px;color:var(--txt2)">12 ativos · CoinGecko + Yahoo Finance · auto-refresh 5 min</span>
   </div>
   <span style="font-size:8px;color:${C.gold};opacity:.7;letter-spacing:.06em">
     MARQUES INVEST · <span style="color:var(--txt2)">fins analíticos</span>
@@ -592,7 +599,7 @@ async function fetchAll() {
 
   } catch(e) {
     console.error("fetchAll falhou:", e);
-    setStatus("✗ Falha ao carregar — verifique sua internet. Retry em 60s.", "err");
+    setStatus("✗ Falha ao carregar — Brave: desative Shields (🦁) para este site. Retry em 60s.", "err");
     countdown = 60;
   }
 }
