@@ -126,23 +126,35 @@ const ST = {
       tech_note:"Preço acima de $600 (suporte psicológico forte). Resistência $654, depois $687. Perda de $570 = fraqueza estrutural.",
       swing_note:"O mais conservador do portfólio. Swing: compra em pullback $620-625, stop $598, alvo $660-680. R/R 1:2. Aguardar FOMC.",
     },
-    nvda:{structural:5,bubble:72,signal:"AGUARDAR",signalStrength:"Correção",
-      structural_note:"NVIDIA domina chips de IA: ~90% de market share em GPUs para datacenters (H100/H200/GB200). Moat estrutural via ecossistema CUDA. Risco: restrições de exportação para China e competição AMD/Intel.",
-      macro_note:"Restrições de chip para China afetam ~$8B de receita. Fed hawkish comprime múltiplos de valuation de high-growth tech. NVDA ainda é o play mais direto em IA.",
-      tech_note:"Ação em correção após ATH de $153. Suporte zona $100-105 (EMA 200). Resistência $120, depois $140. PE elevado (~30-35x forward) vulnerável a juros altos.",
-      swing_note:"Compra em pullback para $100-105 (suporte + EMA 200), stop $95, alvo $125-130. R/R 1:2.5. Risco: decepção em guidance ou escalada restrições China.",
+    nvda:{structural:5,bubble:72,signal:"LONG",signalStrength:"Liderança AI",
+      structural_note:"NVIDIA domina chips de IA: ~90% de market share em GPUs para datacenters (Blackwell GB200/300). Moat estrutural via ecossistema CUDA — praticamente impossível de replicar em 5+ anos. Cada geração de AI exige mais compute.",
+      macro_note:"Demanda por AI compute ainda comprimida em supply — hyperscalers acelerando capex. NVDA é o pick-and-shovel mais direto do ciclo AI. Fed hawkish comprime múltiplos no curto prazo.",
+      tech_note:"Alta volatilidade intraday — ideal para swing. Suporte/resistência calculados ao vivo. RSI(14) ao vivo detecta sobrecompra/sobrevenda em tempo real.",
+      swing_note:"Compra em toque em S1 (calculado ao vivo), stop abaixo S2. Alvo R1 e R2. Volatilidade alta = stops obrigatórios. R/R mínimo 1:2.",
     },
-    googl:{structural:4,bubble:45,signal:"AGUARDAR",signalStrength:"Neutro",
-      structural_note:"Alphabet domina busca global (~92%), YouTube e Google Cloud crescendo. Gemini AI competindo com OpenAI. Receita de publicidade resiliente. Buybacks agressivos ($70B+ aprovado). Risco antitrust DOJ.",
-      macro_note:"Publicidade digital correlaciona com ciclo econômico — Fed hawkish é headwind. Google Cloud cresce 28% YoY. Múltiplo razoável (~20x forward PE) versus pares de tech.",
-      tech_note:"GOOGL em consolidação. Suporte zona $160-165 (EMA 50). Resistência $175, depois $185. Earnings de julho será catalisador.",
-      swing_note:"Compra em $162-165 (suporte técnico), stop $157, alvo $180. R/R 1:2.5. Catalisador: AI announcements. Risco: perda de market share em busca.",
+    msft:{structural:5,bubble:52,signal:"LONG",signalStrength:"Cloud+AI",
+      structural_note:"Microsoft domina enterprise cloud com Azure (2° maior IaaS global) e ecossistema Copilot AI integrado em Teams, Office e GitHub. OpenAI partnership exclusivo. Receitas recorrentes de assinaturas M365.",
+      macro_note:"Azure crescendo +33%+ YoY. Copilot monetização acelerando em enterprise. Menor sensibilidade a ciclo econômico. Ideal como anchor de portfólio tech.",
+      tech_note:"Tendência de alta preservada com pullbacks compráveis. Suporte S1/S2 calculados ao vivo. RSI(14) ao vivo indica melhor janela de entrada. Beta mais baixo que NVDA.",
+      swing_note:"Compra em toque no S1 (calculado ao vivo). Stop abaixo de S2. Alvo R1. R/R mínimo 1:2. Beta moderado = posição maior que NVDA é aceitável.",
     },
-    aapl:{structural:4,bubble:38,signal:"AGUARDAR",signalStrength:"Neutro",
-      structural_note:"Apple tem o maior moat de ecossistema do mundo: 1.4B iPhones ativos, App Store, Apple Intelligence. Receita de serviços crescendo ($23B/trimestre). Risco: desaceleração de vendas na China (-7% YoY).",
-      macro_note:"Apple correlaciona com consumo premium — risco em desaceleração econômica. China representa 17% da receita. Valuação esticada (~28x PE forward) para crescimento de single-digit.",
-      tech_note:"AAPL em range de consolidação. Suporte $195-200 (zona institucional). Resistência $215, depois $230 (ATH). Menos volátil que pares de tech.",
-      swing_note:"O mais defensivo do portfólio de tech. Swing: compra em pullback $195-200, stop $190, alvo $218. R/R 1:3. Catalisador: WWDC AI announcements.",
+    orcl:{structural:4,bubble:55,signal:"LONG",signalStrength:"OCI Acelerando",
+      structural_note:"Oracle Cloud Infrastructure (OCI) lidera em crescimento entre todos os hyperscalers. Contratos AI explosivos: Nvidia, OpenAI e Cohere rodando na OCI. Database tradicional gera FCF enorme como base.",
+      macro_note:"Cloud enterprise correlaciona menos com ciclo do consumidor. Contratos de longo prazo protegem receita. Larry Ellison posicionou ORCL como infraestrutura AI de referência global.",
+      tech_note:"Tendência forte. Pullbacks compráveis na EMA 20 ou zona S1. RSI(14) ao vivo revela janelas de entrada. Suporte/resistência calculados das últimas 21 sessões.",
+      swing_note:"Compra em zona S1 (ao vivo). Stop abaixo S2. Alvo R1 e R2. Hold típico de 10-15 dias para capturar o movimento. Ciclos claros de alta pós-earnings.",
+    },
+    meta:{structural:5,bubble:60,signal:"LONG",signalStrength:"Momentum Forte",
+      structural_note:"Meta é o maior beneficiário de AI em publicidade: Advantage+ AI melhora ROAS em 30%+. Llama open-source como estratégia de ecossistema. Instagram, WhatsApp e Threads com 3B+ usuários.",
+      macro_note:"Publicidade digital sofre com macro hawkish, mas META mais resiliente por ROI mensurável de AI. Capex em AI alto (~$35B/ano) bem coberto por FCF robusto de $50B+.",
+      tech_note:"Um dos setups mais limpos do S&P 500. Pullbacks para S1 são compráveis. RSI(14) ao vivo indica estado atual. Momentum preservado acima da EMA 50.",
+      swing_note:"Compra em pullback para S1 (ao vivo). Stop S2. Alvo R1, depois R2. Ideal manter metade além de R1 se momentum continuar. Swing favorito do setor.",
+    },
+    googl:{structural:4,bubble:45,signal:"AGUARDAR",signalStrength:"Consolidando",
+      structural_note:"Alphabet domina busca global (~92%), YouTube e Google Cloud crescendo. Gemini AI integrado em Search/Workspace. Receita de publicidade resiliente. Buybacks agressivos. Risco antitrust DOJ.",
+      macro_note:"Google Cloud (GCP) crescendo 28%+ YoY. YouTube Shorts monetizando. Valuação mais razoável vs peers. Risco regulatório DOJ sobre monopólio de busca pode pesar.",
+      tech_note:"Suporte/resistência calculados ao vivo. RSI(14) neutro favorece entrada. Observe breakout acima de R1 para confirmar momentum de alta.",
+      swing_note:"Entrada gradual em S1 (calculado ao vivo). Stop S2. Alvo R1. Posição menor que NVDA/META dado risco regulatório. Bom complemento do portfólio.",
     },
   },
 };
@@ -159,9 +171,11 @@ const CRYPTO_CFG = [
   {id:"bnb", name:"BNB",         cgId:"binancecoin", lbl:"Exchange Token",  color:"#F3BA2F"},
 ];
 const STOCK_CFG = [
-  {id:"nvda", name:"Nvidia",   sym:"NVDA", lbl:"Semicondutores · AI", color:"#76b900"},
-  {id:"googl",name:"Alphabet", sym:"GOOGL",lbl:"Big Tech · Search",   color:"#4285F4"},
-  {id:"aapl", name:"Apple",    sym:"AAPL", lbl:"Consumer Tech",        color:"#aaaaaa"},
+  {id:"nvda", name:"Nvidia",    sym:"NVDA", lbl:"Semicondutores · AI",   color:"#76b900"},
+  {id:"msft", name:"Microsoft", sym:"MSFT", lbl:"Cloud · Copilot AI",    color:"#00a4ef"},
+  {id:"orcl", name:"Oracle",    sym:"ORCL", lbl:"Cloud · Database AI",   color:"#f80000"},
+  {id:"meta", name:"Meta",      sym:"META", lbl:"Social · AI Ads",       color:"#0082fb"},
+  {id:"googl",name:"Alphabet",  sym:"GOOGL",lbl:"Big Tech · Gemini AI",  color:"#4285F4"},
 ];
 
 // ════════════════════════════════════════════════
@@ -548,14 +562,14 @@ async function fetchAll() {
 </div>
 <div class="tabs">
   <button class="tab on" id="tab-c" onclick="switchTab('crypto')">🔷 Cripto (6) · Bybit</button>
-  <button class="tab" id="tab-s" onclick="switchTab('stocks')">📈 Ações Tech (3) · NYSE</button>
+  <button class="tab" id="tab-s" onclick="switchTab('stocks')">📈 Ações Tech (5) · NYSE</button>
 </div>
 <div class="grid" id="gc">${cryptoHtml}</div>
 <div class="grid" id="gs" style="display:none">${stockHtml}</div>
 <div class="ft">
   <div style="display:flex;align-items:center;gap:6px">
     <div class="sdot" id="sdot"></div>
-    <span style="font-size:8px;color:var(--txt2)">9 ativos · CoinGecko + Yahoo Finance · auto-refresh 5 min</span>
+    <span style="font-size:8px;color:var(--txt2)">11 ativos · CoinGecko + Yahoo Finance · auto-refresh 5 min</span>
   </div>
   <span style="font-size:8px;color:${C.gold};opacity:.7;letter-spacing:.06em">
     MARQUES INVEST · <span style="color:var(--txt2)">fins analíticos</span>
