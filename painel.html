@@ -167,23 +167,31 @@ const STOCK_CFG = [
 // ════════════════════════════════════════════════
 // PROXY FETCH  — tenta 3 proxies em sequência
 // ════════════════════════════════════════════════
+// CoinGecko tem CORS nativo — chamada direta sem proxy
+async function cgFetch(url) {
+  const r = await fetch(url, { signal: AbortSignal.timeout(15000) });
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
+}
+
+// Proxies usados APENAS para Yahoo Finance
 const PROXIES = [
   u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-  u => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
-  u => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(u)}`,
+  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  u => `https://thingproxy.freeboard.io/fetch/${u}`,
 ];
 let activeProxy = 0;
 
 async function pfetch(rawUrl, attempt = 0) {
   if (attempt >= PROXIES.length) throw new Error("Todos os proxies falharam para: " + rawUrl);
   const url = PROXIES[attempt](rawUrl);
-  setStatus(`Proxy ${attempt+1}/3 · buscando dados...`, "warn");
   try {
     const r = await fetch(url, { signal: AbortSignal.timeout(12000) });
     if (!r.ok) throw new Error("HTTP " + r.status);
     const txt = await r.text();
     const json = JSON.parse(txt);
-    activeProxy = attempt; // cache working proxy
+    activeProxy = attempt;
     return json;
   } catch(e) {
     console.warn(`Proxy ${attempt+1} falhou (${e.message}), tentando próximo...`);
@@ -199,17 +207,18 @@ const YF_BASE = "https://query1.finance.yahoo.com/v8/finance/chart";
 
 async function cgPrices(ids) {
   const u = `${CG_BASE}/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_high_24h=true&include_low_24h=true`;
-  return pfetch(u, activeProxy);
+  return cgFetch(u);
 }
 
-async function cgChart(cgId, attempt) {
+async function cgChart(cgId) {
   const u = `${CG_BASE}/coins/${cgId}/market_chart?vs_currency=usd&days=30&interval=daily`;
-  return pfetch(u, attempt !== undefined ? attempt : activeProxy);
+  const data = await cgFetch(u);
+  return data?.prices?.map(p => p[1]) || [];
 }
 
 async function yfStock(sym) {
   const u = `${YF_BASE}/${sym}?interval=1d&range=2mo&includePrePost=false`;
-  const d = await pfetch(u, activeProxy);
+  const d = await pfetch(u, 0);
   const res = d.chart?.result?.[0];
   if (!res) throw new Error("Yahoo: sem resultado para " + sym);
   const q      = res.indicators?.quote?.[0] || {};
@@ -445,7 +454,7 @@ function updateCd() {
 // MAIN FETCH
 // ════════════════════════════════════════════════
 async function fetchAll() {
-  setStatus("Buscando preços via proxy...", "warn");
+  setStatus("Buscando preços (CoinGecko direto · Yahoo via proxy)...", "warn");
   try {
     // 1. Batch price (todos os cryptos)
     const cgIds = CRYPTO_CFG.map(c => c.cgId).join(",");
@@ -564,7 +573,7 @@ async function fetchAll() {
         drawSpark(cfg.id, res.value.closes, res.value.change >= 0 ? C.g : C.r);
     });
 
-    setStatus("✓ Dados ao vivo · CoinGecko + Yahoo Finance via proxy", "ok");
+    setStatus("✓ Dados ao vivo · CoinGecko direto + Yahoo Finance via proxy", "ok");
     countdown = 300;
 
   } catch(e) {
