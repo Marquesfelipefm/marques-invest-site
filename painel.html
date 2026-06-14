@@ -56,6 +56,30 @@
   #status-bar.ok{border-color:rgba(76,175,80,.3);color:#4CAF50;}
   #status-bar.err{border-color:rgba(244,67,54,.3);color:#f44336;}
   #status-bar.warn{border-color:rgba(255,152,0,.3);color:#FF9800;}
+  /* ── Metrics Panel (in-card analytics) ── */
+  button.sigb{cursor:pointer;font:inherit;line-height:1;}
+  .mPanel{display:none;border-top:.5px solid #1c2533;padding-top:11px;flex-direction:column;gap:10px;margin-top:2px}
+  .mPanel.open{display:flex}
+  .mLoader{padding:14px 0;text-align:center}
+  .mBeacon{display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:center;background:#0b0f19;border:.5px solid #1c2533;border-radius:10px;padding:12px 14px}
+  .mLight{width:44px;height:44px;border-radius:50%;flex:none}
+  .mGrid{display:grid;grid-template-columns:1.05fr 1fr;gap:9px}
+  .mCard{background:#0b0f19;border:.5px solid #1c2533;border-radius:8px;padding:10px 12px}
+  .mCardH{font-size:9px;letter-spacing:1.1px;text-transform:uppercase;color:#69748a;font-weight:600;margin-bottom:7px;padding-bottom:4px;border-bottom:.5px solid #1c2533}
+  .mRung{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:6px;padding:5px 0;border-top:.5px dashed #1c2533}
+  .mRung:first-of-type{border-top:0}
+  .mRlbl{font-size:9px;color:#69748a;line-height:1.3}
+  .mRval{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:10px;font-weight:700;text-align:right;white-space:nowrap}
+  .mRbar{height:5px;border-radius:3px;background:#1c2533;position:relative;width:38px}
+  .mRbar i{position:absolute;top:-4px;width:2px;height:12px;border-radius:2px;transform:translateX(-50%)}
+  .mMA{width:100%;border-collapse:collapse}
+  .mMA td{padding:4px 0;font-size:10px;border-top:.5px solid #131926;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-weight:600}
+  .mMA td:first-child{color:#69748a;font-family:inherit;font-weight:400;font-size:9px}
+  .mMA td:last-child{text-align:right}
+  .mPress{height:22px;border-radius:5px;overflow:hidden;display:flex;border:.5px solid #1c2533;margin-top:4px}
+  .mPBuy{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:#16c784;color:#06120a;min-width:28px}
+  .mPSell{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:#ea3943;color:#1a0608;flex:1;min-width:28px}
+  @media(max-width:500px){.mGrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -128,39 +152,39 @@ const ST = {
     },
     nvda:{structural:5,bubble:72,signal:"LONG",signalStrength:"Liderança AI",
       structural_note:"NVIDIA domina chips de IA: ~90% de market share em GPUs para datacenters (Blackwell GB200/300). Moat estrutural via ecossistema CUDA — praticamente impossível de replicar em 5+ anos. Cada geração de AI exige mais compute.",
-      macro_note:"Demanda por AI compute ainda comprimida em supply — hyperscalers acelerando capex. NVDA é o pick-and-shovel mais direto do ciclo AI. Fed hawkish comprime múltiplos no curto prazo.",
-      tech_note:"Alta volatilidade intraday — ideal para swing. Suporte/resistência calculados ao vivo. RSI(14) ao vivo detecta sobrecompra/sobrevenda em tempo real.",
-      swing_note:"Compra em toque em S1 (calculado ao vivo), stop abaixo S2. Alvo R1 e R2. Volatilidade alta = stops obrigatórios. R/R mínimo 1:2.",
+      macro_note:"Demanda por AI compute ainda comprimida em supply — hyperscalers (Google, Meta, Microsoft, Amazon) acelerando capex. NVDA é o pick-and-shovel mais direto do ciclo AI. Fed hawkish comprime múltiplos no curto prazo.",
+      tech_note:"Alta volatilidade intraday — ideal para swing. Suporte/resistência calculados ao vivo a partir das últimas sessões. RSI(14) ao vivo detecta sobrecompra/sobrevenda em tempo real.",
+      swing_note:"Compra em toque em S1 (calculado ao vivo), stop abaixo S2. Alvo R1 e R2. Volatilidade alta = stops obrigatórios. Nunca entrar sem definir saída. R/R mínimo 1:2.",
     },
     msft:{structural:5,bubble:52,signal:"LONG",signalStrength:"Cloud+AI",
-      structural_note:"Microsoft domina enterprise cloud com Azure (2° maior IaaS global) e ecossistema Copilot AI integrado em Teams, Office e GitHub. OpenAI partnership exclusivo. Receitas recorrentes de assinaturas M365.",
-      macro_note:"Azure crescendo +33%+ YoY. Copilot monetização acelerando em enterprise. Menor sensibilidade a ciclo econômico. Ideal como anchor de portfólio tech.",
+      structural_note:"Microsoft domina enterprise cloud com Azure (2° maior IaaS global) e o ecossistema Copilot AI integrado em Teams, Office e GitHub. OpenAI partnership exclusivo. Receitas recorrentes de assinaturas M365 geram FCF previsível.",
+      macro_note:"Azure crescendo consistentemente (+33%+ YoY). Copilot monetização acelerando em enterprise. Menor sensibilidade a ciclo econômico que consumo. Ideal como anchor de portfólio tech.",
       tech_note:"Tendência de alta preservada com pullbacks compráveis. Suporte S1/S2 calculados ao vivo. RSI(14) ao vivo indica melhor janela de entrada. Beta mais baixo que NVDA.",
       swing_note:"Compra em toque no S1 (calculado ao vivo). Stop abaixo de S2. Alvo R1. R/R mínimo 1:2. Beta moderado = posição maior que NVDA é aceitável.",
     },
     orcl:{structural:4,bubble:55,signal:"LONG",signalStrength:"OCI Acelerando",
-      structural_note:"Oracle Cloud Infrastructure (OCI) lidera em crescimento entre todos os hyperscalers. Contratos AI explosivos: Nvidia, OpenAI e Cohere rodando na OCI. Database tradicional gera FCF enorme como base.",
+      structural_note:"Oracle Cloud Infrastructure (OCI) lidera em crescimento entre todos os hyperscalers. Contratos AI explosivos: Nvidia, OpenAI e Cohere rodando na OCI. Database tradicional ainda gera FCF enorme como base.",
       macro_note:"Cloud enterprise correlaciona menos com ciclo do consumidor. Contratos de longo prazo protegem receita. Larry Ellison posicionou ORCL como infraestrutura AI de referência global.",
       tech_note:"Tendência forte. Pullbacks compráveis na EMA 20 ou zona S1. RSI(14) ao vivo revela janelas de entrada. Suporte/resistência calculados das últimas 21 sessões.",
       swing_note:"Compra em zona S1 (ao vivo). Stop abaixo S2. Alvo R1 e R2. Hold típico de 10-15 dias para capturar o movimento. Ciclos claros de alta pós-earnings.",
     },
     meta:{structural:5,bubble:60,signal:"LONG",signalStrength:"Momentum Forte",
-      structural_note:"Meta é o maior beneficiário de AI em publicidade: Advantage+ AI melhora ROAS em 30%+. Llama open-source como estratégia de ecossistema. Instagram, WhatsApp e Threads com 3B+ usuários.",
+      structural_note:"Meta é o maior beneficiário de AI em publicidade: Advantage+ AI melhora ROAS em 30%+. Llama open-source como estratégia de ecossistema. Instagram, WhatsApp e Threads com 3B+ usuários combinados.",
       macro_note:"Publicidade digital sofre com macro hawkish, mas META mais resiliente por ROI mensurável de AI. Capex em AI alto (~$35B/ano) bem coberto por FCF robusto de $50B+.",
-      tech_note:"Um dos setups mais limpos do S&P 500. Pullbacks para S1 são compráveis. RSI(14) ao vivo indica estado atual. Momentum preservado acima da EMA 50.",
-      swing_note:"Compra em pullback para S1 (ao vivo). Stop S2. Alvo R1, depois R2. Ideal manter metade além de R1 se momentum continuar. Swing favorito do setor.",
+      tech_note:"Um dos setups mais limpos do S&P 500. Pullbacks para S1 são compráveis. RSI(14) ao vivo indica estado atual. Momentum de alta preservado enquanto acima da EMA 50.",
+      swing_note:"Compra em pullback para S1 (ao vivo). Stop S2. Alvo R1 primeiro, depois R2. Ideal manter metade da posição além de R1 se momentum continuar. Swing favorito do setor.",
     },
     aapl:{structural:4,bubble:38,signal:"AGUARDAR",signalStrength:"Defensivo",
-      structural_note:"Apple tem o maior moat de ecossistema do mundo: 1.4B iPhones ativos, App Store, Apple Intelligence. Receita de serviços crescendo 14%+ YoY. iPhone com AI nativo. Risco: China representa 17% da receita.",
-      macro_note:"Apple correlaciona com consumo premium. China e múltiplo esticado (~28x PE forward) para crescimento single-digit são headwinds. Proteção de capital no portfólio.",
+      structural_note:"Apple tem o maior moat de ecossistema do mundo: 1.4B iPhones ativos, App Store, Apple Intelligence. Receita de serviços crescendo 14%+ YoY. iPhone 16 com AI nativo. Risco: China representa 17% da receita.",
+      macro_note:"Apple correlaciona com consumo premium. China (-7% YoY) e múltiplo esticado (~28x PE forward) para crescimento single-digit são os maiores headwinds. Proteção de capital no portfólio.",
       tech_note:"Ação mais defensiva do grupo — menor beta, menos swing. Suporte/resistência ao vivo (S1/S2/R1/R2) calculados das últimas 21 sessões. RSI(14) ao vivo.",
-      swing_note:"Compra em S1 (ao vivo). Stop S2. Alvo R1. Posição conservadora — ideal para equilibrar risco do portfólio com NVDA/META. Catalisador: Apple Intelligence eventos.",
+      swing_note:"Compra em S1 (ao vivo). Stop S2. Alvo R1. Posição mais conservadora — ideal para equilibrar o risco do portfólio com NVDA/META. Catalisador: Apple Intelligence eventos.",
     },
-        googl:{structural:4,bubble:45,signal:"AGUARDAR",signalStrength:"Consolidando",
-      structural_note:"Alphabet domina busca global (~92%), YouTube e Google Cloud crescendo. Gemini AI integrado em Search/Workspace. Receita de publicidade resiliente. Buybacks agressivos. Risco antitrust DOJ.",
-      macro_note:"Google Cloud (GCP) crescendo 28%+ YoY. YouTube Shorts monetizando. Valuação mais razoável vs peers. Risco regulatório DOJ sobre monopólio de busca pode pesar.",
+    googl:{structural:4,bubble:45,signal:"AGUARDAR",signalStrength:"Consolidando",
+      structural_note:"Alphabet domina busca global (~92%), YouTube e Google Cloud crescendo. Gemini AI integrado em Search/Workspace. Receita de publicidade resiliente. Buybacks agressivos. Risco antitrust DOJ é o maior headwind.",
+      macro_note:"Google Cloud (GCP) crescendo 28%+ YoY. YouTube Shorts monetizando. Valuação mais razoável vs peers. Risco regulatório de DOJ sobre monopólio de busca pode pesar.",
       tech_note:"Suporte/resistência calculados ao vivo. RSI(14) neutro favorece entrada. Observe breakout acima de R1 para confirmar momentum de alta.",
-      swing_note:"Entrada gradual em S1 (calculado ao vivo). Stop S2. Alvo R1. Posição menor que NVDA/META dado risco regulatório. Bom complemento do portfólio.",
+      swing_note:"Entrada gradual em S1 (calculado ao vivo). Stop S2. Alvo R1. Posição menor que NVDA/META dado risco regulatório. Ideal como complemento do portfólio tech.",
     },
   },
 };
@@ -169,12 +193,12 @@ const ST = {
 // ASSET CONFIG
 // ════════════════════════════════════════════════
 const CRYPTO_CFG = [
-  {id:"btc", name:"Bitcoin",     cgId:"bitcoin",     lbl:"Store of Value",  color:"#F7931A"},
-  {id:"eth", name:"Ethereum",    cgId:"ethereum",    lbl:"Smart Contracts", color:"#627EEA"},
-  {id:"sol", name:"Solana",      cgId:"solana",      lbl:"Layer 1",         color:"#9945FF"},
-  {id:"ada", name:"Cardano",     cgId:"cardano",     lbl:"Layer 1 PoS",     color:"#0EA5E9"},
-  {id:"hype",name:"Hyperliquid", cgId:"hyperliquid", lbl:"Perp DEX",        color:"#fb923c"},
-  {id:"bnb", name:"BNB",         cgId:"binancecoin", lbl:"Exchange Token",  color:"#F3BA2F"},
+  {id:"btc", name:"Bitcoin",     cgId:"bitcoin",     lbl:"Store of Value",  color:"#F7931A", bybitSym:"BTCUSDT"},
+  {id:"eth", name:"Ethereum",    cgId:"ethereum",    lbl:"Smart Contracts", color:"#627EEA", bybitSym:"ETHUSDT"},
+  {id:"sol", name:"Solana",      cgId:"solana",      lbl:"Layer 1",         color:"#9945FF", bybitSym:"SOLUSDT"},
+  {id:"ada", name:"Cardano",     cgId:"cardano",     lbl:"Layer 1 PoS",     color:"#0EA5E9", bybitSym:"ADAUSDT"},
+  {id:"hype",name:"Hyperliquid", cgId:"hyperliquid", lbl:"Perp DEX",        color:"#fb923c", bybitSym:"HYPEUSDT"},
+  {id:"bnb", name:"BNB",         cgId:"binancecoin", lbl:"Exchange Token",  color:"#F3BA2F", bybitSym:"BNBUSDT"},
 ];
 const STOCK_CFG = [
   {id:"nvda", name:"Nvidia",    sym:"NVDA", lbl:"Semicondutores · AI",   color:"#76b900"},
@@ -188,30 +212,48 @@ const STOCK_CFG = [
 // ════════════════════════════════════════════════
 // PROXY FETCH  — tenta 3 proxies em sequência
 // ════════════════════════════════════════════════
-// CoinGecko tem CORS nativo — chamada direta sem proxy
-async function cgFetch(url) {
-  const r = await fetch(url, { signal: AbortSignal.timeout(15000) });
-  if (!r.ok) throw new Error("HTTP " + r.status);
-  return r.json();
+// CoinGecko tem CORS nativo — tenta direto, fallback via proxy (para Brave Shields / redes corporativas)
+const CG_PROXIES = [
+  u => u,
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+];
+async function cgFetch(url, attempt = 0) {
+  if (attempt >= CG_PROXIES.length) throw new Error("CoinGecko inacessível (Brave Shields? Desative para este site)");
+  try {
+    const r = await fetch(CG_PROXIES[attempt](url), { signal: AbortSignal.timeout(13000) });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  } catch(e) {
+    console.warn(`CoinGecko attempt ${attempt+1} falhou (${e.message}), tentando...`);
+    return cgFetch(url, attempt + 1);
+  }
 }
 
-// Proxies usados APENAS para Yahoo Finance
+// Proxies para Yahoo Finance (não suporta CORS)
 const PROXIES = [
-  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
   u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
   u => `https://thingproxy.freeboard.io/fetch/${u}`,
+  u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
 ];
 let activeProxy = 0;
 
 async function pfetch(rawUrl, attempt = 0) {
-  if (attempt >= PROXIES.length) throw new Error("Todos os proxies falharam para: " + rawUrl);
+  if (attempt >= PROXIES.length) throw new Error("Todos os proxies falharam — tente desativar Brave Shields para este site");
   const url = PROXIES[attempt](rawUrl);
   try {
     const r = await fetch(url, { signal: AbortSignal.timeout(12000) });
     if (!r.ok) throw new Error("HTTP " + r.status);
     const txt = await r.text();
-    const json = JSON.parse(txt);
+    // allorigins /get retorna {contents:"..."} — extrair
+    let json;
+    try { json = JSON.parse(txt); } catch { throw new Error("JSON inválido"); }
+    if (json?.contents && typeof json.contents === 'string') {
+      try { json = JSON.parse(json.contents); } catch { throw new Error("JSON contents inválido"); }
+    }
     activeProxy = attempt;
     return json;
   } catch(e) {
@@ -234,12 +276,13 @@ async function cgPrices(ids) {
 async function cgChart(cgId) {
   const u = `${CG_BASE}/coins/${cgId}/market_chart?vs_currency=usd&days=30&interval=daily`;
   const data = await cgFetch(u);
+  // Extrai array de fechamentos: cada entrada é [timestamp, price]
   return data?.prices?.map(p => p[1]) || [];
 }
 
 async function yfStock(sym) {
   const u = `${YF_BASE}/${sym}?interval=1d&range=2mo&includePrePost=false`;
-  const d = await pfetch(u, 0);
+  const d = await pfetch(u, activeProxy);
   const res = d.chart?.result?.[0];
   if (!res) throw new Error("Yahoo: sem resultado para " + sym);
   const q      = res.indicators?.quote?.[0] || {};
@@ -368,6 +411,197 @@ function toggleB(id) {
 }
 
 // ════════════════════════════════════════════════
+// METRICS — EMA / Hamming / Format helpers
+// ════════════════════════════════════════════════
+function mEma(v,n){const k=2/(n+1);let e=v[0];const o=[e];for(let i=1;i<v.length;i++){e=v[i]*k+e*(1-k);o.push(e);}return o;}
+function mHamming(v,n=10){const w=[];let s=0;for(let i=0;i<n;i++){const x=0.54-0.46*Math.cos(2*Math.PI*i/(n-1));w.push(x);s+=x;}
+  for(let i=0;i<n;i++)w[i]/=s;const o=Array(v.length).fill(null);
+  for(let i=n-1;i<v.length;i++){let a=0;for(let j=0;j<n;j++)a+=v[i-n+1+j]*w[j];o[i]=a;}return o;}
+function f2m(x){
+  if(x==null||isNaN(x))return"—";const n=parseFloat(x);
+  if(n<1)return"$"+n.toFixed(4);if(n<100)return"$"+n.toFixed(2);
+  return"$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+// ════════════════════════════════════════════════
+// METRICS — FETCH: Bybit (crypto) + Binance fallback
+// ════════════════════════════════════════════════
+async function fetchBybitCandles(sym){
+  async function tryBybit(sym,interval){
+    const url=`https://api.bybit.com/v5/market/kline?category=linear&symbol=${sym}&interval=${interval}&limit=200`;
+    const r=await fetch(url,{signal:AbortSignal.timeout(11000)});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const j=await r.json();
+    return j.result.list.slice().reverse().map(r=>({o:+r[1],h:+r[2],l:+r[3],c:+r[4],v:+r[5]}));
+  }
+  async function tryBinance(sym,interval){
+    const url=`https://api.binance.com/api/v3/klines?symbol=${sym}&interval=${interval}&limit=200`;
+    const r=await fetch(url,{signal:AbortSignal.timeout(11000)});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const j=await r.json();
+    return j.map(r=>({o:+r[1],h:+r[2],l:+r[3],c:+r[4],v:+r[5]}));
+  }
+  try{
+    const[c15,c1h]=await Promise.all([tryBybit(sym,"15"),tryBybit(sym,"60")]);
+    return[c15,c1h];
+  }catch(e){
+    console.warn("Bybit falhou, tentando Binance...",e.message);
+    const[c15,c1h]=await Promise.all([tryBinance(sym,"15m"),tryBinance(sym,"1h")]);
+    return[c15,c1h];
+  }
+}
+
+// ════════════════════════════════════════════════
+// METRICS — FETCH: Yahoo Finance intraday (stocks)
+// ════════════════════════════════════════════════
+async function fetchYFIntraday(sym){
+  async function fetchInterval(interval,range){
+    const url=`${YF_BASE}/${sym}?interval=${interval}&range=${range}&includePrePost=false`;
+    const j=await pfetch(url,activeProxy);
+    const res=j.chart?.result?.[0];
+    if(!res)throw new Error("YF: sem resultado "+sym+" "+interval);
+    const q=res.indicators?.quote?.[0]||{};
+    const closes=q.close||[],highs=q.high||[],lows=q.low||[],vols=q.volume||[];
+    const out=[];
+    for(let i=0;i<closes.length;i++){
+      if(closes[i]!=null)out.push({c:closes[i],h:highs[i]||closes[i],l:lows[i]||closes[i],v:vols[i]||0,o:closes[i]});
+    }
+    return out;
+  }
+  return Promise.all([fetchInterval("15m","5d"),fetchInterval("60m","1mo")]);
+}
+
+// ════════════════════════════════════════════════
+// METRICS — COMPUTE & RENDER
+// ════════════════════════════════════════════════
+function renderMetrics(id,panel,c15,c1h){
+  const N=c15.length;
+  if(N<30){panel.innerHTML='<div style="padding:10px;color:#69748a;font-size:10px">Dados insuficientes para cálculo.</div>';return;}
+  const closes15=c15.map(x=>x.c),lows15=c15.map(x=>x.l);
+  const e9=mEma(closes15,9),e21=mEma(closes15,21),e50=mEma(closes15,50),ham=mHamming(closes15,10);
+  const ci=N-2,live=closes15[N-1];
+  const closes1h=c1h.map(x=>x.c);
+  const e21h=mEma(closes1h,21),e50h=mEma(closes1h,50),last1h=closes1h.length-1;
+  const win=lows15.slice(Math.max(0,ci-12),ci);
+  const structLow=Math.min(...win);
+  const reclaim=e21[ci],partial=Math.min(e9[ci],ham[ci]??e9[ci]),lastC=closes15[ci];
+
+  let zone,beaconC,label,sub;
+  if(lastC<structLow){
+    zone="INVAL";beaconC="#ea3943";label="BAIXA / SHORT";
+    sub=`Fechamento 15m ${f2m(lastC)} abaixo do suporte ${f2m(structLow)}. Próximo: EMA50 1h ${f2m(e50h[last1h])}.`;
+  }else if(lastC>reclaim){
+    zone="CONF";beaconC="#16c784";label="COMPRA CONFIRMADA";
+    sub=`Fechamento 15m ${f2m(lastC)} acima da EMA21 (${f2m(reclaim)}). Reclaim confirmado — gatilho ativo.`;
+  }else if(lastC>partial){
+    zone="PART";beaconC="#f0b90b";label="PARCIAL — AGUARDAR";
+    sub=`Recuperou EMA9/Hamming (${f2m(partial)}) mas abaixo da EMA21 (${f2m(reclaim)}). Aguarde confirmação.`;
+  }else{
+    zone="WAIT";beaconC="#555";label="AGUARDAR";
+    sub=`Preço abaixo das médias. Confirmação acima de ${f2m(reclaim)}.`;
+  }
+
+  const slope6=e21h[last1h]-e21h[Math.max(0,last1h-6)];
+  const pct6=slope6/(e21h[Math.max(0,last1h-6)]||1)*100;
+  let rg,rgC;
+  if(pct6<-0.6){rg="TENDÊNCIA DE BAIXA — Gate 1 ativo";rgC="#ea3943";}
+  else if(pct6>0.6){rg="TENDÊNCIA DE ALTA — long válido";rgC="#16c784";}
+  else{rg="LATERAL — reversão à média válida";rgC="#f0b90b";}
+
+  const l24=c1h.slice(-24);let bv=0,sv=0;
+  l24.forEach(x=>{x.c>=x.o?bv+=x.v:sv+=x.v;});
+  const tot=bv+sv||1,bp=Math.round(100*bv/tot),sp=100-bp;
+
+  const rungs=[
+    {lbl:"EMA21 15m (resistência)",val:reclaim,c:"#FF9800"},
+    {lbl:"EMA9/Hamming 15m",val:partial,c:"#8b8bf0"},
+    {lbl:"PREÇO AO VIVO",val:live,c:"#3dd6f5"},
+    {lbl:"Suporte estrutural",val:structLow,c:"#ea3943"},
+    {lbl:"EMA50 1h (suporte forte)",val:e50h[last1h],c:"#16c784"},
+  ].sort((a,b)=>b.val-a.val);
+  const vals=rungs.map(r=>r.val),hi=Math.max(...vals),lo=Math.min(...vals),rng=(hi-lo)||1;
+  const ladderHtml=rungs.map(r=>{
+    const pos=((r.val-lo)/rng*100).toFixed(1);
+    return`<div class="mRung"><span class="mRlbl">${r.lbl}</span><div class="mRbar"><i style="left:${pos}%;background:${r.c}"></i></div><span class="mRval" style="color:${r.c}">${f2m(r.val)}</span></div>`;
+  }).join("");
+
+  // Atualiza badge de sinal
+  const sigBtn=document.getElementById("sigb-"+id);
+  if(sigBtn){
+    const sc2=zone==="CONF"?SIG.LONG:zone==="INVAL"?SIG.SHORT:SIG.AGUARDAR;
+    const lblMap={CONF:"COMPRA",INVAL:"SHORT",PART:"PARCIAL",WAIT:"AGUARDAR"};
+    sigBtn.textContent=lblMap[zone]||"AGUARDAR";
+    sigBtn.style.color=sc2.color;sigBtn.style.background=sc2.bg;sigBtn.style.borderColor=sc2.bd;
+  }
+
+  panel.innerHTML=`
+<div class="mBeacon">
+  <div class="mLight" style="background:${beaconC};box-shadow:0 0 0 6px ${beaconC}22,0 0 20px ${beaconC}55"></div>
+  <div>
+    <div style="font-size:13px;font-weight:800;color:${beaconC};letter-spacing:.3px">${label}</div>
+    <div style="font-size:10px;color:#69748a;margin-top:4px;line-height:1.5">${sub}</div>
+  </div>
+</div>
+<div class="mGrid">
+  <div class="mCard">
+    <div class="mCardH">Escada de Níveis</div>
+    ${ladderHtml}
+  </div>
+  <div class="mCard">
+    <div class="mCardH">Médias Móveis · Ao Vivo</div>
+    <table class="mMA">
+      <tr><td>Preço ao vivo</td><td style="color:#3dd6f5">${f2m(live)}</td></tr>
+      <tr><td>EMA 9 · 15m</td><td>${f2m(e9[N-1])}</td></tr>
+      <tr><td>Hamming 10 · 15m</td><td>${f2m(ham[N-1])}</td></tr>
+      <tr><td>EMA 21 · 15m</td><td>${f2m(e21[N-1])}</td></tr>
+      <tr><td>EMA 50 · 15m</td><td>${f2m(e50[N-1])}</td></tr>
+      <tr><td>EMA 21 · 1h</td><td>${f2m(e21h[last1h])}</td></tr>
+      <tr><td>EMA 50 · 1h</td><td style="color:#16c784">${f2m(e50h[last1h])}</td></tr>
+    </table>
+    <div class="mCardH" style="margin-top:9px">Pressão Compradores · 24h</div>
+    <div class="mPress">
+      <div class="mPBuy" style="width:${bp}%">${bp}%</div>
+      <div class="mPSell">${sp}%</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#69748a;margin-top:4px">
+      <span style="color:${bp>=sp?"#16c784":"#ea3943"}">${bp>=sp?"comprador no controle":"vendedor domina"}</span>
+      <span>C ${bp}% · V ${sp}%</span>
+    </div>
+    <div class="mCardH" style="margin-top:9px">Regime (Gate 1)</div>
+    <div style="font-size:11px;font-weight:700;color:${rgC}">${rg}</div>
+    <div style="font-size:9px;color:#69748a;margin-top:3px">EMA21·1h slope ${pct6>=0?"+":""}${pct6.toFixed(2)}% · 6 barras</div>
+  </div>
+</div>`;
+}
+
+// ════════════════════════════════════════════════
+// METRICS — OPEN / TOGGLE
+// ════════════════════════════════════════════════
+const mLoaded={};
+async function openMetrics(id){
+  const panel=document.getElementById("mPanel-"+id);
+  if(!panel)return;
+  const isOpen=panel.classList.contains("open");
+  if(isOpen){panel.classList.remove("open");return;}
+  panel.classList.add("open");
+  if(mLoaded[id])return; // já renderizado — só exibe
+  panel.innerHTML='<div class="mLoader"><span class="pul" style="color:#69748a;font-size:10px">⟳ Calculando métricas ao vivo...</span></div>';
+  try{
+    const cryptoCfg=CRYPTO_CFG.find(c=>c.id===id);
+    let c15,c1h;
+    if(cryptoCfg){
+      [c15,c1h]=await fetchBybitCandles(cryptoCfg.bybitSym);
+    }else{
+      const stockCfg=STOCK_CFG.find(c=>c.id===id);
+      [c15,c1h]=await fetchYFIntraday(stockCfg.sym);
+    }
+    renderMetrics(id,panel,c15,c1h);
+    mLoaded[id]=true;
+  }catch(e){
+    panel.innerHTML=`<div style="padding:10px;color:#ea3943;font-size:10px">⚠ Erro: ${e.message}</div>`;
+  }
+}
+
+// ════════════════════════════════════════════════
 // BUILD CARD
 // ════════════════════════════════════════════════
 function buildCard(id, name, catLabel, catColor, price, chg, high24, low24, volRaw, closes, stat) {
@@ -430,7 +664,7 @@ function buildCard(id, name, catLabel, catColor, price, chg, high24, low24, volR
   </div>
   <div class="sep sigr">
     <div style="display:flex;align-items:center">
-      <span class="sigb" style="color:${sc.color};background:${sc.bg};border-color:${sc.bd}">${stat.signal}</span>
+      <button class="sigb" id="sigb-${id}" onclick="openMetrics('${id}')" title="Ver métricas ao vivo" style="color:${sc.color};background:${sc.bg};border-color:${sc.bd}">${stat.signal}</button>
       <span style="font-size:8px;color:${sc.color};opacity:.8;margin-left:5px">${stat.signalStrength}</span>
     </div>
     <div style="display:flex;align-items:center;gap:3px">
@@ -439,6 +673,7 @@ function buildCard(id, name, catLabel, catColor, price, chg, high24, low24, volR
       <span style="font-size:7px;color:${C.gold}">${stat.structural}/5</span>
     </div>
   </div>
+  <div class="mPanel" id="mPanel-${id}"></div>
   <button class="bbtn" id="btn-${id}" onclick="toggleB('${id}')">▼ Ver Briefing Completo</button>
   <div class="brief" id="brief-${id}">
     <div><div class="bsh"><span>🏛</span><span class="bslbl" style="color:${C.gold}">Governança &amp; Estrutura de Valor</span></div><p class="bsbdy">${stat.structural_note}</p></div>
@@ -467,7 +702,7 @@ function updateCd() {
   const m  = Math.floor(countdown/60), s = countdown % 60;
   const pct = ((300 - countdown) / 300 * 100).toFixed(1);
   el.innerHTML = `
-    <div style="font-size:8px;color:var(--txt2);text-align:right">Próx. refresh: <span style="color:${C.gold}">${m}:${String(s).padStart(2,"00")}</span></div>
+    <div style="font-size:8px;color:var(--txt2);text-align:right">Próx. refresh: <span style="color:${C.gold}">${m}:${String(s).padStart(2,"0")}</span></div>
     <div class="cdbg"><div class="cdfg" style="width:${pct}%"></div></div>`;
 }
 
@@ -599,7 +834,7 @@ async function fetchAll() {
 
   } catch(e) {
     console.error("fetchAll falhou:", e);
-    setStatus("✗ Falha ao carregar — Brave: desative Shields (🦁) para este site. Retry em 60s.", "err");
+    setStatus("✗ Falha ao carregar — Brave/Firefox: desative Shields para este site (🦁 → desativar). Retry em 60s.", "err");
     countdown = 60;
   }
 }
