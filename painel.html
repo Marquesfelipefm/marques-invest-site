@@ -664,7 +664,7 @@ function renderModal(id,container,c15,c1h,st){
   const e21h=mEma(closes1h,21),e50h=mEma(closes1h,50),last1h=closes1h.length-1;
   const win=lows15.slice(Math.max(0,ci-12),ci);
   const structLow=Math.min(...win);
-  const reclaim=e21[ci],partial=Math.min(E9[ci],ham[ci]??e9[ci]),lastC=closes15[ci];
+  const reclaim=e21[ci],partial=Math.min(e9[ci],ham[ci]??e9[ci]),lastC=closes15[ci];
 
   let zone,beaconC,label,sub;
   if(lastC<structLow){
