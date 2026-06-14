@@ -768,7 +768,8 @@ function renderModal(id,container,c15,c1h,st){
 
 // ════════════════════════════════════════════════
 // BUILD CARD
-// ════════════════════════════════════════════════function buildCard(id, name, catLabel, catColor, price, chg, high24, low24, volRaw, closes, stat) {
+// ════════════════════════════════════════════════
+function buildCard(id, name, catLabel, catColor, price, chg, high24, low24, volRaw, closes, stat) {
   const cc  = chg >= 0 ? C.g : C.r;
   const rsi = calcRSI(closes);
   const sr  = srFromCloses(closes);
