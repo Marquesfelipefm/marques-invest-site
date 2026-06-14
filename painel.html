@@ -80,7 +80,33 @@
   .mPBuy{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:#16c784;color:#06120a;min-width:28px}
   .mPSell{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:#ea3943;color:#1a0608;flex:1;min-width:28px}
   @media(max-width:500px){.mGrid{grid-template-columns:1fr}}
-</style>
+#ativo-modal{display:none;position:fixed;inset:0;background:rgba(4,10,18,.93);z-index:9000;overflow-y:auto;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#ativo-modal.open{display:flex;align-items:flex-start;justify-content:center;padding:18px 12px 40px}
+.mo-box{background:#0b1622;border:1px solid #1c2533;border-radius:14px;width:100%;max-width:1100px;animation:moSlide .22s ease}
+@keyframes moSlide{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:none}}
+.mo-hdr{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid #1c2533;flex-wrap:wrap}
+.mo-close{background:none;border:none;color:#697489;font-size:18px;cursor:pointer;padding:4px 10px;margin-left:auto;border-radius:6px;transition:background .15s}
+.mo-close:hover{background:#1c2533;color:#e8ecf0}
+.mo-nm{font-weight:700;font-size:15px;color:#e8ecf0}
+.mo-lb{font-size:9px;color:#697489;letter-spacing:.08em;text-transform:uppercase}
+.mo-pr{font-family:ui-monospace,'SF Mono',monospace;font-size:20px;font-weight:700;color:#3dd6f5;margin-left:6px}
+.mo-cg{font-size:12px;margin-left:4px}
+.mo-body{padding:18px 18px 24px}
+.mo-tr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
+.mo-c{background:#060f19;border:1px solid #1c2533;border-radius:8px;padding:14px}
+.mo-c h5{font-size:8px;letter-spacing:1.4px;color:#697489;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:.5px solid #1c2533;text-transform:uppercase}
+.mo-br{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.mo-bc{background:#060f19;border:1px solid #1c2533;border-radius:8px;padding:14px}
+.mo-bc h5{font-size:8px;letter-spacing:1.2px;color:#697489;font-weight:700;margin-bottom:7px;padding-bottom:5px;border-bottom:.5px solid #1c2533;text-transform:uppercase}
+.mo-bc p{font-size:11px;color:#b0bac8;line-height:1.65;margin:0}
+.mo-mac{background:#060f19;border:1px solid #1c2533;border-radius:8px;padding:14px}
+.mo-mac h5{font-size:8px;letter-spacing:1.2px;color:#697489;font-weight:700;margin-bottom:6px;text-transform:uppercase}
+.mo-mac p{font-size:11px;color:#b0bac8;line-height:1.65;margin:0}
+.mo-ld{padding:40px;text-align:center;color:#697489;font-size:11px}
+.mo-bea{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#060f19;border:1px solid #1c2533;border-radius:8px;margin-bottom:16px}
+.mo-blt{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
+@media(max-width:700px){.mo-tr{grid-template-columns:1fr}.mo-br{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.mo-br{grid-template-columns:1fr}}</style>
 </head>
 <body>
 
@@ -577,34 +603,172 @@ function renderMetrics(id,panel,c15,c1h){
 // METRICS — OPEN / TOGGLE
 // ════════════════════════════════════════════════
 const mLoaded={};
+
 async function openMetrics(id){
-  const panel=document.getElementById("mPanel-"+id);
-  if(!panel)return;
-  const isOpen=panel.classList.contains("open");
-  if(isOpen){panel.classList.remove("open");return;}
-  panel.classList.add("open");
-  if(mLoaded[id])return; // já renderizado — só exibe
-  panel.innerHTML='<div class="mLoader"><span class="pul" style="color:#69748a;font-size:10px">⟳ Calculando métricas ao vivo...</span></div>';
-  try{
-    const cryptoCfg=CRYPTO_CFG.find(c=>c.id===id);
-    let c15,c1h;
-    if(cryptoCfg){
-      [c15,c1h]=await fetchBybitCandles(cryptoCfg.bybitSym);
-    }else{
-      const stockCfg=STOCK_CFG.find(c=>c.id===id);
-      [c15,c1h]=await fetchYFIntraday(stockCfg.sym);
-    }
-    renderMetrics(id,panel,c15,c1h);
-    mLoaded[id]=true;
-  }catch(e){
-    panel.innerHTML=`<div style="padding:10px;color:#ea3943;font-size:10px">⚠ Erro: ${e.message}</div>`;
+  const modal=document.getElementById("ativo-modal");
+  const cryptoCfg=CRYPTO_CFG.find(c=>c.id===id);
+  const stockCfg=STOCK_CFG.find(c=>c.id===id);
+  const cfg=cryptoCfg||stockCfg;
+  if(!cfg)return;
+
+  // Preencher header
+  document.getElementById("mo-dot").style.background=cfg.color;
+  document.getElementById("mo-nm").textContent=cfg.name;
+  document.getElementById("mo-lb").textContent=(cfg.lbl||"").toUpperCase();
+  const st=ST.assets[id]||{};
+  const sc=SIG[st.signal]||SIG.AGUARDAR;
+  document.getElementById("mo-sig").innerHTML=
+    `<span style="font-size:10px;font-weight:700;color:${sc.color};background:${sc.bg};border:1px solid ${sc.bd};padding:3px 10px;border-radius:5px">${st.signal||"AGUARDAR"}</span>`;
+
+  // Abrir modal com loading
+  const moBody=document.getElementById("mo-body");
+  moBody.innerHTML='<div class="mo-ld">⟳ Calculando métricas ao vivo...</div>';
+  modal.classList.add("open");
+  document.body.style.overflow="hidden";
+  modal.onclick=e=>{if(e.target===modal)closeModal();};
+  document.onkeydown=e=>{if(e.key==="Escape")closeModal();};
+
+  // Se já carregado, só rerenderiza
+  if(mLoaded[id]){
+    const{c15,c1h}=mLoaded[id];
+    document.getElementById("mo-pr").textContent=f2m(c15[c15.length-1]?.c);
+    renderModal(id,moBody,c15,c1h,st);
+    return;
   }
+
+  try{
+    let c15,c1h;
+    if(cryptoCfg){[c15,c1h]=await fetchBybitCandles(cryptoCfg.bybitSym);}
+    else{[c15,c1h]=await fetchYFIntraday(stockCfg.sym);}
+    mLoaded[id]={c15,c1h};
+    document.getElementById("mo-pr").textContent=f2m(c15[c15.length-1]?.c);
+    renderModal(id,moBody,c15,c1h,st);
+  }catch(e){
+    moBody.innerHTML=`<div class="mo-ld" style="color:#ea3943">⚠ Erro ao carregar: ${e.message}</div>`;
+  }
+}
+
+function closeModal(){
+  document.getElementById("ativo-modal").classList.remove("open");
+  document.body.style.overflow="";
+  document.onkeydown=null;
+}
+
+function renderModal(id,container,c15,c1h,st){
+  const N=c15.length;
+  if(N<30){container.innerHTML='<div class="mo-ld">Dados insuficientes para cálculo.</div>';return;}
+  const closes15=c15.map(x=>x.c),lows15=c15.map(x=>x.l);
+  const e9=mEma(closes15,9),e21=mEma(closes15,21),e50=mEma(closes15,50),ham=mHamming(closes15,10);
+  const ci=N-2,live=closes15[N-1];
+  const closes1h=c1h.map(x=>x.c);
+  const e21h=mEma(closes1h,21),e50h=mEma(closes1h,50),last1h=closes1h.length-1;
+  const win=lows15.slice(Math.max(0,ci-12),ci);
+  const structLow=Math.min(...win);
+  const reclaim=e21[ci],partial=Math.min(E9[ci],ham[ci]??e9[ci]),lastC=closes15[ci];
+
+  let zone,beaconC,label,sub;
+  if(lastC<structLow){
+    zone="INVAL";beaconC="#ea3943";label="BAIXA / SHORT";
+    sub=`Fechamento 15m ${f2m(lastC)} abaixo do suporte estrutural ${f2m(structLow)}. Próximo suporte: EMA50·1h ${f2m(e50h[last1h])}.`;
+  }else if(lastC>reclaim){
+    zone="CONF";beaconC="#16c784";label="COMPRA CONFIRMADA";
+    sub=`Fechamento 15m ${f2m(lastC)} acima da EMA21 (${f2m(reclaim)}). Reclaim confirmado — gatilho de entrada ativo.`;
+  }else if(lastC>partial){
+    zone="PART";beaconC="#f0b90b";label="PARCIAL — AGUARDAR";
+    sub=`Recuperou EMA9/Hamming (${f2m(partial)}) mas abaixo da EMA21 (${f2m(reclaim)}). Aguarde fechamento acima.`;
+  }else{
+    zone="WAIT";beaconC="#555";label="AGUARDAR";
+    sub=`Preço abaixo das médias-chave. Confirmação acima de ${f2m(reclaim)} (EMA21·15m).`;
+  }
+
+  // Atualiza sinal no botão do card
+  const sigBtn=document.getElementById("sigb-"+id);
+  if(sigBtn){
+    const sc2=zone==="CONF"?SIG.LONG:zone==="INVAL"?SIG.SHORT:SIG.AGUARDAR;
+    const lblMap={CONF:"COMPRA",INVAL:"SHORT",PART:"PARCIAL",WAIT:"AGUARDAR"};
+    sigBtn.textContent=lblMap[zone]||"AGUARDAR";
+    sigBtn.style.color=sc2.color;sigBtn.style.background=sc2.bg;sigBtn.style.borderColor=sc2.bd;
+  }
+
+  // Regime Gate 1
+  const slope6=e21h[last1h]-e21h[Math.max(0,last1h-6)];
+  const pct6=slope6/(e21h[Math.max(0,last1h-6)]||1)*100;
+  let rg,rgC;
+  if(pct6<-0.6){rg="TENDÊNCIA DE BAIXA — Gate 1 ativo";rgC="#ea3943";}
+  else if(pct6>0.6){rg="TENDÊNCIA DE ALTA — long válido";rgC="#16c784";}
+  else{rg="LATERAL — reversão à média válida";rgC="#f0b90b";}
+
+  // Pressão
+  const l24=c1h.slice(-24);let bv=0,sv=0;
+  l24.forEach(x=>{x.c>=x.o?bv+=x.v:sv+=x.v;});
+  const tot=bv+sv||1,bp=Math.round(100*bv/tot),sp=100-bp;
+
+  // Escada de níveis
+  const rungs=[
+    {lbl:"EMA21 · 15m (resistência)",val:reclaim,c:"#FF9800"},
+    {lbl:"EMA9 / Hamming · 15m",val:partial,c:"#8b8bf0"},
+    {lbl:"PREÇO AO VIVO",val:live,c:"#3dd6f5"},
+    {lbl:"Suporte estrutural",val:structLow,c:"#ea3943"},
+    {lbl:"EMA50 · 1h (suporte forte)",val:e50h[last1h],c:"#16c784"},
+  ].sort((a,b)=>b.val-a.val);
+  const vals=rungs.map(r=>r.val),hi=Math.max(...vals),lo=Math.min(...vals),rng=(hi-lo)||1;
+  const ladderHtml=rungs.map(r=>{
+    const pos=((r.val-lo)/rng*100).toFixed(1);
+    return`<div class="mRung"><span class="mRlbl">${r.lbl}</span><div class="mRbar"><i style="left:${pos}%;background:${r.c}"></i></div><span class="mRval" style="color:${r.c}">${f2m(r.val)}</span></div>`;
+  }).join("");
+
+  // Briefing notes
+  const bn=st||{};
+  const briefHtml=`
+<div class="mo-bc"><h5>🏛 Governança &amp; Estrutura</h5><p>${bn.structural_note||"—"}</p></div>
+<div class="mo-bc"><h5>🌐 Cenário Macro</h5><p>${bn.macro_note||"—"}</p></div>
+<div class="mo-bc"><h5>📊 Análise Técnica</h5><p>${bn.tech_note||"—"}</p></div>
+<div class="mo-bc"><h5>🏄 Setup Swing Trade</h5><p>${bn.swing_note||"—"}</p></div>`;
+
+  container.innerHTML=`
+<div class="mo-bea">
+  <div class="mo-blt" style="background:${beaconC};box-shadow:0 0 0 5px ${beaconC}22,0 0 16px ${beaconC}44"></div>
+  <div>
+    <div style="font-size:13px;font-weight:800;color:${beaconC};letter-spacing:.3px">${label}</div>
+    <div style="font-size:10.5px;color:#697489;margin-top:4px;line-height:1.55">${sub}</div>
+  </div>
+</div>
+<div class="mo-tr">
+  <div class="mo-c"><h5>Escada de Níveis</h5>${ladderHtml}</div>
+  <div class="mo-c"><h5>Médias Móveis · Ao Vivo</h5>
+    <table class="mMA">
+      <tr><td>Preço ao vivo</td><td style="color:#3dd6f5">${f2m(live)}</td></tr>
+      <tr><td>EMA 9 · 15m</td><td>${f2m(e9[N-1])}</td></tr>
+      <tr><td>Hamming 10 · 15m</td><td>${f2m(ham[N-1])}</td></tr>
+      <tr><td>EMA 21 · 15m</td><td>${f2m(e21[N-1])}</td></tr>
+      <tr><td>EMA 50 · 15m</td><td>${f2m(e50[N-1])}</td></tr>
+      <tr><td>EMA 21 · 1h</td><td>${f2m(e21h[last1h])}</td></tr>
+      <tr><td>EMA 50 · 1h</td><td style="color:#16c784">${f2m(e50h[last1h])}</td></tr>
+    </table>
+  </div>
+  <div class="mo-c"><h5>Mercado</h5>
+    <div style="font-size:9px;color:#697489;font-weight:600;letter-spacing:.08em;margin-bottom:6px">PRESSÃO COMPRADORES · 24H</div>
+    <div class="mPress"><div class="mPBuy" style="width:${bp}%">${bp}%</div><div class="mPSell">${sp}%</div></div>
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#69748a;margin-top:4px;margin-bottom:12px">
+      <span style="color:${bp>=sp?"#16c784":"#ea3943"}">${bp>=sp?"comprador no controle":"vendedor domina"}</span>
+      <span>C ${bp}% · V ${sp}%</span>
+    </div>
+    <div style="font-size:9px;color:#697489;font-weight:600;letter-spacing:.08em;margin-bottom:6px">REGIME (GATE 1 · EMA21·1H)</div>
+    <div style="font-size:11px;font-weight:700;color:${rgC}">${rg}</div>
+    <div style="font-size:9px;color:#69748a;margin-top:3px">slope ${pct6>=0?"+":""}${pct6.toFixed(2)}% · 6 barras</div>
+  </div>
+</div>
+<div class="mo-br">${briefHtml}</div>
+<div class="mo-mac">
+  <h5>📅 Contexto Macro</h5>
+  <p><strong style="color:#f0b90b">${ST.macro.fedEvent||""}</strong>${ST.macro.headline?" · "+ST.macro.headline:""}</p>
+  <p style="margin-top:6px">Fear &amp; Greed: <strong style="color:#3dd6f5">${ST.macro.fearGreed} · ${ST.macro.fearGreedLabel||""}</strong></p>
+</div>`;
 }
 
 // ════════════════════════════════════════════════
 // BUILD CARD
-// ════════════════════════════════════════════════
-function buildCard(id, name, catLabel, catColor, price, chg, high24, low24, volRaw, closes, stat) {
+// ════════════════════════════════════════════════function buildCard(id, name, catLabel, catColor, price, chg, high24, low24, volRaw, closes, stat) {
   const cc  = chg >= 0 ? C.g : C.r;
   const rsi = calcRSI(closes);
   const sr  = srFromCloses(closes);
@@ -851,5 +1015,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 1000);
 });
 </script>
-</body>
+<!-- ═══ MODAL OVERLAY ═══ -->
+<div id="ativo-modal">
+  <div class="mo-box">
+    <div class="mo-hdr">
+      <div style="width:10px;height:10px;border-radius:50%;flex-shrink:0" id="mo-dot"></div>
+      <div><div class="mo-nm" id="mo-nm">—</div><div class="mo-lb" id="mo-lb"></div></div>
+      <span class="mo-pr" id="mo-pr">—</span>
+      <span class="mo-cg" id="mo-cg"></span>
+      <div id="mo-sig" style="margin-left:6px"></div>
+      <button class="mo-close" onclick="closeModal()" title="Fechar (Esc)">✕</button>
+    </div>
+    <div class="mo-body" id="mo-body">
+      <div class="mo-ld">⟳ Calculando métricas ao vivo...</div>
+    </div>
+  </div>
+</div></body>
 </html>
