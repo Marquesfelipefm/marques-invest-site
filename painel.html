@@ -106,7 +106,18 @@
 .mo-bea{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#060f19;border:1px solid #1c2533;border-radius:8px;margin-bottom:16px}
 .mo-blt{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
 @media(max-width:700px){.mo-tr{grid-template-columns:1fr}.mo-br{grid-template-columns:1fr 1fr}}
-@media(max-width:420px){.mo-br{grid-template-columns:1fr}}</style>
+@media(max-width:420px){.mo-br{grid-template-columns:1fr}}
+.mo-sw{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
+.mo-swc{background:#060f19;border:1px solid #1c2533;border-radius:8px;padding:14px}
+.mo-swc h5{font-size:8px;letter-spacing:1.4px;color:#697489;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:.5px solid #1c2533;text-transform:uppercase}
+.mSZ{display:inline-block;padding:3px 9px;border-radius:4px;font-size:10px;font-weight:700;margin-bottom:8px}
+.mFR{display:flex;align-items:center;gap:6px;padding:4px 2px;border-bottom:.5px solid #131926}
+.mFR:last-child{border-bottom:none}
+.mFR.mFC{background:#3dd6f511;border-radius:4px;border:.5px solid #3dd6f533;margin:1px 0}
+.mFL{width:58px;color:#697489;font-size:9px;flex-shrink:0}
+.mFV{flex:1;font-weight:600;font-size:10px;font-family:ui-monospace,'SF Mono',monospace}
+.mFD{font-size:9px;text-align:right;min-width:46px}
+@media(max-width:700px){.mo-sw{grid-template-columns:1fr}}</style>
 </head>
 <body>
 
@@ -448,6 +459,59 @@ function f2m(x){
   if(n<1)return"$"+n.toFixed(4);if(n<100)return"$"+n.toFixed(2);
   return"$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
 
+function mRsiArr(closes,n=14){
+  const g=[],l=[];
+  for(let i=1;i<closes.length;i++){const d=closes[i]-closes[i-1];g.push(d>0?d:0);l.push(d<0?-d:0);}
+  let ag=g.slice(0,n).reduce((a,b)=>a+b,0)/n,al=l.slice(0,n).reduce((a,b)=>a+b,0)/n;
+  const rsi=[al===0?100:100-100/(1+ag/al)];
+  for(let i=n;i<g.length;i++){ag=(ag*(n-1)+g[i])/n;al=(al*(n-1)+l[i])/n;rsi.push(al===0?100:100-100/(1+ag/al));}
+  return rsi;
+}
+function mStoch(closes,highs,lows,k=14,sm=3,d=3){
+  const rawK=[];
+  for(let i=k-1;i<closes.length;i++){
+    const hh=Math.max(...highs.slice(i-k+1,i+1)),ll=Math.min(...lows.slice(i-k+1,i+1));
+    rawK.push(hh===ll?50:(closes[i]-ll)/(hh-ll)*100);
+  }
+  const sma=(a,n)=>{const o=[];for(let i=n-1;i<a.length;i++)o.push(a.slice(i-n+1,i+1).reduce((x,y)=>x+y,0)/n);return o;};
+  const smK=sma(rawK,sm),smD=sma(smK,d);
+  return{K:smK[smK.length-1]??50,D:smD[smD.length-1]??50};
+}
+function mPivots(arr,left=3,right=3){
+  const hs=[],ls=[];
+  for(let i=left;i<arr.length-right;i++){
+    const sl=arr.slice(i-left,i+right+1),v=arr[i];
+    if(v===Math.max(...sl))hs.push({i,v});
+    if(v===Math.min(...sl))ls.push({i,v});
+  }
+  return{hs,ls};
+}
+function mDivergence(closes,rsiArr,left=3,right=3){
+  const off=closes.length-rsiArr.length,ac=closes.slice(off);
+  const{hs,ls}=mPivots(ac,left,right);
+  if(hs.length>=2){
+    const[p1,p2]=hs.slice(-2),r1=rsiArr[p1.i]??50,r2=rsiArr[p2.i]??50;
+    if(p2.v>p1.v&&r2<r1-2)return{type:'bearish',label:'🔴 Bearish Divergência',desc:`Preço topo mais alto (${f2m(p1.v)}→${f2m(p2.v)}) mas RSI caiu (${r1.toFixed(0)}→${r2.toFixed(0)}). Exaustão comprador.`};
+  }
+  if(ls.length>=2){
+    const[p1,p2]=ls.slice(-2),r1=rsiArr[p1.i]??50,r2=rsiArr[p2.i]??50;
+    if(p2.v<p1.v&&r2>r1+2)return{type:'bullish',label:'🟢 Bullish Divergência',desc:`Preço fundo mais baixo (${f2m(p1.v)}→${f2m(p2.v)}) mas RSI subiu (${r1.toFixed(0)}→${r2.toFixed(0)}). Fraqueza vendedor.`};
+  }
+  return{type:'neutral',label:'🟡 Neutro',desc:'Sem divergência detectada nos últimos swings.'};
+}
+function mFibLevels(high,low,price){
+  const rg=high-low;
+  return[
+    {lbl:'Topo',val:high},
+    {lbl:'78.6%',val:high-0.214*rg},
+    {lbl:'61.8%',val:high-0.382*rg},
+    {lbl:'50%',val:high-0.5*rg},
+    {lbl:'38.2%',val:high-0.618*rg},
+    {lbl:'23.6%',val:high-0.764*rg},
+    {lbl:'Fundo',val:low},
+  ].map(f=>({...f,dist:((price-f.val)/(f.val||1)*100)}));
+}
+
 // ════════════════════════════════════════════════
 // METRICS — FETCH: Bybit (crypto) + Binance fallback
 // ════════════════════════════════════════════════
@@ -657,7 +721,7 @@ function closeModal(){
 function renderModal(id,container,c15,c1h,st){
   const N=c15.length;
   if(N<30){container.innerHTML='<div class="mo-ld">Dados insuficientes para cálculo.</div>';return;}
-  const closes15=c15.map(x=>x.c),lows15=c15.map(x=>x.l);
+  const closes15=c15.map(x=>x.c),lows15=c15.map(x=>x.l),highs15=c15.map(x=>x.h);
   const e9=mEma(closes15,9),e21=mEma(closes15,21),e50=mEma(closes15,50),ham=mHamming(closes15,10);
   const ci=N-2,live=closes15[N-1];
   const closes1h=c1h.map(x=>x.c);
@@ -681,7 +745,6 @@ function renderModal(id,container,c15,c1h,st){
     sub=`Preço abaixo das médias-chave. Confirmação acima de ${f2m(reclaim)} (EMA21·15m).`;
   }
 
-  // Atualiza sinal no botão do card
   const sigBtn=document.getElementById("sigb-"+id);
   if(sigBtn){
     const sc2=zone==="CONF"?SIG.LONG:zone==="INVAL"?SIG.SHORT:SIG.AGUARDAR;
@@ -690,7 +753,6 @@ function renderModal(id,container,c15,c1h,st){
     sigBtn.style.color=sc2.color;sigBtn.style.background=sc2.bg;sigBtn.style.borderColor=sc2.bd;
   }
 
-  // Regime Gate 1
   const slope6=e21h[last1h]-e21h[Math.max(0,last1h-6)];
   const pct6=slope6/(e21h[Math.max(0,last1h-6)]||1)*100;
   let rg,rgC;
@@ -698,12 +760,10 @@ function renderModal(id,container,c15,c1h,st){
   else if(pct6>0.6){rg="TENDÊNCIA DE ALTA — long válido";rgC="#16c784";}
   else{rg="LATERAL — reversão à média válida";rgC="#f0b90b";}
 
-  // Pressão
   const l24=c1h.slice(-24);let bv=0,sv=0;
   l24.forEach(x=>{x.c>=x.o?bv+=x.v:sv+=x.v;});
   const tot=bv+sv||1,bp=Math.round(100*bv/tot),sp=100-bp;
 
-  // Escada de níveis
   const rungs=[
     {lbl:"EMA21 · 15m (resistência)",val:reclaim,c:"#FF9800"},
     {lbl:"EMA9 / Hamming · 15m",val:partial,c:"#8b8bf0"},
@@ -711,13 +771,38 @@ function renderModal(id,container,c15,c1h,st){
     {lbl:"Suporte estrutural",val:structLow,c:"#ea3943"},
     {lbl:"EMA50 · 1h (suporte forte)",val:e50h[last1h],c:"#16c784"},
   ].sort((a,b)=>b.val-a.val);
-  const vals=rungs.map(r=>r.val),hi=Math.max(...vals),lo=Math.min(...vals),rng=(hi-lo)||1;
+  const vals=rungs.map(r=>r.val),hi=Math.max(...vals),lo=Math.min(...vals),rngg=(hi-lo)||1;
   const ladderHtml=rungs.map(r=>{
-    const pos=((r.val-lo)/rng*100).toFixed(1);
+    const pos=((r.val-lo)/rngg*100).toFixed(1);
     return`<div class="mRung"><span class="mRlbl">${r.lbl}</span><div class="mRbar"><i style="left:${pos}%;background:${r.c}"></i></div><span class="mRval" style="color:${r.c}">${f2m(r.val)}</span></div>`;
   }).join("");
 
-  // Briefing notes
+  // SWINGS INTERMEDIÁRIOS
+  const rsiArr=mRsiArr(closes15,14);
+  const stoch=mStoch(closes15,highs15,lows15,14,3,3);
+  const K=stoch.K,D=stoch.D;
+  let stZone,stZoneC,stZoneBg;
+  if(K>80){stZone="SOBRECOMPRADO";stZoneC="#ea3943";stZoneBg="#ea394322";}
+  else if(K<20){stZone="SOBREVENDIDO";stZoneC="#16c784";stZoneBg="#16c78422";}
+  else{stZone="NEUTRO";stZoneC="#697489";stZoneBg="#69748922";}
+  const stochHtml=`<div class="mSZ" style="color:${stZoneC};background:${stZoneBg}">${stZone}</div>
+<table class="mMA"><tr><td>%K (rápida)</td><td style="color:${stZoneC};font-weight:700">${K.toFixed(1)}</td></tr><tr><td>%D (signal)</td><td>${D.toFixed(1)}</td></tr><tr><td>Tendência %K vs %D</td><td style="color:#8b8bf0">${K>D?"↑ K acima":"↓ K abaixo"}</td></tr></table>`;
+
+  const div=mDivergence(closes15,rsiArr,3,3);
+  const divC=div.type==='bearish'?"#ea3943":div.type==='bullish'?"#16c784":"#697489";
+  const divHtml=`<div style="font-size:13px;font-weight:800;color:${divC};margin-bottom:8px">${div.label}</div><div style="font-size:10px;color:#697489;line-height:1.6">${div.desc}</div>`;
+
+  const c1h50=c1h.slice(-50);
+  const fibHigh=Math.max(...c1h50.map(x=>x.h));
+  const fibLow=Math.min(...c1h50.map(x=>x.l));
+  const fibs=mFibLevels(fibHigh,fibLow,live);
+  const nearFib=fibs.reduce((a,b)=>Math.abs(a.dist)<Math.abs(b.dist)?a:b);
+  const fibHtml=fibs.map(f=>{
+    const isN=f.lbl===nearFib.lbl;
+    const c=isN?"#3dd6f5":f.val>live?"#697489":"#444";
+    return`<div class="mFR${isN?" mFC":""}"><span class="mFL" style="color:${isN?"#3dd6f5":"#697489"}">${f.lbl}</span><span class="mFV" style="color:${c}">${f2m(f.val)}</span><span class="mFD" style="color:${f.dist>0?"#16c784":f.dist<0?"#ea3943":"#697489"}">${f.dist>0?"+":""}${f.dist.toFixed(2)}%</span></div>`;
+  }).join("");
+
   const bn=st||{};
   const briefHtml=`
 <div class="mo-bc"><h5>🏛 Governança &amp; Estrutura</h5><p>${bn.structural_note||"—"}</p></div>
@@ -728,10 +813,8 @@ function renderModal(id,container,c15,c1h,st){
   container.innerHTML=`
 <div class="mo-bea">
   <div class="mo-blt" style="background:${beaconC};box-shadow:0 0 0 5px ${beaconC}22,0 0 16px ${beaconC}44"></div>
-  <div>
-    <div style="font-size:13px;font-weight:800;color:${beaconC};letter-spacing:.3px">${label}</div>
-    <div style="font-size:10.5px;color:#697489;margin-top:4px;line-height:1.55">${sub}</div>
-  </div>
+  <div><div style="font-size:13px;font-weight:800;color:${beaconC};letter-spacing:.3px">${label}</div>
+  <div style="font-size:10.5px;color:#697489;margin-top:4px;line-height:1.55">${sub}</div></div>
 </div>
 <div class="mo-tr">
   <div class="mo-c"><h5>Escada de Níveis</h5>${ladderHtml}</div>
@@ -757,6 +840,11 @@ function renderModal(id,container,c15,c1h,st){
     <div style="font-size:11px;font-weight:700;color:${rgC}">${rg}</div>
     <div style="font-size:9px;color:#69748a;margin-top:3px">slope ${pct6>=0?"+":""}${pct6.toFixed(2)}% · 6 barras</div>
   </div>
+</div>
+<div class="mo-sw">
+  <div class="mo-swc"><h5>📊 Stochastic 15m · 14-3-3</h5>${stochHtml}</div>
+  <div class="mo-swc"><h5>⚡ Divergência RSI 15m</h5>${divHtml}</div>
+  <div class="mo-swc"><h5>📐 Fibonacci · Range 1h (50 velas)</h5>${fibHtml}</div>
 </div>
 <div class="mo-br">${briefHtml}</div>
 <div class="mo-mac">
