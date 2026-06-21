@@ -105,19 +105,11 @@
 .mo-ld{padding:40px;text-align:center;color:#697489;font-size:11px}
 .mo-bea{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#060f19;border:1px solid #1c2533;border-radius:8px;margin-bottom:16px}
 .mo-blt{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
-@media(max-width:700px){.mo-tr{grid-template-columns:1fr}.mo-br{grid-template-columns:1fr 1fr}}
-@media(max-width:420px){.mo-br{grid-template-columns:1fr}}
-.mo-sw{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
-.mo-swc{background:#060f19;border:1px solid #1c2533;border-radius:8px;padding:14px}
-.mo-swc h5{font-size:8px;letter-spacing:1.4px;color:#697489;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:.5px solid #1c2533;text-transform:uppercase}
-.mSZ{display:inline-block;padding:3px 9px;border-radius:4px;font-size:10px;font-weight:700;margin-bottom:8px}
-.mFR{display:flex;align-items:center;gap:6px;padding:4px 2px;border-bottom:.5px solid #131926}
-.mFR:last-child{border-bottom:none}
-.mFR.mFC{background:#3dd6f511;border-radius:4px;border:.5px solid #3dd6f533;margin:1px 0}
-.mFL{width:58px;color:#697489;font-size:9px;flex-shrink:0}
-.mFV{flex:1;font-weight:600;font-size:10px;font-family:ui-monospace,'SF Mono',monospace}
-.mFD{font-size:9px;text-align:right;min-width:46px}
-@media(max-width:700px){.mo-sw{grid-template-columns:1fr}}</style>
+.mo-risk{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.rk-val{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:14px;font-weight:700;color:#e8ecf0}
+.rk-sub{font-size:9.5px;color:#697489;margin-top:5px;line-height:1.45}
+@media(max-width:700px){.mo-tr{grid-template-columns:1fr}.mo-br{grid-template-columns:1fr 1fr}.mo-risk{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.mo-br{grid-template-columns:1fr}.mo-risk{grid-template-columns:1fr}}</style>
 </head>
 <body>
 
@@ -237,6 +229,7 @@ const CRYPTO_CFG = [
   {id:"hype",name:"Hyperliquid", cgId:"hyperliquid", lbl:"Perp DEX",        color:"#fb923c", bybitSym:"HYPEUSDT"},
   {id:"bnb", name:"BNB",         cgId:"binancecoin", lbl:"Exchange Token",  color:"#F3BA2F", bybitSym:"BNBUSDT"},
 ];
+const SYM_TO_ID = Object.fromEntries(CRYPTO_CFG.map(c => [c.bybitSym, c.id]));
 const STOCK_CFG = [
   {id:"nvda", name:"Nvidia",    sym:"NVDA", lbl:"Semicondutores · AI",   color:"#76b900"},
   {id:"aapl", name:"Apple",     sym:"AAPL", lbl:"Consumer Tech · iPhone", color:"#aaaaaa"},
@@ -454,63 +447,21 @@ function mEma(v,n){const k=2/(n+1);let e=v[0];const o=[e];for(let i=1;i<v.length
 function mHamming(v,n=10){const w=[];let s=0;for(let i=0;i<n;i++){const x=0.54-0.46*Math.cos(2*Math.PI*i/(n-1));w.push(x);s+=x;}
   for(let i=0;i<n;i++)w[i]/=s;const o=Array(v.length).fill(null);
   for(let i=n-1;i<v.length;i++){let a=0;for(let j=0;j<n;j++)a+=v[i-n+1+j]*w[j];o[i]=a;}return o;}
+function mAtr(candles,n=14){
+  const tr=[];
+  for(let i=1;i<candles.length;i++){
+    const hh=candles[i].h, ll=candles[i].l, pc=candles[i-1].c;
+    tr.push(Math.max(hh-ll, Math.abs(hh-pc), Math.abs(ll-pc)));
+  }
+  if(tr.length<n)return null;
+  let a=tr.slice(0,n).reduce((x,y)=>x+y,0)/n; // seed = SMA dos primeiros n
+  for(let i=n;i<tr.length;i++)a=(a*(n-1)+tr[i])/n; // suavização de Wilder
+  return a;
+}
 function f2m(x){
   if(x==null||isNaN(x))return"—";const n=parseFloat(x);
   if(n<1)return"$"+n.toFixed(4);if(n<100)return"$"+n.toFixed(2);
   return"$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
-
-function mRsiArr(closes,n=14){
-  const g=[],l=[];
-  for(let i=1;i<closes.length;i++){const d=closes[i]-closes[i-1];g.push(d>0?d:0);l.push(d<0?-d:0);}
-  let ag=g.slice(0,n).reduce((a,b)=>a+b,0)/n,al=l.slice(0,n).reduce((a,b)=>a+b,0)/n;
-  const rsi=[al===0?100:100-100/(1+ag/al)];
-  for(let i=n;i<g.length;i++){ag=(ag*(n-1)+g[i])/n;al=(al*(n-1)+l[i])/n;rsi.push(al===0?100:100-100/(1+ag/al));}
-  return rsi;
-}
-function mStoch(closes,highs,lows,k=14,sm=3,d=3){
-  const rawK=[];
-  for(let i=k-1;i<closes.length;i++){
-    const hh=Math.max(...highs.slice(i-k+1,i+1)),ll=Math.min(...lows.slice(i-k+1,i+1));
-    rawK.push(hh===ll?50:(closes[i]-ll)/(hh-ll)*100);
-  }
-  const sma=(a,n)=>{const o=[];for(let i=n-1;i<a.length;i++)o.push(a.slice(i-n+1,i+1).reduce((x,y)=>x+y,0)/n);return o;};
-  const smK=sma(rawK,sm),smD=sma(smK,d);
-  return{K:smK[smK.length-1]??50,D:smD[smD.length-1]??50};
-}
-function mPivots(arr,left=3,right=3){
-  const hs=[],ls=[];
-  for(let i=left;i<arr.length-right;i++){
-    const sl=arr.slice(i-left,i+right+1),v=arr[i];
-    if(v===Math.max(...sl))hs.push({i,v});
-    if(v===Math.min(...sl))ls.push({i,v});
-  }
-  return{hs,ls};
-}
-function mDivergence(closes,rsiArr,left=3,right=3){
-  const off=closes.length-rsiArr.length,ac=closes.slice(off);
-  const{hs,ls}=mPivots(ac,left,right);
-  if(hs.length>=2){
-    const[p1,p2]=hs.slice(-2),r1=rsiArr[p1.i]??50,r2=rsiArr[p2.i]??50;
-    if(p2.v>p1.v&&r2<r1-2)return{type:'bearish',label:'🔴 Bearish Divergência',desc:`Preço topo mais alto (${f2m(p1.v)}→${f2m(p2.v)}) mas RSI caiu (${r1.toFixed(0)}→${r2.toFixed(0)}). Exaustão comprador.`};
-  }
-  if(ls.length>=2){
-    const[p1,p2]=ls.slice(-2),r1=rsiArr[p1.i]??50,r2=rsiArr[p2.i]??50;
-    if(p2.v<p1.v&&r2>r1+2)return{type:'bullish',label:'🟢 Bullish Divergência',desc:`Preço fundo mais baixo (${f2m(p1.v)}→${f2m(p2.v)}) mas RSI subiu (${r1.toFixed(0)}→${r2.toFixed(0)}). Fraqueza vendedor.`};
-  }
-  return{type:'neutral',label:'🟡 Neutro',desc:'Sem divergência detectada nos últimos swings.'};
-}
-function mFibLevels(high,low,price){
-  const rg=high-low;
-  return[
-    {lbl:'Topo',val:high},
-    {lbl:'78.6%',val:high-0.214*rg},
-    {lbl:'61.8%',val:high-0.382*rg},
-    {lbl:'50%',val:high-0.5*rg},
-    {lbl:'38.2%',val:high-0.618*rg},
-    {lbl:'23.6%',val:high-0.764*rg},
-    {lbl:'Fundo',val:low},
-  ].map(f=>({...f,dist:((price-f.val)/(f.val||1)*100)}));
-}
 
 // ════════════════════════════════════════════════
 // METRICS — FETCH: Bybit (crypto) + Binance fallback
@@ -541,6 +492,45 @@ async function fetchBybitCandles(sym){
 }
 
 // ════════════════════════════════════════════════
+// METRICS — FETCH: candle diário + funding/OI (gestão de risco)
+// ════════════════════════════════════════════════
+async function fetchBybitExtra(sym){
+  async function tryBybitDaily(){
+    const url=`https://api.bybit.com/v5/market/kline?category=linear&symbol=${sym}&interval=D&limit=200`;
+    const r=await fetch(url,{signal:AbortSignal.timeout(11000)});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const j=await r.json();
+    return j.result.list.slice().reverse().map(r=>({o:+r[1],h:+r[2],l:+r[3],c:+r[4],v:+r[5]}));
+  }
+  async function tryBybitTicker(){
+    const url=`https://api.bybit.com/v5/market/tickers?category=linear&symbol=${sym}`;
+    const r=await fetch(url,{signal:AbortSignal.timeout(11000)});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const j=await r.json();
+    const t=j.result.list[0]||{};
+    return{
+      funding:t.fundingRate!=null&&t.fundingRate!==""?+t.fundingRate*100:null,
+      oi:t.openInterest!=null&&t.openInterest!==""?+t.openInterest:null,
+    };
+  }
+  async function tryBinanceDaily(){
+    const url=`https://api.binance.com/api/v3/klines?symbol=${sym}&interval=1d&limit=200`;
+    const r=await fetch(url,{signal:AbortSignal.timeout(11000)});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const j=await r.json();
+    return j.map(r=>({o:+r[1],h:+r[2],l:+r[3],c:+r[4],v:+r[5]}));
+  }
+  try{
+    const[cD,tick]=await Promise.all([tryBybitDaily(),tryBybitTicker()]);
+    return{cD,funding:tick.funding,oi:tick.oi};
+  }catch(e){
+    console.warn("Bybit extra (diário/funding) falhou, tentando Binance diário...",e.message);
+    const cD=await tryBinanceDaily().catch(()=>[]);
+    return{cD,funding:null,oi:null};
+  }
+}
+
+// ════════════════════════════════════════════════
 // METRICS — FETCH: Yahoo Finance intraday (stocks)
 // ════════════════════════════════════════════════
 async function fetchYFIntraday(sym){
@@ -558,6 +548,20 @@ async function fetchYFIntraday(sym){
     return out;
   }
   return Promise.all([fetchInterval("15m","5d"),fetchInterval("60m","1mo")]);
+}
+
+async function fetchYFDaily(sym){
+  const url=`${YF_BASE}/${sym}?interval=1d&range=1y&includePrePost=false`;
+  const j=await pfetch(url,activeProxy);
+  const res=j.chart?.result?.[0];
+  if(!res)throw new Error("YF diário: sem resultado "+sym);
+  const q=res.indicators?.quote?.[0]||{};
+  const closes=q.close||[],highs=q.high||[],lows=q.low||[];
+  const out=[];
+  for(let i=0;i<closes.length;i++){
+    if(closes[i]!=null)out.push({c:closes[i],h:highs[i]||closes[i],l:lows[i]||closes[i]});
+  }
+  return out;
 }
 
 // ════════════════════════════════════════════════
@@ -694,19 +698,30 @@ async function openMetrics(id){
 
   // Se já carregado, só rerenderiza
   if(mLoaded[id]){
-    const{c15,c1h}=mLoaded[id];
+    const{c15,c1h,cD,funding,oi}=mLoaded[id];
     document.getElementById("mo-pr").textContent=f2m(c15[c15.length-1]?.c);
-    renderModal(id,moBody,c15,c1h,st);
+    renderModal(id,moBody,c15,c1h,st,cD,funding,oi,!!cryptoCfg);
     return;
   }
 
   try{
-    let c15,c1h;
-    if(cryptoCfg){[c15,c1h]=await fetchBybitCandles(cryptoCfg.bybitSym);}
-    else{[c15,c1h]=await fetchYFIntraday(stockCfg.sym);}
-    mLoaded[id]={c15,c1h};
+    let c15,c1h,cD=[],funding=null,oi=null;
+    if(cryptoCfg){
+      const[intraday,extra]=await Promise.all([
+        fetchBybitCandles(cryptoCfg.bybitSym),
+        fetchBybitExtra(cryptoCfg.bybitSym),
+      ]);
+      [c15,c1h]=intraday; cD=extra.cD; funding=extra.funding; oi=extra.oi;
+    }else{
+      const[intraday,daily]=await Promise.all([
+        fetchYFIntraday(stockCfg.sym),
+        fetchYFDaily(stockCfg.sym).catch(()=>[]),
+      ]);
+      [c15,c1h]=intraday; cD=daily;
+    }
+    mLoaded[id]={c15,c1h,cD,funding,oi};
     document.getElementById("mo-pr").textContent=f2m(c15[c15.length-1]?.c);
-    renderModal(id,moBody,c15,c1h,st);
+    renderModal(id,moBody,c15,c1h,st,cD,funding,oi,!!cryptoCfg);
   }catch(e){
     moBody.innerHTML=`<div class="mo-ld" style="color:#ea3943">⚠ Erro ao carregar: ${e.message}</div>`;
   }
@@ -718,10 +733,10 @@ function closeModal(){
   document.onkeydown=null;
 }
 
-function renderModal(id,container,c15,c1h,st){
+function renderModal(id,container,c15,c1h,st,cD,funding,oi,isCrypto){
   const N=c15.length;
   if(N<30){container.innerHTML='<div class="mo-ld">Dados insuficientes para cálculo.</div>';return;}
-  const closes15=c15.map(x=>x.c),lows15=c15.map(x=>x.l),highs15=c15.map(x=>x.h);
+  const closes15=c15.map(x=>x.c),lows15=c15.map(x=>x.l);
   const e9=mEma(closes15,9),e21=mEma(closes15,21),e50=mEma(closes15,50),ham=mHamming(closes15,10);
   const ci=N-2,live=closes15[N-1];
   const closes1h=c1h.map(x=>x.c);
@@ -745,6 +760,7 @@ function renderModal(id,container,c15,c1h,st){
     sub=`Preço abaixo das médias-chave. Confirmação acima de ${f2m(reclaim)} (EMA21·15m).`;
   }
 
+  // Atualiza sinal no botão do card
   const sigBtn=document.getElementById("sigb-"+id);
   if(sigBtn){
     const sc2=zone==="CONF"?SIG.LONG:zone==="INVAL"?SIG.SHORT:SIG.AGUARDAR;
@@ -753,6 +769,7 @@ function renderModal(id,container,c15,c1h,st){
     sigBtn.style.color=sc2.color;sigBtn.style.background=sc2.bg;sigBtn.style.borderColor=sc2.bd;
   }
 
+  // Regime Gate 1
   const slope6=e21h[last1h]-e21h[Math.max(0,last1h-6)];
   const pct6=slope6/(e21h[Math.max(0,last1h-6)]||1)*100;
   let rg,rgC;
@@ -760,10 +777,12 @@ function renderModal(id,container,c15,c1h,st){
   else if(pct6>0.6){rg="TENDÊNCIA DE ALTA — long válido";rgC="#16c784";}
   else{rg="LATERAL — reversão à média válida";rgC="#f0b90b";}
 
+  // Pressão
   const l24=c1h.slice(-24);let bv=0,sv=0;
   l24.forEach(x=>{x.c>=x.o?bv+=x.v:sv+=x.v;});
   const tot=bv+sv||1,bp=Math.round(100*bv/tot),sp=100-bp;
 
+  // Escada de níveis
   const rungs=[
     {lbl:"EMA21 · 15m (resistência)",val:reclaim,c:"#FF9800"},
     {lbl:"EMA9 / Hamming · 15m",val:partial,c:"#8b8bf0"},
@@ -771,38 +790,52 @@ function renderModal(id,container,c15,c1h,st){
     {lbl:"Suporte estrutural",val:structLow,c:"#ea3943"},
     {lbl:"EMA50 · 1h (suporte forte)",val:e50h[last1h],c:"#16c784"},
   ].sort((a,b)=>b.val-a.val);
-  const vals=rungs.map(r=>r.val),hi=Math.max(...vals),lo=Math.min(...vals),rngg=(hi-lo)||1;
+  const vals=rungs.map(r=>r.val),hi=Math.max(...vals),lo=Math.min(...vals),rng=(hi-lo)||1;
   const ladderHtml=rungs.map(r=>{
-    const pos=((r.val-lo)/rngg*100).toFixed(1);
+    const pos=((r.val-lo)/rng*100).toFixed(1);
     return`<div class="mRung"><span class="mRlbl">${r.lbl}</span><div class="mRbar"><i style="left:${pos}%;background:${r.c}"></i></div><span class="mRval" style="color:${r.c}">${f2m(r.val)}</span></div>`;
   }).join("");
 
-  // SWINGS INTERMEDIÁRIOS
-  const rsiArr=mRsiArr(closes15,14);
-  const stoch=mStoch(closes15,highs15,lows15,14,3,3);
-  const K=stoch.K,D=stoch.D;
-  let stZone,stZoneC,stZoneBg;
-  if(K>80){stZone="SOBRECOMPRADO";stZoneC="#ea3943";stZoneBg="#ea394322";}
-  else if(K<20){stZone="SOBREVENDIDO";stZoneC="#16c784";stZoneBg="#16c78422";}
-  else{stZone="NEUTRO";stZoneC="#697489";stZoneBg="#69748922";}
-  const stochHtml=`<div class="mSZ" style="color:${stZoneC};background:${stZoneBg}">${stZone}</div>
-<table class="mMA"><tr><td>%K (rápida)</td><td style="color:${stZoneC};font-weight:700">${K.toFixed(1)}</td></tr><tr><td>%D (signal)</td><td>${D.toFixed(1)}</td></tr><tr><td>Tendência %K vs %D</td><td style="color:#8b8bf0">${K>D?"↑ K acima":"↓ K abaixo"}</td></tr></table>`;
+  // ---- Gestão de risco & contexto (ATR, R:R, funding/OI, regime diário) ----
+  const atr14=mAtr(c1h,14);
+  const atrStopVal=atr14!=null?live-atr14*2:null;
+  const riscoVal=live-structLow;
+  const riscoOk=riscoVal>0;
+  const alvo2Val=riscoOk?live+riscoVal*2:null, alvo3Val=riscoOk?live+riscoVal*3:null;
 
-  const div=mDivergence(closes15,rsiArr,3,3);
-  const divC=div.type==='bearish'?"#ea3943":div.type==='bullish'?"#16c784":"#697489";
-  const divHtml=`<div style="font-size:13px;font-weight:800;color:${divC};margin-bottom:8px">${div.label}</div><div style="font-size:10px;color:#697489;line-height:1.6">${div.desc}</div>`;
+  let dRegimeLbl="amostra diária insuficiente",dRegimeC="#697489";
+  if(cD&&cD.length>=180){
+    const dCloses=cD.map(x=>x.c);
+    const e50d=mEma(dCloses,50),e200d=mEma(dCloses,200),dLast=dCloses.length-1;
+    const slopeD=e200d[dLast]-e200d[dLast-30];
+    if(live>e50d[dLast]&&e50d[dLast]>e200d[dLast]&&slopeD>0){dRegimeLbl="ALTA — tendência de fundo positiva";dRegimeC="#16c784";}
+    else if(live<e50d[dLast]&&e50d[dLast]<e200d[dLast]&&slopeD<0){dRegimeLbl="BAIXA — evite comprar força";dRegimeC="#ea3943";}
+    else{dRegimeLbl="MISTO/LATERAL — sem alinhamento claro";dRegimeC="#f0b90b";}
+  }
 
-  const c1h50=c1h.slice(-50);
-  const fibHigh=Math.max(...c1h50.map(x=>x.h));
-  const fibLow=Math.min(...c1h50.map(x=>x.l));
-  const fibs=mFibLevels(fibHigh,fibLow,live);
-  const nearFib=fibs.reduce((a,b)=>Math.abs(a.dist)<Math.abs(b.dist)?a:b);
-  const fibHtml=fibs.map(f=>{
-    const isN=f.lbl===nearFib.lbl;
-    const c=isN?"#3dd6f5":f.val>live?"#697489":"#444";
-    return`<div class="mFR${isN?" mFC":""}"><span class="mFL" style="color:${isN?"#3dd6f5":"#697489"}">${f.lbl}</span><span class="mFV" style="color:${c}">${f2m(f.val)}</span><span class="mFD" style="color:${f.dist>0?"#16c784":f.dist<0?"#ea3943":"#697489"}">${f.dist>0?"+":""}${f.dist.toFixed(2)}%</span></div>`;
-  }).join("");
+  const fundingStr=funding!=null?(funding>=0?"+":"")+funding.toFixed(4)+"%":"—";
+  const oiStr=oi!=null?Math.round(oi).toLocaleString("en-US"):"—";
+  const riskGridHtml=`
+  <div class="mo-risk">
+    <div class="mo-c"><h5>ATR (1h·14) &amp; Stop</h5>
+      <div class="rk-val" style="color:#3dd6f5">${atr14!=null?f2m(atr14):"—"}</div>
+      <div class="rk-sub">Stop sugerido 2×ATR: <strong style="color:#e8ecf0">${atrStopVal!=null?f2m(atrStopVal):"—"}</strong></div>
+    </div>
+    <div class="mo-c"><h5>Risco &amp; Alvos R:R</h5>
+      <div class="rk-val" style="color:${riscoOk?"#e8ecf0":"#ea3943"}">${riscoOk?f2m(riscoVal):"preço < suporte"}</div>
+      <div class="rk-sub">${riscoOk?`R:R 1:2 → <strong style="color:#16c784">${f2m(alvo2Val)}</strong> · 1:3 → <strong style="color:#16c784">${f2m(alvo3Val)}</strong>`:"recalcular stop/suporte"}</div>
+    </div>
+    <div class="mo-c"><h5>Funding / Open Interest</h5>
+      <div class="rk-val">${isCrypto?fundingStr:"—"}</div>
+      <div class="rk-sub">${isCrypto?`OI: <strong style="color:#e8ecf0">${oiStr}</strong> · perp Bybit`:"aplica-se só a perpétuos cripto"}</div>
+    </div>
+    <div class="mo-c"><h5>Tendência Diária</h5>
+      <div class="rk-val" style="color:${dRegimeC};font-size:11.5px;line-height:1.3">${dRegimeLbl}</div>
+      <div class="rk-sub">EMA50D vs EMA200D · estilo trend template</div>
+    </div>
+  </div>`;
 
+  // Briefing notes
   const bn=st||{};
   const briefHtml=`
 <div class="mo-bc"><h5>🏛 Governança &amp; Estrutura</h5><p>${bn.structural_note||"—"}</p></div>
@@ -813,9 +846,12 @@ function renderModal(id,container,c15,c1h,st){
   container.innerHTML=`
 <div class="mo-bea">
   <div class="mo-blt" style="background:${beaconC};box-shadow:0 0 0 5px ${beaconC}22,0 0 16px ${beaconC}44"></div>
-  <div><div style="font-size:13px;font-weight:800;color:${beaconC};letter-spacing:.3px">${label}</div>
-  <div style="font-size:10.5px;color:#697489;margin-top:4px;line-height:1.55">${sub}</div></div>
+  <div>
+    <div style="font-size:13px;font-weight:800;color:${beaconC};letter-spacing:.3px">${label}</div>
+    <div style="font-size:10.5px;color:#697489;margin-top:4px;line-height:1.55">${sub}</div>
+  </div>
 </div>
+${riskGridHtml}
 <div class="mo-tr">
   <div class="mo-c"><h5>Escada de Níveis</h5>${ladderHtml}</div>
   <div class="mo-c"><h5>Médias Móveis · Ao Vivo</h5>
@@ -841,11 +877,6 @@ function renderModal(id,container,c15,c1h,st){
     <div style="font-size:9px;color:#69748a;margin-top:3px">slope ${pct6>=0?"+":""}${pct6.toFixed(2)}% · 6 barras</div>
   </div>
 </div>
-<div class="mo-sw">
-  <div class="mo-swc"><h5>📊 Stochastic 15m · 14-3-3</h5>${stochHtml}</div>
-  <div class="mo-swc"><h5>⚡ Divergência RSI 15m</h5>${divHtml}</div>
-  <div class="mo-swc"><h5>📐 Fibonacci · Range 1h (50 velas)</h5>${fibHtml}</div>
-</div>
 <div class="mo-br">${briefHtml}</div>
 <div class="mo-mac">
   <h5>📅 Contexto Macro</h5>
@@ -857,7 +888,7 @@ function renderModal(id,container,c15,c1h,st){
 // ════════════════════════════════════════════════
 // BUILD CARD
 // ════════════════════════════════════════════════
-function buildCard(id, name, catLabel, catColor, price, chg, high24, low24, volRaw, closes, stat) {
+function buildCard(id, name, catLabel, catColor, price, chg, high24, low24, volRaw, closes, stat, isCrypto) {
   const cc  = chg >= 0 ? C.g : C.r;
   const rsi = calcRSI(closes);
   const sr  = srFromCloses(closes);
@@ -887,9 +918,12 @@ function buildCard(id, name, catLabel, catColor, price, chg, high24, low24, volR
     <span class="ctag" style="color:${catColor};border-color:${catColor}44">${catLabel}</span>
   </div>
   <div style="display:flex;align-items:baseline;justify-content:space-between">
-    <span style="font-size:26px;font-weight:700;letter-spacing:-.02em">${fp(price,id)}</span>
+    <span style="display:inline-flex;align-items:center;gap:6px">
+      <span style="font-size:26px;font-weight:700;letter-spacing:-.02em" id="price-${id}">${fp(price,id)}</span>
+      ${isCrypto?`<span id="live-${id}" title="Preço ao vivo via WebSocket (Bybit)" style="width:6px;height:6px;border-radius:50%;background:#16c784;opacity:.25;transition:opacity .3s"></span>`:""}
+    </span>
     <div style="text-align:right">
-      <div style="font-size:13px;font-weight:700;color:${cc}">${chg>=0?"▲":"▼"} ${Math.abs(chg).toFixed(2)}%</div>
+      <div style="font-size:13px;font-weight:700;color:${cc}" id="chg-${id}">${chg>=0?"▲":"▼"} ${Math.abs(chg).toFixed(2)}%</div>
       <div style="font-size:7px;color:var(--txt2)">Vol 24h: ${fvol(volRaw)}</div>
     </div>
   </div>
@@ -949,14 +983,49 @@ function switchTab(t) {
   document.getElementById("gs").style.display = t === "stocks" ? "grid" : "none";
 }
 
-let countdown = 300;
+let countdown = 60;
 function updateCd() {
   const el = document.getElementById("cdwrap"); if (!el) return;
   const m  = Math.floor(countdown/60), s = countdown % 60;
-  const pct = ((300 - countdown) / 300 * 100).toFixed(1);
+  const pct = ((60 - countdown) / 60 * 100).toFixed(1);
   el.innerHTML = `
-    <div style="font-size:8px;color:var(--txt2);text-align:right">Próx. refresh: <span style="color:${C.gold}">${m}:${String(s).padStart(2,"0")}</span></div>
+    <div style="font-size:8px;color:var(--txt2);text-align:right">Próx. atualização completa: <span style="color:${C.gold}">${m}:${String(s).padStart(2,"0")}</span></div>
     <div class="cdbg"><div class="cdfg" style="width:${pct}%"></div></div>`;
+}
+
+// ════════════════════════════════════════════════
+// REAL-TIME PRICE — Bybit WebSocket (tickers)
+// ════════════════════════════════════════════════
+const wsState={};
+let bybitWS=null;
+function connectBybitWS(){
+  try{
+    bybitWS=new WebSocket("wss://stream.bybit.com/v5/public/linear");
+    bybitWS.onopen=()=>{
+      const args=CRYPTO_CFG.map(c=>`tickers.${c.bybitSym}`);
+      bybitWS.send(JSON.stringify({op:"subscribe",args}));
+    };
+    bybitWS.onmessage=(ev)=>{
+      let msg; try{msg=JSON.parse(ev.data);}catch{return;}
+      if(!msg.topic||!msg.topic.startsWith("tickers."))return;
+      const sym=msg.topic.split(".")[1];
+      const id=SYM_TO_ID[sym]; if(!id)return;
+      wsState[sym]={...(wsState[sym]||{}),...msg.data};
+      const st=wsState[sym];
+      const priceEl=document.getElementById("price-"+id);
+      const chgEl=document.getElementById("chg-"+id);
+      const liveEl=document.getElementById("live-"+id);
+      if(priceEl&&st.lastPrice!=null)priceEl.textContent=fp(st.lastPrice,id);
+      if(chgEl&&st.price24hPcnt!=null){
+        const chg=parseFloat(st.price24hPcnt)*100;
+        chgEl.style.color=chg>=0?C.g:C.r;
+        chgEl.textContent=`${chg>=0?"▲":"▼"} ${Math.abs(chg).toFixed(2)}%`;
+      }
+      if(liveEl)liveEl.style.opacity="1";
+    };
+    bybitWS.onclose=()=>{ setTimeout(connectBybitWS,3000); };
+    bybitWS.onerror=()=>{ try{bybitWS.close();}catch{} };
+  }catch(e){ console.warn("WebSocket Bybit indisponível, mantendo polling:",e.message); }
 }
 
 // ════════════════════════════════════════════════
@@ -1002,7 +1071,7 @@ async function fetchAll() {
       return buildCard(cfg.id, cfg.name, cfg.lbl, cfg.color,
         p.usd||0, p.usd_24h_change||0,
         p.usd_24h_high||p.usd*1.01||0, p.usd_24h_low||p.usd*.99||0,
-        p.usd_24h_vol||0, chartResults[i]||[], ST.assets[cfg.id]);
+        p.usd_24h_vol||0, chartResults[i]||[], ST.assets[cfg.id], true);
     }).join("");
 
     // Monta cards ações
@@ -1013,7 +1082,7 @@ async function fetchAll() {
       }
       const d = res.value;
       return buildCard(cfg.id, cfg.name, cfg.lbl, cfg.color,
-        d.price, d.change, d.high24, d.low24, 0, d.closes, ST.assets[cfg.id]);
+        d.price, d.change, d.high24, d.low24, 0, d.closes, ST.assets[cfg.id], false);
     }).join("");
 
     // Injeta tudo
@@ -1064,7 +1133,7 @@ async function fetchAll() {
 <div class="ft">
   <div style="display:flex;align-items:center;gap:6px">
     <div class="sdot" id="sdot"></div>
-    <span style="font-size:8px;color:var(--txt2)">12 ativos · CoinGecko + Yahoo Finance · auto-refresh 5 min</span>
+    <span style="font-size:8px;color:var(--txt2)">12 ativos · preço cripto ao vivo via WebSocket (Bybit) · dados completos a cada 60s</span>
   </div>
   <span style="font-size:8px;color:${C.gold};opacity:.7;letter-spacing:.06em">
     MARQUES INVEST · <span style="color:var(--txt2)">fins analíticos</span>
@@ -1083,7 +1152,7 @@ async function fetchAll() {
     });
 
     setStatus("✓ Dados ao vivo · CoinGecko direto + Yahoo Finance via proxy", "ok");
-    countdown = 300;
+    countdown = 60;
 
   } catch(e) {
     console.error("fetchAll falhou:", e);
@@ -1097,6 +1166,7 @@ async function fetchAll() {
 // ════════════════════════════════════════════════
 document.addEventListener("DOMContentLoaded", () => {
   fetchAll();
+  connectBybitWS();
   setInterval(() => {
     countdown--;
     updateCd();
