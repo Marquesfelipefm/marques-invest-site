@@ -109,7 +109,21 @@
 .rk-val{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:14px;font-weight:700;color:#e8ecf0}
 .rk-sub{font-size:9.5px;color:#697489;margin-top:5px;line-height:1.45}
 @media(max-width:700px){.mo-tr{grid-template-columns:1fr}.mo-br{grid-template-columns:1fr 1fr}.mo-risk{grid-template-columns:1fr 1fr}}
-@media(max-width:420px){.mo-br{grid-template-columns:1fr}.mo-risk{grid-template-columns:1fr}}</style>
+@media(max-width:420px){.mo-br{grid-template-columns:1fr}.mo-risk{grid-template-columns:1fr}}
+/* ── On-chain / atividade institucional ao vivo (Birdeye p/ cripto, candle-volume p/ ações) ── */
+.stats4-mo{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px}
+.mo-lbl-xs{font-size:9px;color:#697489;text-transform:uppercase;letter-spacing:.05em}
+.mo-v-sm{font-size:14px;font-weight:700;margin-top:2px}
+.oc-row{display:grid;grid-template-columns:56px 50px 78px 92px 1fr;gap:8px;padding:6px 12px;font-size:11px;border-top:1px solid #0d121b;align-items:center}
+.oc-row:first-child{border-top:0}
+.oc-row.oc-whale{background:rgba(255,106,0,.14);border-left:3px solid #ff6a00}
+.oc-buy{color:#16c784;font-weight:700}
+.oc-sell{color:#ea3943;font-weight:700}
+.oc-dex{color:#697489}
+.oc-t{color:#3d4760;font-family:ui-monospace,'SF Mono',Menlo,monospace}
+.oc-logrow{display:grid;grid-template-columns:62px 112px 1fr;gap:8px;padding:6px 12px;border-top:1px solid #0b0f19;align-items:start}
+.oc-logrow:first-child{border-top:0}
+@media(max-width:700px){.stats4-mo{grid-template-columns:repeat(2,1fr)}.oc-row{grid-template-columns:46px 42px 64px 1fr;font-size:10px}.oc-row .oc-dex{display:none}.oc-logrow{grid-template-columns:54px 1fr}}</style>
 </head>
 <body>
 
@@ -238,6 +252,18 @@ const STOCK_CFG = [
   {id:"orcl", name:"Oracle",    sym:"ORCL", lbl:"Cloud · Database AI",   color:"#f80000"},
   {id:"meta", name:"Meta",      sym:"META", lbl:"Social · AI Ads",       color:"#0082fb"},
 ];
+
+// ════════════════════════════════════════════════
+// BIRDEYE — chains/endereços por cripto (só ativos com chain suportada;
+// Cardano e Hyperliquid não têm dados on-chain na Birdeye — sem painel p/ eles)
+// ════════════════════════════════════════════════
+const BIRDEYE_API_KEY = "99ee88b2c00c494b8de1ffa1d019ba12"; // troque aqui se gerar uma key nova em bds.birdeye.so
+const BIRDEYE_CFG = {
+  btc: { chain:"ethereum", address:"0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", symbol:"WBTC" },
+  eth: { chain:"ethereum", address:"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", symbol:"WETH" },
+  sol: { chain:"solana",   address:"So11111111111111111111111111111111111111112", symbol:"WSOL" },
+  bnb: { chain:"bsc",      address:"0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", symbol:"WBNB" },
+};
 
 // ════════════════════════════════════════════════
 // PROXY FETCH  — tenta 3 proxies em sequência
@@ -540,14 +566,32 @@ async function fetchYFIntraday(sym){
     const res=j.chart?.result?.[0];
     if(!res)throw new Error("YF: sem resultado "+sym+" "+interval);
     const q=res.indicators?.quote?.[0]||{};
-    const closes=q.close||[],highs=q.high||[],lows=q.low||[],vols=q.volume||[];
+    const closes=q.close||[],highs=q.high||[],lows=q.low||[],vols=q.volume||[],opens=q.open||[];
     const out=[];
     for(let i=0;i<closes.length;i++){
-      if(closes[i]!=null)out.push({c:closes[i],h:highs[i]||closes[i],l:lows[i]||closes[i],v:vols[i]||0,o:closes[i]});
+      if(closes[i]!=null)out.push({c:closes[i],h:highs[i]||closes[i],l:lows[i]||closes[i],v:vols[i]||0,o:opens[i]!=null?opens[i]:closes[i]});
     }
     return out;
   }
   return Promise.all([fetchInterval("15m","5d"),fetchInterval("60m","1mo")]);
+}
+
+// 1m — usado pelo painel de atividade institucional (aproximação via volume de candle)
+async function fetchYF1m(sym){
+  const url=`${YF_BASE}/${sym}?interval=1m&range=5d&includePrePost=false`;
+  const j=await pfetch(url,activeProxy);
+  const res=j.chart?.result?.[0];
+  if(!res)throw new Error("YF 1m: sem resultado "+sym);
+  const ts=res.timestamp||[];
+  const q=res.indicators?.quote?.[0]||{};
+  const opens=q.open||[],closes=q.close||[],highs=q.high||[],lows=q.low||[],vols=q.volume||[];
+  const out=[];
+  for(let i=0;i<closes.length;i++){
+    if(closes[i]!=null&&vols[i]!=null&&vols[i]>0){
+      out.push({t:ts[i],o:opens[i]!=null?opens[i]:closes[i],h:highs[i]||closes[i],l:lows[i]||closes[i],c:closes[i],v:vols[i]});
+    }
+  }
+  return out;
 }
 
 async function fetchYFDaily(sym){
@@ -562,6 +606,308 @@ async function fetchYFDaily(sym){
     if(closes[i]!=null)out.push({c:closes[i],h:highs[i]||closes[i],l:lows[i]||closes[i]});
   }
   return out;
+}
+
+// ════════════════════════════════════════════════
+// LIVE ACTIVITY PANEL — on-chain (Birdeye) p/ cripto suportada,
+// aproximação via volume de candle (Yahoo) p/ ações.
+// Detecta "trade/candle desestruturante" (≥3x a média das últimas 20 amostras)
+// como proxy de atividade institucional capaz de alterar a tendência.
+// ════════════════════════════════════════════════
+const OC_POLL_S = 15, OC_WINDOW_N = 20, OC_MULT = 3, OC_MIN_SAMPLE = 5;       // Birdeye (cripto)
+const STOCK_POLL_S = 20, STOCK_WINDOW_N = 20, STOCK_MULT = 3, STOCK_MIN_SAMPLE = 5; // candle (ações)
+
+let ocState = null;          // estado do painel Birdeye (1 ativo por vez — modal é singleton)
+let stockPressState = null;  // estado do painel de aproximação por candle (ações)
+
+function fmtUsdOC(x){ if(x==null) return "—"; return "$"+x.toLocaleString("en-US",{minimumFractionDigits:x>=1000?0:2,maximumFractionDigits:x>=1000?0:2}); }
+function shortAddrOC(a){ return a ? a.slice(0,4)+"…"+a.slice(-4) : "—"; }
+function prettyDexOC(s){ return s ? s.replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase()) : "—"; }
+function addrEqOC(a,b){
+  if(!a||!b) return false;
+  if(a.slice(0,2).toLowerCase()==="0x" && b.slice(0,2).toLowerCase()==="0x") return a.toLowerCase()===b.toLowerCase();
+  return a===b;
+}
+function explorerTxUrl(chain,hash){
+  const m={solana:"https://solscan.io/tx/",ethereum:"https://etherscan.io/tx/",bsc:"https://bscscan.com/tx/"};
+  return (m[chain]||"#")+hash;
+}
+function setText(elId,txt){ const el=document.getElementById(elId); if(el) el.textContent=txt; }
+
+function stopLivePanel(){
+  if(ocState){ clearInterval(ocState.pollTimer); clearInterval(ocState.cdTimer); ocState=null; }
+  if(stockPressState){ clearInterval(stockPressState.pollTimer); clearInterval(stockPressState.cdTimer); stockPressState=null; }
+}
+
+function logLivePanelAlert(id,msg){
+  const logEl=document.getElementById("oc-log-"+id);
+  if(!logEl) return;
+  const empty=logEl.querySelector(".oc-empty"); if(empty) empty.remove();
+  const now=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  const row=document.createElement("div");
+  row.className="oc-logrow";
+  row.innerHTML=`<span class="oc-t">${now}</span><span style="color:#ff6a00;font-weight:700;font-size:10px">DESESTRUTURAÇÃO</span><span style="font-size:10.5px;color:#b0bac8">${msg}</span>`;
+  logEl.prepend(row);
+  while(logEl.children.length>30) logEl.removeChild(logEl.lastChild);
+}
+
+// ---- Birdeye (on-chain genuíno) ----
+async function pullBirdeyeTxs(cfg){
+  const url=`https://public-api.birdeye.so/defi/txs/token?address=${cfg.address}&offset=0&limit=20&tx_type=swap&sort_type=desc`;
+  const r=await fetch(url,{headers:{"X-API-KEY":BIRDEYE_API_KEY,"x-chain":cfg.chain,"accept":"application/json"},cache:"no-store",signal:AbortSignal.timeout(11000)});
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  const j=await r.json();
+  if(!j||!j.data||!Array.isArray(j.data.items)) throw new Error("payload inesperado");
+  return j.data.items;
+}
+
+function processBirdeyeTrade(state,item,cfg){
+  const base=item.base||{}, quote=item.quote||{};
+  let side=null;
+  if(addrEqOC(base.address,cfg.address)) side=base;
+  else if(addrEqOC(quote.address,cfg.address)) side=quote;
+  else return;
+  const px=side.price||side.nearestPrice||0;
+  const qty=Math.abs(side.uiAmount||0);
+  const usd=qty*px;
+  if(!usd) return;
+  const dir=(side.uiChangeAmount||0)<0?"sell":"buy";
+  const time=new Date((item.blockUnixTime||0)*1000).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+
+  let whale=false,mult=0;
+  if(state.sizes.length>=OC_MIN_SAMPLE){
+    const avg=state.sizes.reduce((a,b)=>a+b,0)/state.sizes.length;
+    if(avg>0){ mult=usd/avg; if(mult>=OC_MULT) whale=true; }
+  }
+  state.sizes.push(usd); if(state.sizes.length>OC_WINDOW_N) state.sizes.shift();
+
+  const st=state.stats;
+  st.vol+=usd; st.count++;
+  if(usd>st.max){ st.max=usd; st.maxDir=dir; }
+  if(dir==="buy") st.buyVol+=usd; else st.sellVol+=usd;
+
+  state.feed.unshift({time,dir,qty,usd,dex:item.source,hash:item.txHash,whale});
+  if(state.feed.length>300) state.feed.pop();
+
+  if(whale && !state.firstLoad){
+    logLivePanelAlert(state.id,`${dir==="buy"?"Compra":"Venda"} institucional de ${fmtUsdOC(usd)} em ${cfg.symbol} — ${mult.toFixed(1)}x a média das últimas trades. DEX: ${prettyDexOC(item.source)}.`);
+  }
+}
+
+function renderBirdeyePanel(state){
+  const id=state.id;
+  const feedEl=document.getElementById("oc-feed-"+id);
+  if(feedEl){
+    if(state.feed.length===0){
+      feedEl.innerHTML='<div class="mo-ld" style="padding:14px">Esperando primeira leitura da Birdeye…</div>';
+    }else{
+      feedEl.innerHTML=state.feed.slice(0,40).map(t=>`
+        <div class="oc-row${t.whale?" oc-whale":""}">
+          <span class="oc-t">${t.time}</span>
+          <span class="${t.dir==="buy"?"oc-buy":"oc-sell"}">${t.dir==="buy"?"COMPRA":"VENDA"}</span>
+          <span class="num">${fmtUsdOC(t.usd)}</span>
+          <span class="oc-dex">${prettyDexOC(t.dex)}</span>
+          <span><a href="${explorerTxUrl(state.cfg.chain,t.hash)}" target="_blank" rel="noopener" style="color:#3dd6f5">ver tx ↗</a></span>
+        </div>`).join("");
+    }
+  }
+  const st=state.stats;
+  setText("oc-vol-"+id, fmtUsdOC(st.vol));
+  setText("oc-count-"+id, st.count.toLocaleString("en-US"));
+  setText("oc-avg-"+id, st.count?fmtUsdOC(st.vol/st.count):"—");
+  const maxEl=document.getElementById("oc-max-"+id);
+  if(maxEl){ maxEl.textContent=fmtUsdOC(st.max); maxEl.style.color=st.maxDir==="buy"?"#16c784":st.maxDir==="sell"?"#ea3943":""; }
+  const tot=(st.buyVol+st.sellVol)||1, bp=Math.round(100*st.buyVol/tot), sp=100-bp;
+  const buyEl=document.getElementById("oc-buy-"+id), sellEl=document.getElementById("oc-sell-"+id);
+  if(buyEl){ buyEl.style.width=bp+"%"; buyEl.textContent=st.buyVol?bp+"%":""; }
+  if(sellEl){ sellEl.style.width=sp+"%"; sellEl.textContent=st.sellVol?sp+"%":""; }
+  setText("oc-buyn-"+id, fmtUsdOC(st.buyVol));
+  setText("oc-selln-"+id, fmtUsdOC(st.sellVol));
+  const biasEl=document.getElementById("oc-bias-"+id);
+  if(biasEl) biasEl.innerHTML=bp>=sp?'<span style="color:#16c784">compradores no controle</span>':'<span style="color:#ea3943">vendedores no controle</span>';
+}
+
+function setOcConn(state,ok,msg){
+  const dot=document.getElementById("oc-dot-"+state.id);
+  if(dot) dot.style.background=ok?"#16c784":"#ea3943";
+  setText("oc-connlbl-"+state.id, msg);
+}
+
+function startBirdeyePanel(id){
+  stopLivePanel();
+  const cfg=BIRDEYE_CFG[id]; if(!cfg) return;
+  const state={ id, cfg, seen:new Set(), sizes:[], feed:[], stats:{vol:0,count:0,max:0,maxDir:null,buyVol:0,sellVol:0}, firstLoad:true, cd:OC_POLL_S };
+  ocState=state;
+  const tick=async()=>{
+    if(ocState!==state) return;
+    try{
+      const items=await pullBirdeyeTxs(cfg);
+      if(ocState!==state) return;
+      const fresh=items.filter(it=>it.txHash&&!state.seen.has(it.txHash));
+      fresh.reverse();
+      fresh.forEach(it=>{ state.seen.add(it.txHash); processBirdeyeTrade(state,it,cfg); });
+      if(state.seen.size>1000) state.seen=new Set(state.feed.map(t=>t.hash));
+      renderBirdeyePanel(state);
+      setOcConn(state,true,"ao vivo · Birdeye");
+      const eb=document.getElementById("oc-err-"+id); if(eb) eb.style.display="none";
+      state.firstLoad=false;
+    }catch(e){
+      if(ocState!==state) return;
+      setOcConn(state,false,"sem conexão");
+      const eb=document.getElementById("oc-err-"+id);
+      if(eb){ eb.style.display="block"; eb.textContent="Não consegui falar com a Birdeye ("+e.message+"). Pode ser CORS (sirva por http://localhost) ou key expirada em bds.birdeye.so."; }
+    }
+  };
+  tick();
+  state.pollTimer=setInterval(tick,OC_POLL_S*1000);
+  state.cdTimer=setInterval(()=>{
+    if(ocState!==state) return;
+    state.cd--; if(state.cd<=0) state.cd=OC_POLL_S;
+    setText("oc-cd-"+id, state.cd);
+  },1000);
+}
+
+// ---- Ações: aproximação via volume de candle de 1m (Yahoo Finance) ----
+function processStockCandle(state,c){
+  const dir=c.c>=c.o?"buy":"sell";
+  const vol=c.v;
+  let whale=false,mult=0;
+  if(state.vols.length>=STOCK_MIN_SAMPLE){
+    const avg=state.vols.reduce((a,b)=>a+b,0)/state.vols.length;
+    if(avg>0){ mult=vol/avg; if(mult>=STOCK_MULT) whale=true; }
+  }
+  state.vols.push(vol); if(state.vols.length>STOCK_WINDOW_N) state.vols.shift();
+
+  const st=state.stats;
+  st.vol+=vol; st.count++;
+  if(vol>st.max){ st.max=vol; st.maxDir=dir; }
+  if(dir==="buy") st.buyVol+=vol; else st.sellVol+=vol;
+
+  const time=c.t?new Date(c.t*1000).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}):"—";
+  state.feed.unshift({time,dir,vol,close:c.c,whale,mult});
+  if(state.feed.length>300) state.feed.pop();
+
+  if(whale && !state.firstLoad){
+    logLivePanelAlert(state.id,`Candle de 1m com volume ${mult.toFixed(1)}x a média (${fvol(vol)} ações, fechamento ${dir==="buy"?"em alta":"em baixa"} @ $${c.c.toFixed(2)}) — possível atividade institucional.`);
+  }
+}
+
+function renderStockPanel(state){
+  const id=state.id;
+  const feedEl=document.getElementById("oc-feed-"+id);
+  if(feedEl){
+    if(state.feed.length===0){
+      feedEl.innerHTML='<div class="mo-ld" style="padding:14px">Esperando primeiras leituras de candle…</div>';
+    }else{
+      feedEl.innerHTML=state.feed.slice(0,40).map(t=>`
+        <div class="oc-row${t.whale?" oc-whale":""}">
+          <span class="oc-t">${t.time}</span>
+          <span class="${t.dir==="buy"?"oc-buy":"oc-sell"}">${t.dir==="buy"?"ALTA":"BAIXA"}</span>
+          <span class="num">${fvol(t.vol)}</span>
+          <span class="oc-dex">@ $${t.close.toFixed(2)}</span>
+          <span style="color:#697489">${t.mult?t.mult.toFixed(1)+"x méd.":""}</span>
+        </div>`).join("");
+    }
+  }
+  const st=state.stats;
+  setText("oc-vol-"+id, fvol(st.vol));
+  setText("oc-count-"+id, st.count.toLocaleString("en-US"));
+  setText("oc-avg-"+id, st.count?fvol(st.vol/st.count):"—");
+  const maxEl=document.getElementById("oc-max-"+id);
+  if(maxEl){ maxEl.textContent=fvol(st.max); maxEl.style.color=st.maxDir==="buy"?"#16c784":st.maxDir==="sell"?"#ea3943":""; }
+  const tot=(st.buyVol+st.sellVol)||1, bp=Math.round(100*st.buyVol/tot), sp=100-bp;
+  const buyEl=document.getElementById("oc-buy-"+id), sellEl=document.getElementById("oc-sell-"+id);
+  if(buyEl){ buyEl.style.width=bp+"%"; buyEl.textContent=st.buyVol?bp+"%":""; }
+  if(sellEl){ sellEl.style.width=sp+"%"; sellEl.textContent=st.sellVol?sp+"%":""; }
+  setText("oc-buyn-"+id, fvol(st.buyVol));
+  setText("oc-selln-"+id, fvol(st.sellVol));
+  const biasEl=document.getElementById("oc-bias-"+id);
+  if(biasEl) biasEl.innerHTML=bp>=sp?'<span style="color:#16c784">compradores no controle</span>':'<span style="color:#ea3943">vendedores no controle</span>';
+}
+
+function setStockConn(state,ok,msg){
+  const dot=document.getElementById("oc-dot-"+state.id);
+  if(dot) dot.style.background=ok?"#16c784":"#ea3943";
+  setText("oc-connlbl-"+state.id, msg);
+}
+
+function startStockPanel(id){
+  stopLivePanel();
+  const cfg=STOCK_CFG.find(c=>c.id===id); if(!cfg) return;
+  const state={ id, sym:cfg.sym, seenTs:new Set(), vols:[], feed:[], stats:{vol:0,count:0,max:0,maxDir:null,buyVol:0,sellVol:0}, firstLoad:true, cd:STOCK_POLL_S };
+  stockPressState=state;
+  const tick=async()=>{
+    if(stockPressState!==state) return;
+    try{
+      const candles=await fetchYF1m(cfg.sym);
+      if(stockPressState!==state) return;
+      const fresh=candles.filter(c=>c.t&&!state.seenTs.has(c.t));
+      fresh.forEach(c=>{ state.seenTs.add(c.t); processStockCandle(state,c); });
+      if(state.seenTs.size>3000) state.seenTs=new Set(state.feed.map(f=>f.ts).filter(Boolean));
+      renderStockPanel(state);
+      setStockConn(state,true,"ao vivo · Yahoo Finance");
+      const eb=document.getElementById("oc-err-"+id); if(eb) eb.style.display="none";
+      state.firstLoad=false;
+    }catch(e){
+      if(stockPressState!==state) return;
+      setStockConn(state,false,"sem conexão");
+      const eb=document.getElementById("oc-err-"+id);
+      if(eb){ eb.style.display="block"; eb.textContent="Não consegui puxar candles de 1m da Yahoo ("+e.message+")."; }
+    }
+  };
+  tick();
+  state.pollTimer=setInterval(tick,STOCK_POLL_S*1000);
+  state.cdTimer=setInterval(()=>{
+    if(stockPressState!==state) return;
+    state.cd--; if(state.cd<=0) state.cd=STOCK_POLL_S;
+    setText("oc-cd-"+id, state.cd);
+  },1000);
+}
+
+function liveActivityPanelHtml(id,isCrypto){
+  const bcfg=BIRDEYE_CFG[id];
+  if(isCrypto && !bcfg) return ""; // ADA/HYPE: Birdeye não tem chain suportada — sem painel (decisão do usuário)
+  const title=isCrypto?`On-chain · ${bcfg.symbol} — transações e volume (Birdeye)`:`Atividade institucional — aproximação via volume de candle (Yahoo Finance)`;
+  const lbl3=isCrypto?"Tamanho médio":"Volume médio/candle";
+  const lbl4=isCrypto?"Maior trade":"Maior candle";
+  const ruleTxt=isCrypto
+    ?`🟠 <b>Desestruturação (on-chain)</b> — uma trade de ${bcfg.symbol} em qualquer DEX (chain: ${bcfg.chain}) com valor ≥ <code>3×</code> o tamanho médio das últimas <code>20</code> trades lidas da Birdeye. Só dispara após pelo menos 5 trades de amostra, pra evitar falso alarme na primeira leitura.`
+    :`🟠 <b>Desestruturação (aproximação)</b> — um candle de 1 minuto com volume ≥ <code>3×</code> a média dos últimos <code>20</code> candles. <b>Isto não é dado de trade individual</b> — é uma aproximação via volume agregado por candle, já que não existe feed público de tape institucional para ações. Use como sinal de atenção, não como confirmação.`;
+  return `
+<div class="mo-c" style="margin-bottom:16px">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+    <h5 style="margin:0;flex:1">${title}</h5>
+    <div style="display:flex;align-items:center;gap:5px;font-size:9px;color:#697489">
+      <span id="oc-dot-${id}" style="width:7px;height:7px;border-radius:50%;background:#3d4760;display:inline-block"></span>
+      <span id="oc-connlbl-${id}">conectando…</span>
+    </div>
+  </div>
+  <div class="stats4-mo">
+    <div><div class="mo-lbl-xs">Volume (sessão)</div><div class="mo-v-sm num" id="oc-vol-${id}">—</div></div>
+    <div><div class="mo-lbl-xs">Trades/candles (sessão)</div><div class="mo-v-sm num" id="oc-count-${id}">—</div></div>
+    <div><div class="mo-lbl-xs">${lbl3}</div><div class="mo-v-sm num" id="oc-avg-${id}">—</div></div>
+    <div><div class="mo-lbl-xs">${lbl4}</div><div class="mo-v-sm num" id="oc-max-${id}">—</div></div>
+  </div>
+  <div class="mPress" style="margin-top:10px"><div class="mPBuy" id="oc-buy-${id}" style="width:50%"></div><div class="mPSell" id="oc-sell-${id}"></div></div>
+  <div style="display:flex;justify-content:space-between;font-size:9px;color:#69748a;margin-top:4px;margin-bottom:10px">
+    <span>compra <span class="num" id="oc-buyn-${id}">—</span></span>
+    <span id="oc-bias-${id}"></span>
+    <span>venda <span class="num" id="oc-selln-${id}">—</span></span>
+  </div>
+  <div id="oc-err-${id}" style="display:none;background:rgba(234,57,67,.12);border:1px solid #ea3943;color:#ffd5d8;border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:11px"></div>
+  <div id="oc-feed-${id}" style="max-height:220px;overflow:auto;background:#060f19;border:1px solid #1c2533;border-radius:8px;margin-bottom:8px">
+    <div class="mo-ld" style="padding:14px">Esperando primeira leitura…</div>
+  </div>
+  <div style="font-size:9px;color:#697489;margin-bottom:10px">próx. leitura em <span class="num" id="oc-cd-${id}">—</span>s${isCrypto?" · Birdeye":" · Yahoo Finance"}</div>
+  <div class="mo-lbl-xs" style="margin-bottom:6px;font-weight:700">Histórico de alertas (trade/candle anormal)</div>
+  <div id="oc-log-${id}" style="max-height:140px;overflow:auto;background:#060f19;border:1px solid #1c2533;border-radius:8px;padding:4px 0">
+    <div class="oc-empty" style="padding:14px;color:#3d4760;font-size:11px">Sem alertas ainda.</div>
+  </div>
+  <details style="margin-top:10px">
+    <summary style="cursor:pointer;font-size:9px;color:#697489;text-transform:uppercase;letter-spacing:.08em">Regra de detecção</summary>
+    <div style="font-size:11px;color:#b0bac8;line-height:1.6;padding-top:8px">${ruleTxt}</div>
+  </details>
+</div>`;
 }
 
 // ════════════════════════════════════════════════
@@ -731,9 +1077,11 @@ function closeModal(){
   document.getElementById("ativo-modal").classList.remove("open");
   document.body.style.overflow="";
   document.onkeydown=null;
+  stopLivePanel();
 }
 
 function renderModal(id,container,c15,c1h,st,cD,funding,oi,isCrypto){
+  stopLivePanel();
   const N=c15.length;
   if(N<30){container.innerHTML='<div class="mo-ld">Dados insuficientes para cálculo.</div>';return;}
   const closes15=c15.map(x=>x.c),lows15=c15.map(x=>x.l);
@@ -877,12 +1225,17 @@ ${riskGridHtml}
     <div style="font-size:9px;color:#69748a;margin-top:3px">slope ${pct6>=0?"+":""}${pct6.toFixed(2)}% · 6 barras</div>
   </div>
 </div>
+${liveActivityPanelHtml(id,isCrypto)}
 <div class="mo-br">${briefHtml}</div>
 <div class="mo-mac">
   <h5>📅 Contexto Macro</h5>
   <p><strong style="color:#f0b90b">${ST.macro.fedEvent||""}</strong>${ST.macro.headline?" · "+ST.macro.headline:""}</p>
   <p style="margin-top:6px">Fear &amp; Greed: <strong style="color:#3dd6f5">${ST.macro.fearGreed} · ${ST.macro.fearGreedLabel||""}</strong></p>
 </div>`;
+
+  // Liga o painel de atividade ao vivo (Birdeye p/ cripto suportada; candle p/ ações)
+  if(isCrypto){ if(BIRDEYE_CFG[id]) startBirdeyePanel(id); }
+  else { startStockPanel(id); }
 }
 
 // ════════════════════════════════════════════════
