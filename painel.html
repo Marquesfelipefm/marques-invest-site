@@ -614,7 +614,7 @@ async function fetchYFDaily(sym){
 // Detecta "trade/candle desestruturante" (≥3x a média das últimas 20 amostras)
 // como proxy de atividade institucional capaz de alterar a tendência.
 // ════════════════════════════════════════════════
-const OC_POLL_S = 15, OC_WINDOW_N = 20, OC_MULT = 3, OC_MIN_SAMPLE = 5;       // Birdeye (cripto)
+const OC_POLL_S = 60, OC_WINDOW_N = 20, OC_MULT = 3, OC_MIN_SAMPLE = 5;       // Birdeye (cripto)
 const STOCK_POLL_S = 20, STOCK_WINDOW_N = 20, STOCK_MULT = 3, STOCK_MIN_SAMPLE = 5; // candle (ações)
 
 let ocState = null;          // estado do painel Birdeye (1 ativo por vez — modal é singleton)
