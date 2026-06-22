@@ -54,7 +54,7 @@
   .pul{animation:pulse 1.4s infinite;}
   #status-bar{background:var(--bg2);border:.5px solid var(--brd);border-radius:7px;padding:7px 12px;margin-bottom:10px;font-size:11px;color:var(--txt2);display:flex;align-items:center;gap:7px;transition:all .3s;}
   #status-bar.ok{border-color:rgba(71,183,23,.3);color:#47b717;}
-  #status-bar.err{border-color:rgba(178,46,50,.3);color:#b22e32;}
+  #status-bar.err{border-color:rgba(178,46,50,.3);color:#ffb4b8;}
   #status-bar.warn{border-color:rgba(255,169,64,.3);color:#ffa940;}
   /* ── Metrics Panel (in-card analytics) ── */
   button.sigb{cursor:pointer;font:inherit;line-height:1;}
@@ -118,7 +118,7 @@
 .oc-row:first-child{border-top:0}
 .oc-row.oc-whale{background:rgba(255,106,0,.14);border-left:3px solid #ff6a00}
 .oc-buy{color:#47b717;font-weight:700}
-.oc-sell{color:#b22e32;font-weight:700}
+.oc-sell{color:#ffb4b8;font-weight:700}
 .oc-dex{color:#a3a3a3}
 .oc-t{color:#606060;font-family:ui-monospace,'SF Mono',Menlo,monospace}
 .oc-logrow{display:grid;grid-template-columns:62px 112px 1fr;gap:8px;padding:6px 12px;border-top:1px solid #333333;align-items:start}
@@ -406,14 +406,15 @@ function nowStr() { return new Date().toLocaleString("pt-BR",{dateStyle:"short",
 // ════════════════════════════════════════════════
 // COLORS
 // ════════════════════════════════════════════════
-const C = { gold:"#C9A84C", g:"#47b717", r:"#b22e32", amb:"#ffa940", blu:"#1a90ff", neu:"#a3a3a3" };
+const C = { gold:"#C9A84C", g:"#47b717", r:"#b22e32", rt:"#ffb4b8", amb:"#ffa940", blu:"#1a90ff", neu:"#a3a3a3" };
+const txtR = c => c === C.r ? C.rt : c; // vermelho legível p/ texto sobre fundo escuro (mantém C.r em bordas/fills)
 const rsiC = v => v <= 30 ? C.g : v >= 70 ? C.r : C.amb;
 const rsiL = v => v <= 30 ? "Sobrevendido ↩" : v >= 70 ? "Sobrecomprado ⚡" : "Neutro";
 const bubC = v => v >= 75 ? "#fb923c" : v >= 50 ? C.amb : C.neu;
 const bubL = v => v >= 75 ? "Bolha Alta ⚡" : v >= 50 ? "Aquecido" : "Frio";
 const SIG = {
   LONG:     { color:C.g,   bg:"rgba(71,183,23,.12)",  bd:"rgba(71,183,23,.4)"  },
-  SHORT:    { color:C.r,   bg:"rgba(178,46,50,.12)",  bd:"rgba(178,46,50,.4)"  },
+  SHORT:    { color:C.rt,  bg:"rgba(178,46,50,.12)",  bd:"rgba(178,46,50,.4)"  },
   AGUARDAR: { color:C.amb, bg:"rgba(255,169,64,.12)",  bd:"rgba(255,169,64,.4)"  },
 };
 
@@ -716,7 +717,7 @@ function renderBirdeyePanel(state){
   setText("oc-count-"+id, st.count.toLocaleString("en-US"));
   setText("oc-avg-"+id, st.count?fmtUsdOC(st.vol/st.count):"—");
   const maxEl=document.getElementById("oc-max-"+id);
-  if(maxEl){ maxEl.textContent=fmtUsdOC(st.max); maxEl.style.color=st.maxDir==="buy"?"#47b717":st.maxDir==="sell"?"#b22e32":""; }
+  if(maxEl){ maxEl.textContent=fmtUsdOC(st.max); maxEl.style.color=st.maxDir==="buy"?"#47b717":st.maxDir==="sell"?"#ffb4b8":""; }
   const tot=(st.buyVol+st.sellVol)||1, bp=Math.round(100*st.buyVol/tot), sp=100-bp;
   const buyEl=document.getElementById("oc-buy-"+id), sellEl=document.getElementById("oc-sell-"+id);
   if(buyEl){ buyEl.style.width=bp+"%"; buyEl.textContent=st.buyVol?bp+"%":""; }
@@ -724,7 +725,7 @@ function renderBirdeyePanel(state){
   setText("oc-buyn-"+id, fmtUsdOC(st.buyVol));
   setText("oc-selln-"+id, fmtUsdOC(st.sellVol));
   const biasEl=document.getElementById("oc-bias-"+id);
-  if(biasEl) biasEl.innerHTML=bp>=sp?'<span style="color:#47b717">compradores no controle</span>':'<span style="color:#b22e32">vendedores no controle</span>';
+  if(biasEl) biasEl.innerHTML=bp>=sp?'<span style="color:#47b717">compradores no controle</span>':'<span style="color:#ffb4b8">vendedores no controle</span>';
 }
 
 function setOcConn(state,ok,msg){
@@ -814,7 +815,7 @@ function renderStockPanel(state){
   setText("oc-count-"+id, st.count.toLocaleString("en-US"));
   setText("oc-avg-"+id, st.count?fvol(st.vol/st.count):"—");
   const maxEl=document.getElementById("oc-max-"+id);
-  if(maxEl){ maxEl.textContent=fvol(st.max); maxEl.style.color=st.maxDir==="buy"?"#47b717":st.maxDir==="sell"?"#b22e32":""; }
+  if(maxEl){ maxEl.textContent=fvol(st.max); maxEl.style.color=st.maxDir==="buy"?"#47b717":st.maxDir==="sell"?"#ffb4b8":""; }
   const tot=(st.buyVol+st.sellVol)||1, bp=Math.round(100*st.buyVol/tot), sp=100-bp;
   const buyEl=document.getElementById("oc-buy-"+id), sellEl=document.getElementById("oc-sell-"+id);
   if(buyEl){ buyEl.style.width=bp+"%"; buyEl.textContent=st.buyVol?bp+"%":""; }
@@ -822,7 +823,7 @@ function renderStockPanel(state){
   setText("oc-buyn-"+id, fvol(st.buyVol));
   setText("oc-selln-"+id, fvol(st.sellVol));
   const biasEl=document.getElementById("oc-bias-"+id);
-  if(biasEl) biasEl.innerHTML=bp>=sp?'<span style="color:#47b717">compradores no controle</span>':'<span style="color:#b22e32">vendedores no controle</span>';
+  if(biasEl) biasEl.innerHTML=bp>=sp?'<span style="color:#47b717">compradores no controle</span>':'<span style="color:#ffb4b8">vendedores no controle</span>';
 }
 
 function setStockConn(state,ok,msg){
@@ -943,7 +944,7 @@ function renderMetrics(id,panel,c15,c1h){
   const slope6=e21h[last1h]-e21h[Math.max(0,last1h-6)];
   const pct6=slope6/(e21h[Math.max(0,last1h-6)]||1)*100;
   let rg,rgC;
-  if(pct6<-0.6){rg="TENDÊNCIA DE BAIXA — Gate 1 ativo";rgC="#b22e32";}
+  if(pct6<-0.6){rg="TENDÊNCIA DE BAIXA — Gate 1 ativo";rgC="#ffb4b8";}
   else if(pct6>0.6){rg="TENDÊNCIA DE ALTA — long válido";rgC="#47b717";}
   else{rg="LATERAL — reversão à média válida";rgC="#ffa940";}
 
@@ -961,7 +962,7 @@ function renderMetrics(id,panel,c15,c1h){
   const vals=rungs.map(r=>r.val),hi=Math.max(...vals),lo=Math.min(...vals),rng=(hi-lo)||1;
   const ladderHtml=rungs.map(r=>{
     const pos=((r.val-lo)/rng*100).toFixed(1);
-    return`<div class="mRung"><span class="mRlbl">${r.lbl}</span><div class="mRbar"><i style="left:${pos}%;background:${r.c}"></i></div><span class="mRval" style="color:${r.c}">${f2m(r.val)}</span></div>`;
+    return`<div class="mRung"><span class="mRlbl">${r.lbl}</span><div class="mRbar"><i style="left:${pos}%;background:${r.c}"></i></div><span class="mRval" style="color:${txtR(r.c)}">${f2m(r.val)}</span></div>`;
   }).join("");
 
   // Atualiza badge de sinal
@@ -977,7 +978,7 @@ function renderMetrics(id,panel,c15,c1h){
 <div class="mBeacon">
   <div class="mLight" style="background:${beaconC};box-shadow:0 0 0 6px ${beaconC}22,0 0 20px ${beaconC}55"></div>
   <div>
-    <div style="font-size:15px;font-weight:800;color:${beaconC};letter-spacing:.3px">${label}</div>
+    <div style="font-size:15px;font-weight:800;color:${txtR(beaconC)};letter-spacing:.3px">${label}</div>
     <div style="font-size:12px;color:#a3a3a3;margin-top:4px;line-height:1.5">${sub}</div>
   </div>
 </div>
@@ -1003,7 +1004,7 @@ function renderMetrics(id,panel,c15,c1h){
       <div class="mPSell">${sp}%</div>
     </div>
     <div style="display:flex;justify-content:space-between;font-size:11px;color:#a3a3a3;margin-top:4px">
-      <span style="color:${bp>=sp?"#47b717":"#b22e32"}">${bp>=sp?"comprador no controle":"vendedor domina"}</span>
+      <span style="color:${bp>=sp?"#47b717":"#ffb4b8"}">${bp>=sp?"comprador no controle":"vendedor domina"}</span>
       <span>C ${bp}% · V ${sp}%</span>
     </div>
     <div class="mCardH" style="margin-top:9px">Regime (Gate 1)</div>
@@ -1069,7 +1070,7 @@ async function openMetrics(id){
     document.getElementById("mo-pr").textContent=f2m(c15[c15.length-1]?.c);
     renderModal(id,moBody,c15,c1h,st,cD,funding,oi,!!cryptoCfg);
   }catch(e){
-    moBody.innerHTML=`<div class="mo-ld" style="color:#b22e32">⚠ Erro ao carregar: ${e.message}</div>`;
+    moBody.innerHTML=`<div class="mo-ld" style="color:#ffb4b8">⚠ Erro ao carregar: ${e.message}</div>`;
   }
 }
 
@@ -1121,7 +1122,7 @@ function renderModal(id,container,c15,c1h,st,cD,funding,oi,isCrypto){
   const slope6=e21h[last1h]-e21h[Math.max(0,last1h-6)];
   const pct6=slope6/(e21h[Math.max(0,last1h-6)]||1)*100;
   let rg,rgC;
-  if(pct6<-0.6){rg="TENDÊNCIA DE BAIXA — Gate 1 ativo";rgC="#b22e32";}
+  if(pct6<-0.6){rg="TENDÊNCIA DE BAIXA — Gate 1 ativo";rgC="#ffb4b8";}
   else if(pct6>0.6){rg="TENDÊNCIA DE ALTA — long válido";rgC="#47b717";}
   else{rg="LATERAL — reversão à média válida";rgC="#ffa940";}
 
@@ -1141,7 +1142,7 @@ function renderModal(id,container,c15,c1h,st,cD,funding,oi,isCrypto){
   const vals=rungs.map(r=>r.val),hi=Math.max(...vals),lo=Math.min(...vals),rng=(hi-lo)||1;
   const ladderHtml=rungs.map(r=>{
     const pos=((r.val-lo)/rng*100).toFixed(1);
-    return`<div class="mRung"><span class="mRlbl">${r.lbl}</span><div class="mRbar"><i style="left:${pos}%;background:${r.c}"></i></div><span class="mRval" style="color:${r.c}">${f2m(r.val)}</span></div>`;
+    return`<div class="mRung"><span class="mRlbl">${r.lbl}</span><div class="mRbar"><i style="left:${pos}%;background:${r.c}"></i></div><span class="mRval" style="color:${txtR(r.c)}">${f2m(r.val)}</span></div>`;
   }).join("");
 
   // ---- Gestão de risco & contexto (ATR, R:R, funding/OI, regime diário) ----
@@ -1157,7 +1158,7 @@ function renderModal(id,container,c15,c1h,st,cD,funding,oi,isCrypto){
     const e50d=mEma(dCloses,50),e200d=mEma(dCloses,200),dLast=dCloses.length-1;
     const slopeD=e200d[dLast]-e200d[dLast-30];
     if(live>e50d[dLast]&&e50d[dLast]>e200d[dLast]&&slopeD>0){dRegimeLbl="ALTA — tendência de fundo positiva";dRegimeC="#47b717";}
-    else if(live<e50d[dLast]&&e50d[dLast]<e200d[dLast]&&slopeD<0){dRegimeLbl="BAIXA — evite comprar força";dRegimeC="#b22e32";}
+    else if(live<e50d[dLast]&&e50d[dLast]<e200d[dLast]&&slopeD<0){dRegimeLbl="BAIXA — evite comprar força";dRegimeC="#ffb4b8";}
     else{dRegimeLbl="MISTO/LATERAL — sem alinhamento claro";dRegimeC="#ffa940";}
   }
 
@@ -1170,7 +1171,7 @@ function renderModal(id,container,c15,c1h,st,cD,funding,oi,isCrypto){
       <div class="rk-sub">Stop sugerido 2×ATR: <strong style="color:#fafafa">${atrStopVal!=null?f2m(atrStopVal):"—"}</strong></div>
     </div>
     <div class="mo-c"><h5>Risco &amp; Alvos R:R</h5>
-      <div class="rk-val" style="color:${riscoOk?"#fafafa":"#b22e32"}">${riscoOk?f2m(riscoVal):"preço < suporte"}</div>
+      <div class="rk-val" style="color:${riscoOk?"#fafafa":"#ffb4b8"}">${riscoOk?f2m(riscoVal):"preço < suporte"}</div>
       <div class="rk-sub">${riscoOk?`R:R 1:2 → <strong style="color:#47b717">${f2m(alvo2Val)}</strong> · 1:3 → <strong style="color:#47b717">${f2m(alvo3Val)}</strong>`:"recalcular stop/suporte"}</div>
     </div>
     <div class="mo-c"><h5>Funding / Open Interest</h5>
@@ -1195,7 +1196,7 @@ function renderModal(id,container,c15,c1h,st,cD,funding,oi,isCrypto){
 <div class="mo-bea">
   <div class="mo-blt" style="background:${beaconC};box-shadow:0 0 0 5px ${beaconC}22,0 0 16px ${beaconC}44"></div>
   <div>
-    <div style="font-size:15px;font-weight:800;color:${beaconC};letter-spacing:.3px">${label}</div>
+    <div style="font-size:15px;font-weight:800;color:${txtR(beaconC)};letter-spacing:.3px">${label}</div>
     <div style="font-size:12.5px;color:#a3a3a3;margin-top:4px;line-height:1.55">${sub}</div>
   </div>
 </div>
@@ -1217,7 +1218,7 @@ ${riskGridHtml}
     <div style="font-size:11px;color:#a3a3a3;font-weight:600;letter-spacing:.08em;margin-bottom:6px">PRESSÃO COMPRADORES · 24H</div>
     <div class="mPress"><div class="mPBuy" style="width:${bp}%">${bp}%</div><div class="mPSell">${sp}%</div></div>
     <div style="display:flex;justify-content:space-between;font-size:11px;color:#a3a3a3;margin-top:4px;margin-bottom:12px">
-      <span style="color:${bp>=sp?"#47b717":"#b22e32"}">${bp>=sp?"comprador no controle":"vendedor domina"}</span>
+      <span style="color:${bp>=sp?"#47b717":"#ffb4b8"}">${bp>=sp?"comprador no controle":"vendedor domina"}</span>
       <span>C ${bp}% · V ${sp}%</span>
     </div>
     <div style="font-size:11px;color:#a3a3a3;font-weight:600;letter-spacing:.08em;margin-bottom:6px">REGIME (GATE 1 · EMA21·1H)</div>
@@ -1242,7 +1243,7 @@ ${liveActivityPanelHtml(id,isCrypto)}
 // BUILD CARD
 // ════════════════════════════════════════════════
 function buildCard(id, name, catLabel, catColor, price, chg, high24, low24, volRaw, closes, stat, isCrypto) {
-  const cc  = chg >= 0 ? C.g : C.r;
+  const cc  = chg >= 0 ? C.g : C.rt;
   const rsi = calcRSI(closes);
   const sr  = srFromCloses(closes);
   const rv  = rsi !== null ? rsi : "—";
@@ -1258,7 +1259,7 @@ function buildCard(id, name, catLabel, catColor, price, chg, high24, low24, volR
   ).join("");
   const srItem = (lvl, clr) =>
     `<div class="sri"><div class="srd" style="background:${clr}"></div>
-     <span style="font-size:11px;font-weight:600;color:${clr}">${fp(lvl,id)}</span>
+     <span style="font-size:11px;font-weight:600;color:${txtR(clr)}">${fp(lvl,id)}</span>
      ${dist(lvl,price)}</div>`;
 
   return `
@@ -1283,13 +1284,13 @@ function buildCard(id, name, catLabel, catColor, price, chg, high24, low24, volR
   <div style="height:42px;margin:0 -4px"><canvas id="sp-${id}" height="42"></canvas></div>
   <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--txt2)">
     <span>H 24h: <span style="color:${C.g}">${fp(high24,id)}</span></span>
-    <span>L 24h: <span style="color:${C.r}">${fp(low24,id)}</span></span>
+    <span>L 24h: <span style="color:${C.rt}">${fp(low24,id)}</span></span>
   </div>
   <div class="sep" style="display:flex;flex-direction:column;gap:8px">
     <div>
-      <div class="glbl"><span class="gkey">RSI (14) · ao vivo</span><span class="gval" style="color:${rc}">${rv}</span></div>
+      <div class="glbl"><span class="gkey">RSI (14) · ao vivo</span><span class="gval" style="color:${txtR(rc)}">${rv}</span></div>
       <div class="gbar"><div class="gfill" style="width:${rv!=="—"?rv:0}%;background:${rc}"></div></div>
-      <div class="gsub" style="color:${rc}">${rl}</div>
+      <div class="gsub" style="color:${txtR(rc)}">${rl}</div>
     </div>
     <div>
       <div class="glbl"><span class="gkey">Bolha Especulativa</span><span class="gval" style="color:${bbc}">${stat.bubble}%</span></div>
@@ -1371,7 +1372,7 @@ function connectBybitWS(){
       if(priceEl&&st.lastPrice!=null)priceEl.textContent=fp(st.lastPrice,id);
       if(chgEl&&st.price24hPcnt!=null){
         const chg=parseFloat(st.price24hPcnt)*100;
-        chgEl.style.color=chg>=0?C.g:C.r;
+        chgEl.style.color=chg>=0?C.g:C.rt;
         chgEl.textContent=`${chg>=0?"▲":"▼"} ${Math.abs(chg).toFixed(2)}%`;
       }
       if(liveEl)liveEl.style.opacity="1";
@@ -1411,8 +1412,8 @@ async function fetchAll() {
     const btcD   = prices["bitcoin"] || {};
     const btcP   = btcD.usd || 0;
     const btcChg = btcD.usd_24h_change || 0;
-    const btcCC  = btcChg >= 0 ? C.g : C.r;
-    const fgCol  = ST.macro.fearGreed <= 25 ? C.r : ST.macro.fearGreed <= 50 ? C.amb : C.g;
+    const btcCC  = btcChg >= 0 ? C.g : C.rt;
+    const fgCol  = ST.macro.fearGreed <= 25 ? C.rt : ST.macro.fearGreed <= 50 ? C.amb : C.g;
     const badges = Object.entries(counts).filter(([,n])=>n>0).map(([sig,n])=>{
       const s = SIG[sig];
       return `<span class="badge" style="color:${s.color};background:${s.bg};border-color:${s.bd}">${n} ${sig}</span>`;
@@ -1431,7 +1432,7 @@ async function fetchAll() {
     const stockHtml = STOCK_CFG.map((cfg, i) => {
       const res = stockResults[i];
       if (res.status === "rejected" || !res.value) {
-        return `<div class="card skel"><span style="color:${C.r};font-size:12px">⚠ ${cfg.name}: erro</span></div>`;
+        return `<div class="card skel"><span style="color:${C.rt};font-size:12px">⚠ ${cfg.name}: erro</span></div>`;
       }
       const d = res.value;
       return buildCard(cfg.id, cfg.name, cfg.lbl, cfg.color,
