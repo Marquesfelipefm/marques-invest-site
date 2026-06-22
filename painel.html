@@ -267,12 +267,12 @@ const GECKO_CFG = {
 // ════════════════════════════════════════════════
 // PROXY FETCH  — tenta 3 proxies em sequência
 // ════════════════════════════════════════════════
-// CoinGecko tem CORS nativo — tenta direto, fallback via proxy (para Brave Shields / redes corporativas)
+// CoinGecko tem CORS nativo — tenta direto, fallback via proxy próprio (Vercel/Netlify) e allorigins
 const CG_PROXIES = [
+  u => `${location.origin}/api/proxy?url=${encodeURIComponent(u)}`,
+  u => `${location.origin}/.netlify/functions/proxy?url=${encodeURIComponent(u)}`,
   u => u,
   u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-  u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
 ];
 async function cgFetch(url, attempt = 0) {
   if (attempt >= CG_PROXIES.length) throw new Error("CoinGecko inacessível (Brave Shields? Desative para este site)");
@@ -288,10 +288,9 @@ async function cgFetch(url, attempt = 0) {
 
 // Proxies para Yahoo Finance (não suporta CORS)
 const PROXIES = [
-  u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u => `${location.origin}/api/proxy?url=${encodeURIComponent(u)}`,
+  u => `${location.origin}/.netlify/functions/proxy?url=${encodeURIComponent(u)}`,
   u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-  u => `https://thingproxy.freeboard.io/fetch/${u}`,
   u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
 ];
 let activeProxy = 0;
