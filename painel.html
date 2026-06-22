@@ -658,16 +658,15 @@ async function pullBirdeyeTxs(cfg){
     const endpoints=[`${window.location.origin}/api/birdeye?${qs}`,`${window.location.origin}/.netlify/functions/birdeye?${qs}`];
     let lastErr=null;
     for(const ep of endpoints){
-          try{
-                  const r=await fetch(ep,{headers:{accept:"application/json"},cache:"no-store",signal:AbortSignal.timeout(11000)});
-                  if(!r.ok){ lastErr=new Error("proxy HTTP "+r.status); continue; }
-                  const j=await r.json();
-                  if(j.mode==="error") throw new Error(j.message||"erro no proxy Birdeye");
-                  if(!Array.isArray(j.items)) throw new Error("payload inesperado do proxy");
-                  return j.items;
-          }catch(e){ lastErr=e; }
+        let r;
+        try{ r=await fetch(ep,{headers:{accept:"application/json"},cache:"no-store",signal:AbortSignal.timeout(11000)}); }catch(e){ lastErr=e; continue; }
+        if(!r.ok){ lastErr=new Error("proxy HTTP "+r.status); continue; }
+        const j=await r.json();
+        if(j.mode==="error") throw new Error(j.message||"erro no proxy Birdeye");
+        if(!Array.isArray(j.items)) throw new Error("payload inesperado do proxy");
+        return j.items;
     }
-    throw lastErr||new Error("nenhum endpoint de proxy disponível (abra este painel via Vercel ou Netlify, não pelo GitHub Pages)");
+  throw lastErr||new Error("nenhum endpoint de proxy disponível (abra este painel via Vercel ou Netlify, não pelo GitHub Pages)");
 }
 function processBirdeyeTrade(state,item,cfg){
   const base=item.base||{}, quote=item.quote||{};
