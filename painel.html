@@ -257,7 +257,6 @@ const STOCK_CFG = [
 // BIRDEYE — chains/endereços por cripto (só ativos com chain suportada;
 // Cardano e Hyperliquid não têm dados on-chain na Birdeye — sem painel p/ eles)
 // ════════════════════════════════════════════════
-const BIRDEYE_API_KEY = "99ee88b2c00c494b8de1ffa1d019ba12"; // troque aqui se gerar uma key nova em bds.birdeye.so
 const BIRDEYE_CFG = {
   btc: { chain:"ethereum", address:"0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", symbol:"WBTC" },
   eth: { chain:"ethereum", address:"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", symbol:"WETH" },
@@ -654,14 +653,22 @@ function logLivePanelAlert(id,msg){
 
 // ---- Birdeye (on-chain genuíno) ----
 async function pullBirdeyeTxs(cfg){
-  const url=`https://public-api.birdeye.so/defi/txs/token?address=${cfg.address}&offset=0&limit=20&tx_type=swap&sort_type=desc`;
-  const r=await fetch(url,{headers:{"X-API-KEY":BIRDEYE_API_KEY,"x-chain":cfg.chain,"accept":"application/json"},cache:"no-store",signal:AbortSignal.timeout(11000)});
-  if(!r.ok) throw new Error("HTTP "+r.status);
-  const j=await r.json();
-  if(!j||!j.data||!Array.isArray(j.data.items)) throw new Error("payload inesperado");
-  return j.data.items;
+    if(window.location.protocol==="file:") throw new Error("modo arquivo local — abra via servidor (Vercel/Netlify)");
+    const qs=new URLSearchParams({address:cfg.address,chain:cfg.chain,offset:"0",limit:"20",tx_type:"swap",sort_type:"desc"}).toString();
+    const endpoints=[`${window.location.origin}/api/birdeye?${qs}`,`${window.location.origin}/.netlify/functions/birdeye?${qs}`];
+    let lastErr=null;
+    for(const ep of endpoints){
+          try{
+                  const r=await fetch(ep,{headers:{accept:"application/json"},cache:"no-store",signal:AbortSignal.timeout(11000)});
+                  if(!r.ok){ lastErr=new Error("proxy HTTP "+r.status); continue; }
+                  const j=await r.json();
+                  if(j.mode==="error") throw new Error(j.message||"erro no proxy Birdeye");
+                  if(!Array.isArray(j.items)) throw new Error("payload inesperado do proxy");
+                  return j.items;
+          }catch(e){ lastErr=e; }
+    }
+    throw lastErr||new Error("nenhum endpoint de proxy disponível (abra este painel via Vercel ou Netlify, não pelo GitHub Pages)");
 }
-
 function processBirdeyeTrade(state,item,cfg){
   const base=item.base||{}, quote=item.quote||{};
   let side=null;
@@ -756,7 +763,7 @@ function startBirdeyePanel(id){
       if(ocState!==state) return;
       setOcConn(state,false,"sem conexão");
       const eb=document.getElementById("oc-err-"+id);
-      if(eb){ eb.style.display="block"; eb.textContent="Não consegui falar com a Birdeye ("+e.message+"). Pode ser CORS (sirva por http://localhost) ou key expirada em bds.birdeye.so."; }
+      if(eb){ eb.style.display="block"; eb.textContent="Não consegui falar com a Birdeye ("+e.message+")."; }
     }
   };
   tick();
