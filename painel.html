@@ -193,6 +193,12 @@ const ST = {
       tech_note:"Preço acima de $600 (suporte psicológico forte). Resistência $654, depois $687. Perda de $570 = fraqueza estrutural.",
       swing_note:"O mais conservador do portfólio. Swing: compra em pullback $620-625, stop $598, alvo $660-680. R/R 1:2. Aguardar FOMC.",
     },
+    xrp:{structural:4,bubble:52,signal:"AGUARDAR",signalStrength:"Pagamentos",
+      structural_note:"XRP é o ativo de liquidez do Ripple Labs para pagamentos cross-border — parceiros como SBI, MoneyGram e centenas de bancos. Regulatório: SEC vs. Ripple encerrado favorável (XRP não é security em mercado secundário). ETF XRP aprovado nos EUA.",
+      macro_note:"XRP beneficia de narrativa de adoção bancária e regulação mais clara pós-Ripple vs SEC. Fed hawkish comprime toda a cripto, mas XRP tem menor beta especulativo. Catalisador: expansão do ODL (On-Demand Liquidity) e adoção bancária.",
+      tech_note:"RSI(14) ao vivo. Suporte S1/S2 e resistência R1/R2 calculados ao vivo. XRP tem padrão de breakouts explosivos pós-compressão lateral — historicamente +30-60% em ciclos de alta.",
+      swing_note:"Entrada em S1 (calculado ao vivo), stop abaixo S2. Alvo R1. XRP tem breakouts expressivos em bull market. R/R mínimo 1:2.",
+    },
     nvda:{structural:5,bubble:72,signal:"LONG",signalStrength:"Liderança AI",
       structural_note:"NVIDIA domina chips de IA: ~90% de market share em GPUs para datacenters (Blackwell GB200/300). Moat estrutural via ecossistema CUDA — praticamente impossível de replicar em 5+ anos. Cada geração de AI exige mais compute.",
       macro_note:"Demanda por AI compute ainda comprimida em supply — hyperscalers (Google, Meta, Microsoft, Amazon) acelerando capex. NVDA é o pick-and-shovel mais direto do ciclo AI. Fed hawkish comprime múltiplos no curto prazo.",
@@ -242,6 +248,7 @@ const CRYPTO_CFG = [
   {id:"ada", name:"Cardano",     cgId:"cardano",     lbl:"Layer 1 PoS",     color:"#0EA5E9", bybitSym:"ADAUSDT"},
   {id:"hype",name:"Hyperliquid", cgId:"hyperliquid", lbl:"Perp DEX",        color:"#fb923c", bybitSym:"HYPEUSDT"},
   {id:"bnb", name:"BNB",         cgId:"binancecoin", lbl:"Exchange Token",  color:"#F3BA2F", bybitSym:"BNBUSDT"},
+  {id:"xrp", name:"XRP",         cgId:"ripple",      lbl:"Payments",        color:"#00AAE4", bybitSym:"XRPUSDT"},
 ];
 const SYM_TO_ID = Object.fromEntries(CRYPTO_CFG.map(c => [c.bybitSym, c.id]));
 const STOCK_CFG = [
@@ -1473,7 +1480,7 @@ async function fetchAll() {
   <p style="font-size:12px;color:var(--txt2);line-height:1.55">⚠ ${ST.macro.headline}</p>
 </div>
 <div class="tabs">
-  <button class="tab on" id="tab-c" onclick="switchTab('crypto')">🔷 Cripto (6) · Bybit</button>
+  <button class="tab on" id="tab-c" onclick="switchTab('crypto')">🔷 Cripto (7) · Bybit</button>
   <button class="tab" id="tab-s" onclick="switchTab('stocks')">📈 Ações Tech (6) · NYSE</button>
 </div>
 <div class="grid" id="gc">${cryptoHtml}</div>
@@ -1481,7 +1488,7 @@ async function fetchAll() {
 <div class="ft">
   <div style="display:flex;align-items:center;gap:6px">
     <div class="sdot" id="sdot"></div>
-    <span style="font-size:10px;color:var(--txt2)">12 ativos · preço cripto ao vivo via WebSocket (Bybit) · dados completos a cada 60s</span>
+    <span style="font-size:10px;color:var(--txt2)">13 ativos · preço cripto ao vivo via WebSocket (Bybit) · dados completos a cada 60s</span>
   </div>
   <span style="font-size:10px;color:${C.gold};opacity:.7;letter-spacing:.06em">
     MARQUES INVEST · <span style="color:var(--txt2)">fins analíticos</span>
