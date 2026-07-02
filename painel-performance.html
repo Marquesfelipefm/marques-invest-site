@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marques Invest · Performance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <style>
+    :root {
+      --bg:          #0a0a0a;   /* preto piano */
+      --surface:     #111111;
+      --surface2:    #181818;
+      --gold:        #d4c060;
+      --gold-dark:   #b8963e;
+      --gold-dim:    rgba(212,192,96,.12);
+      --gold-border: rgba(212,192,96,.22);
+      --text:        #f0e8c8;
+      --text-muted:  #888;
+      --text-dim:    #444;
+      --green:       #4ade80;
+      --red:         #f87171;
+      --amber:       #fbbf24;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ─── HEADER ─────────────────────────────────────────────────── */
+    header {
+      padding: 36px 48px 28px;
+      border-bottom: 1px solid var(--gold-border);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .logo-star {
+      flex-shrink: 0;
+    }
+    .header-text h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1.1;
+      letter-spacing: .01em;
+    }
+    .header-text .sub {
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    /* ─── MAIN LAYOUT ────────────────────────────────────────────── */
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 40px 48px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* ─── CARD BASE ──────────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--gold-border);
+      border-radius: 14px;
+      padding: 28px 32px;
+    }
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 20px;
+    }
+    .card-title svg { opacity: .7; }
+    .badge {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: #0a0a0a;
+      background: var(--gold-dark);
+      padding: 3px 9px;
+      border-radius: 4px;
+    }
+
+    /* ─── UPLOAD ZONE ────────────────────────────────────────────── */
+    #drop-zone {
+      display: block;
+      border: 2px dashed var(--gold-border);
+      border-radius: 12px;
+      padding: 36px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      user-select: none;
+    }
+    #drop-zone.over {
+      border-color: var(--gold);
+      background: var(--gold-dim);
+    }
+    #drop-zone .dz-icon { margin: 0 auto 14px; display: block; }
+    #drop-zone .dz-main { color: var(--text-muted); font-size: 14px; }
+    #drop-zone .dz-main strong { color: var(--gold); text-decoration: underline; }
+    #drop-zone .dz-hint { font-size: 11px; margin-top: 6px; color: var(--text-dim); }
+    #file-input { display: none; }
+    #upload-msg {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--text-muted);
+      min-height: 20px;
+      text-align: center;
+    }
+
+    /* ─── METRICS GRID ───────────────────────────────────────────── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .metric {
+      background: var(--surface2);
+      border: 1px solid var(--gold-border);
+      border-radius: 10px;
+      padding: 18px 22px;
+    }
+    .m-label {
+      font-size: 10px;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .m-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--gold);
+    }
+    .m-val.up   { color: var(--green); }
+    .m-val.down { color: var(--red); }
+    .m-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 5px;
+    }
+
+    /* ─── CHART ──────────────────────────────────────────────────── */
+    .chart-wrap { position: relative; height: 268px; }
+
+    /* ─── ML CARD ────────────────────────────────────────────────── */
+    .signal-row {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-bottom: 22px;
+    }
+    .signal-pill {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      padding: 10px 26px;
+      border-radius: 8px;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+    .pill-LONG   { background: rgba(74,222,128,.12); color: var(--green); border: 1px solid rgba(74,222,128,.35); }
+    .pill-SHORT  { background: rgba(248,113,113,.12); color: var(--red);   border: 1px solid rgba(248,113,113,.35); }
+    .pill-NEUTRO { background: rgba(136,136,136,.12); color: #aaa;         border: 1px solid rgba(136,136,136,.25); }
+
+    .prob-wrap { flex: 1; }
+    .prob-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .prob-bar-bg {
+      height: 8px;
+      background: var(--surface2);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .prob-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+      transition: width .7s ease;
+    }
+
+    .regime-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .regime-badge {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      padding: 4px 10px;
+      border-radius: 5px;
+      background: var(--gold-dim);
+      color: var(--gold);
+      border: 1px solid var(--gold-border);
+    }
+
+    .wf-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .wf-cell {
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 14px 14px;
+    }
+    .wf-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+    .wf-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .wf-val.good { color: var(--green); }
+    .wf-val.warn { color: var(--amber); }
+
+    .prec-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .prec-block {
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .prec-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .prec-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+    .prec-row em { font-style: normal; color: var(--text); font-weight: 500; }
+
+    .baseline-warn {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: rgba(251,191,36,.07);
+      border: 1px solid rgba(251,191,36,.28);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--amber);
+      margin-bottom: 20px;
+    }
+
+    .ml-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .ml-ts { font-size: 11px; color: var(--text-dim); }
+    .ml-next { font-size: 11px; color: var(--text-muted); text-align: right; }
+
+    .disclaimer {
+      border-top: 1px solid var(--gold-border);
+      padding-top: 14px;
+      font-size: 11px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .disclaimer strong { color: var(--text-muted); }
+
+    .no-signal {
+      text-align: center;
+      padding: 44px 20px;
+      color: var(--text-muted);
+    }
+    .no-signal code {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 8px 18px;
+      background: var(--surface2);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--gold);
+      font-family: 'Courier New', monospace;
+      border: 1px solid var(--gold-border);
+    }
+    .no-signal p.hint {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 800px) {
+      header { padding: 20px 20px 18px; }
+      main { padding: 24px 20px 48px; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .wf-grid { grid-template-columns: repeat(2, 1fr); }
+      .signal-row { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header>
+  <svg class="logo-star" width="44" height="44" viewBox="0 0 48 48" fill="none">
+    <path d="M24 3 L26.8 21.2 L45 24 L26.8 26.8 L24 45 L21.2 26.8 L3 24 L21.2 21.2 Z" fill="#d4c060"/>
+    <defs>
+      <radialGradient id="g1" cx="40%" cy="35%" r="55%">
+        <stop offset="0%" stop-color="#fff" stop-opacity=".35"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </radialGradient>
+    </defs>
+    <path d="M24 3 L26.8 21.2 L45 24 L26.8 26.8 L24 45 L21.2 26.8 L3 24 L21.2 21.2 Z" fill="url(#g1)"/>
+  </svg>
+  <div class="header-text">
+    <h1>Marques Invest · Performance</h1>
+    <p class="sub">Análise de P&L · Bybit Transaction Log · Sinal Quantitativo ML</p>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══ 1. UPLOAD CSV ══ -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="12" y1="18" x2="12" y2="12"/>
+        <line x1="9" y1="15" x2="15" y2="15"/>
+      </svg>
+      Transaction Log CSV
+    </div>
+
+    <label id="drop-zone" for="file-input">
+      <svg class="dz-icon" width="38" height="38" viewBox="0 0 24 24" fill="none"
+           stroke="#d4c060" stroke-width="1.4" opacity=".5">
+        <polyline points="16 16 12 12 8 16"/>
+        <line x1="12" y1="12" x2="12" y2="21"/>
+        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+      </svg>
+      <p class="dz-main">Arraste o arquivo aqui ou <strong>clique para selecionar</strong></p>
+      <p class="dz-hint">Bybit Transaction Log · Exports USDT · Trades realizados</p>
+    </label>
+    <input type="file" id="file-input" accept=".csv">
+    <div id="upload-msg"></div>
+  </div>
+
+  <!-- ══ 2. METRICS (oculto até CSV carregado) ══ -->
+  <div id="metrics-wrap" class="hidden">
+    <div class="metrics-grid">
+      <div class="metric">
+        <div class="m-label">P&L Total</div>
+        <div class="m-val" id="m-pnl">—</div>
+        <div class="m-sub" id="m-pnl-sub"></div>
+      </div>
+      <div class="metric">
+        <div class="m-label">Win Rate</div>
+        <div class="m-val" id="m-wr">—</div>
+        <div class="m-sub" id="m-wr-sub"></div>
+      </div>
+      <div class="metric">
+        <div class="m-label">Max Drawdown</div>
+        <div class="m-val down" id="m-dd">—</div>
+        <div class="m-sub">sobre curva P&L acumulado</div>
+      </div>
+      <div class="metric">
+        <div class="m-label">Total de Trades</div>
+        <div class="m-val" id="m-trades">—</div>
+        <div class="m-sub" id="m-period"></div>
+      </div>
+      <div class="metric">
+        <div class="m-label">Profit Factor</div>
+        <div class="m-val" id="m-pf">—</div>
+        <div class="m-sub">ganhos brutos / perdas brutas</div>
+      </div>
+      <div class="metric">
+        <div class="m-label">Razão Win / Loss</div>
+        <div class="m-val" id="m-wl">—</div>
+        <div class="m-sub" id="m-wl-sub"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 3. P&L CHART (oculto até CSV carregado) ══ -->
+  <div id="chart-wrap" class="card hidden">
+    <div class="card-title">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+      Curva de P&L Acumulado
+    </div>
+    <div class="chart-wrap">
+      <canvas id="pnl-chart"></canvas>
+    </div>
+  </div>
+
+  <!-- ══ 4. SINAL QUANTITATIVO ML ══ -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+      </svg>
+      Sinal Quantitativo (ML)
+      <span class="badge">GBClassifier · BTCUSDT H4</span>
+    </div>
+    <div id="ml-content"></div>
+  </div>
+
+</main>
+
+<script>
+// ════════════════════════════════════════════════════════════════════
+//  BLOCO 1 — CSV PARSER (Bybit Transaction Log)
+// ════════════════════════════════════════════════════════════════════
+
+const COL_ALIASES = {
+  date:     ['Date(UTC)', 'Time', 'Date', 'Timestamp', 'datetime'],
+  type:     ['Type', 'type'],
+  cashflow: ['Cash Flow', 'Amount', 'Realized Profit', 'P&L', 'Profit', 'Pnl'],
+  coin:     ['Coin', 'Currency', 'coin', 'currency', 'Asset'],
+  qty:      ['Quantity', 'Qty', 'qty', 'quantity', 'Trade Qty', 'Order Qty'],
+};
+
+function findCol(headers, aliases) {
+  const norm = h => h.trim().toLowerCase();
+  for (const alias of aliases) {
+    const found = headers.find(h => norm(h) === norm(alias));
+    if (found) return found;
+  }
+  return null;
+}
+
+function num(v) {
+  if (v == null) return NaN;
+  return parseFloat(String(v).replace(/,/g, ''));
+}
+
+function parseTransactionLog(text) {
+  const result = Papa.parse(text.trim(), {
+    header: true,
+    skipEmptyLines: true,
+    dynamicTyping: false,
+  });
+
+  if (!result.data.length) throw new Error('CSV vazio ou inválido.');
+  const headers = Object.keys(result.data[0]);
+
+  const colDate = findCol(headers, COL_ALIASES.date);
+  const colType = findCol(headers, COL_ALIASES.type);
+  const colCF   = findCol(headers, COL_ALIASES.cashflow);
+  const colCoin = findCol(headers, COL_ALIASES.coin);
+  const colQty  = findCol(headers, COL_ALIASES.qty);
+
+  if (!colType) throw new Error('Coluna "Type" não encontrada. Confirme que é um Transaction Log da Bybit.');
+  if (!colCF)   throw new Error(`Coluna P&L não encontrada. Esperado: ${COL_ALIASES.cashflow.slice(0,3).join(' / ')}.`);
+
+  const trades = result.data.filter(row => {
+    const type = (row[colType] || '').trim().toUpperCase();
+    if (type !== 'TRADE') return false;
+    if (colCoin) {
+      const coin = (row[colCoin] || '').trim().toUpperCase();
+      if (coin !== 'USDT') return false;
+    }
+    if (colQty) {
+      const q = num(row[colQty]);
+      if (!isNaN(q) && q <= 0) return false;
+    }
+    return !isNaN(num(row[colCF]));
+  });
+
+  if (!trades.length) throw new Error(
+    'Nenhum trade USDT encontrado. Verifique filtros: Type=TRADE, Coin=USDT, Quantity>0.'
+  );
+
+  // Bybit exporta do mais recente — reversão para ordem cronológica
+  const series = [...trades].reverse().map(row => ({
+    date: colDate ? (row[colDate] || '') : '',
+    cf: num(row[colCF]),
+  }));
+
+  // P&L acumulado — NUNCA baseado em Wallet Balance
+  let cum = 0;
+  series.forEach(s => { s.cumPnL = (cum += s.cf); });
+
+  return series;
+}
+
+function calcMetrics(series) {
+  const pnls    = series.map(s => s.cf);
+  const total   = pnls.reduce((a, b) => a + b, 0);
+  const wins    = pnls.filter(p => p > 0);
+  const losses  = pnls.filter(p => p < 0);
+  const sumW    = wins.reduce((a, b) => a + b, 0);
+  const sumL    = Math.abs(losses.reduce((a, b) => a + b, 0));
+  const avgWin  = wins.length   ? sumW / wins.length   : 0;
+  const avgLoss = losses.length ? sumL / losses.length : 0;
+  const pf      = sumL > 0 ? sumW / sumL : Infinity;
+
+  // Max Drawdown sobre curva P&L acumulado
+  let peak = -Infinity, dd = 0;
+  for (const s of series) {
+    if (s.cumPnL > peak) peak = s.cumPnL;
+    const cur = peak - s.cumPnL;
+    if (cur > dd) dd = cur;
+  }
+
+  return {
+    total, totalTrades: pnls.length,
+    wins: wins.length, losses: losses.length,
+    winRate: pnls.length ? wins.length / pnls.length : 0,
+    sumW, sumL, avgWin, avgLoss, pf, dd,
+    firstDate: series[0]?.date,
+    lastDate:  series[series.length - 1]?.date,
+  };
+}
+
+const f2  = n => new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+const pct1 = n => (n * 100).toFixed(1) + '%';
+
+function renderMetrics(m) {
+  const sign = n => n >= 0 ? '+' : '';
+
+  const pnlEl = document.getElementById('m-pnl');
+  pnlEl.textContent = `${sign(m.total)}$${f2(Math.abs(m.total))}`;
+  pnlEl.className = 'm-val ' + (m.total >= 0 ? 'up' : 'down');
+  document.getElementById('m-pnl-sub').textContent = `${sign(m.total)}${f2(m.total)} USDT`;
+
+  const wrEl = document.getElementById('m-wr');
+  wrEl.textContent = pct1(m.winRate);
+  wrEl.className = 'm-val ' + (m.winRate >= 0.5 ? 'up' : 'down');
+  document.getElementById('m-wr-sub').textContent = `${m.wins} wins · ${m.losses} losses`;
+
+  document.getElementById('m-dd').textContent = m.dd > 0 ? `-$${f2(m.dd)}` : '$0.00';
+
+  document.getElementById('m-trades').textContent = m.totalTrades.toLocaleString('pt-BR');
+  const fmtDate = d => {
+    if (!d) return '—';
+    const p = new Date(d);
+    return isNaN(p) ? d.slice(0, 10) : p.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' });
+  };
+  document.getElementById('m-period').textContent = `${fmtDate(m.firstDate)} → ${fmtDate(m.lastDate)}`;
+
+  const pfEl = document.getElementById('m-pf');
+  pfEl.textContent = isFinite(m.pf) ? f2(m.pf) : '∞';
+  pfEl.className = 'm-val ' + (m.pf >= 1.5 ? 'up' : m.pf >= 1.0 ? '' : 'down');
+
+  const wlEl = document.getElementById('m-wl');
+  wlEl.textContent = m.avgLoss > 0 ? f2(m.avgWin / m.avgLoss) : '∞';
+  document.getElementById('m-wl-sub').textContent = `avg win $${f2(m.avgWin)} · avg loss $${f2(m.avgLoss)}`;
+
+  document.getElementById('metrics-wrap').classList.remove('hidden');
+  document.getElementById('chart-wrap').classList.remove('hidden');
+}
+
+let pnlChart = null;
+function renderChart(series) {
+  const ctx = document.getElementById('pnl-chart').getContext('2d');
+  if (pnlChart) pnlChart.destroy();
+
+  const dense = series.length > 200;
+  const labels = series.map((s, i) => {
+    if (!s.date) return `#${i + 1}`;
+    const d = new Date(s.date);
+    return isNaN(d) ? '' : d.toLocaleDateString('pt-BR', { month: 'short', day: '2-digit' });
+  });
+
+  pnlChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'P&L Acumulado (USDT)',
+        data: series.map(s => +s.cumPnL.toFixed(2)),
+        borderColor: '#d4c060',
+        backgroundColor: 'rgba(212,192,96,.07)',
+        borderWidth: 1.8,
+        fill: true,
+        tension: 0.35,
+        pointRadius: dense ? 0 : 3,
+        pointHoverRadius: 5,
+        pointBackgroundColor: '#d4c060',
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` P&L: $${f2(ctx.raw)} USDT`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: '#444', maxTicksLimit: 12, font: { size: 11, family: 'Inter' } },
+          grid: { color: 'rgba(255,255,255,.03)' },
+        },
+        y: {
+          ticks: { color: '#666', font: { size: 11, family: 'Inter' }, callback: v => `$${f2(v)}` },
+          grid: { color: 'rgba(255,255,255,.03)' },
+        },
+      },
+    },
+  });
+}
+
+function handleFile(file) {
+  const msg = document.getElementById('upload-msg');
+  msg.innerHTML = `<span style="color:#888">⏳ Processando <strong>${file.name}</strong>...</span>`;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const series  = parseTransactionLog(e.target.result);
+      const metrics = calcMetrics(series);
+      renderMetrics(metrics);
+      renderChart(series);
+      msg.innerHTML = `<span style="color:#4ade80">✓ ${file.name} — ${metrics.totalTrades} trades USDT carregados com sucesso.</span>`;
+    } catch (err) {
+      msg.innerHTML = `<span style="color:#f87171">✗ Erro: ${err.message}</span>`;
+    }
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+// Drop-zone events
+const dropZone  = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+
+['dragenter', 'dragover'].forEach(ev =>
+  dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.add('over'); }));
+['dragleave', 'drop'].forEach(ev =>
+  dropZone.addEventListener(ev, () => dropZone.classList.remove('over')));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  const file = e.dataTransfer?.files?.[0];
+  if (file) handleFile(file);
+});
+fileInput.addEventListener('change', e => {
+  if (e.target.files?.[0]) handleFile(e.target.files[0]);
+});
+
+
+// ════════════════════════════════════════════════════════════════════
+//  BLOCO 2 — SINAL QUANTITATIVO ML (lê signals.json)
+// ════════════════════════════════════════════════════════════════════
+
+function mlPct(v) {
+  if (v == null) return '—';
+  return (v * 100).toFixed(1) + '%';
+}
+
+function fmtTS(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return isNaN(d) ? iso : d.toLocaleString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: '2-digit',
+    hour: '2-digit', minute: '2-digit',
+  });
+}
+
+function renderMLCard(d) {
+  const el = document.getElementById('ml-content');
+
+  if (!d || d.signal === null || d.signal === undefined) {
+    el.innerHTML = `
+      <div class="no-signal">
+        <p style="font-size:14px;color:#888">Sinal ainda não gerado.</p>
+        <code>python ml_signal.py</code>
+        <p class="hint">Execute o script Python e recarregue a página para ver o sinal.</p>
+      </div>`;
+    return;
+  }
+
+  const sig     = d.signal;            // LONG | SHORT | NEUTRO
+  const prob    = d.probability;
+  const beats   = d.beats_baseline;
+  const oos     = d.oos_accuracy;
+  const base    = d.baseline_accuracy;
+  const pBar    = Math.round((prob ?? 0) * 100);
+
+  const probLabel = sig === 'NEUTRO'
+    ? `P(máx) = ${mlPct(prob)}`
+    : `P(${sig}) = ${mlPct(prob)}`;
+
+  const oosClass  = beats ? 'good' : 'warn';
+  const warnStyle = beats ? 'display:none' : 'display:flex';
+
+  el.innerHTML = `
+    <div class="baseline-warn" style="${warnStyle}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+      Atenção: modelo NÃO supera o baseline ingênuo nesta janela walk-forward. Interprete com cautela redobrada.
+    </div>
+
+    <div class="signal-row">
+      <div class="signal-pill pill-${sig}">
+        ${sig === 'LONG' ? '▲ LONG' : sig === 'SHORT' ? '▼ SHORT' : '◆ NEUTRO'}
+      </div>
+      <div class="prob-wrap">
+        <div class="prob-top">
+          <span>Probabilidade</span>
+          <span>${probLabel}</span>
+        </div>
+        <div class="prob-bar-bg">
+          <div class="prob-bar-fill" style="width:${pBar}%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="regime-row">
+      <span class="regime-badge">${d.regime ?? '—'}</span>
+      <span>${d.regime_detail ?? ''}</span>
+    </div>
+
+    <div class="wf-grid">
+      <div class="wf-cell">
+        <div class="wf-label">OOS Accuracy</div>
+        <div class="wf-val ${oosClass}">${mlPct(oos)}</div>
+      </div>
+      <div class="wf-cell">
+        <div class="wf-label">Baseline</div>
+        <div class="wf-val ${beats ? '' : 'warn'}">${mlPct(base)}</div>
+      </div>
+      <div class="wf-cell">
+        <div class="wf-label">Folds WF</div>
+        <div class="wf-val">${d.folds ?? '—'}</div>
+      </div>
+      <div class="wf-cell">
+        <div class="wf-label">Candles treinados</div>
+        <div class="wf-val">${d.candles_trained ? d.candles_trained.toLocaleString('pt-BR') : '—'}</div>
+      </div>
+    </div>
+
+    <div class="prec-grid">
+      <div class="prec-block">
+        <div class="prec-title">▲ Classe LONG</div>
+        <div class="prec-row"><span>Precision</span><em>${mlPct(d.precision_long)}</em></div>
+        <div class="prec-row"><span>Recall</span><em>${mlPct(d.recall_long)}</em></div>
+      </div>
+      <div class="prec-block">
+        <div class="prec-title">▼ Classe SHORT</div>
+        <div class="prec-row"><span>Precision</span><em>${mlPct(d.precision_short)}</em></div>
+        <div class="prec-row"><span>Recall</span><em>${mlPct(d.recall_short)}</em></div>
+      </div>
+    </div>
+
+    <div class="ml-meta">
+      <div class="ml-ts">Atualizado ${fmtTS(d.updated_at)} · ${d.model_version ?? 'GBClassifier'}</div>
+      <div class="ml-next">Próx. candle H4: ${fmtTS(d.next_candle_closes)}</div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>⚠ Sinal estatístico — não é recomendação de investimento.</strong>
+      Gestão de risco sempre. Modelo treinado em dados históricos;
+      performance passada não garante resultados futuros.
+      Nunca arrisque capital que não pode perder.
+    </div>`;
+}
+
+async function loadMLSignal() {
+  try {
+    const resp = await fetch('signals.json?_=' + Date.now());
+    if (!resp.ok) throw new Error('not found');
+    const data = await resp.json();
+    renderMLCard(data);
+  } catch {
+    renderMLCard(null);
+  }
+}
+
+loadMLSignal();
+ </script>
+</body>
+</html>
